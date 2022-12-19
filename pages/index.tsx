@@ -1,7 +1,12 @@
-import { useForm } from "@mantine/form";
-import { TextInput } from "@mantine/core";
+import { TextInput, Flex, Button, Group } from "@mantine/core";
+import { useForm } from "react-hook-form";
 
-const grabItemById = async (itemId: number) => {
+interface FormValue {
+  id: number;
+}
+
+const grabItemById = async (data: FormValue) => {
+  const itemId = data.id;
   try {
     const response = await fetch(
       `https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-classic-us&locale=en_US&access_token=USDb1cb2IQJnHEz8JmJ4GVT3U1lq1zBFns`
@@ -14,22 +19,29 @@ const grabItemById = async (itemId: number) => {
 };
 
 function GrabBlizzItem() {
-  const form = useForm({
-    initialValues: {
-      itemId: 0,
-    },
-    validate: {
-      itemId: (value) => value > 0 || "Item ID must be greater than 0",
-    },
-  });
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<FormValue>({ defaultValues: { id: undefined } });
 
   return (
-    <div>
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
-        <TextInput label='itemId' placeholder='00000' {...form.getInputProps("itemId")} />
-        <button type='submit'>Submit</button>
+    <Flex h='100vh' justify='center' align='center'>
+      <form onSubmit={handleSubmit(grabItemById)}>
+        <TextInput
+          label='Item ID'
+          placeholder='00000'
+          id='id'
+          {...register("id", {
+            onBlur: () => {},
+          })}
+        />
+        <Group position='right' mt='xs'>
+          <Button type='submit'>Submit</Button>
+        </Group>
       </form>
-    </div>
+    </Flex>
   );
 }
 
