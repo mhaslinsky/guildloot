@@ -10,177 +10,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Item {
-  id                String  @id
-  player            String
-  date              DateTime
-  time              DateTime
-  itemId            Int
-  itemString        String
-  response          String
-  votes             Int
-  class             String
-  instance          String
-  boss              String
-  gear1             String
-  gear2             String
-  responseId        String
-  isAwardReason     Boolean
-  rollType          String
-  subType           String
-  equipLoc          String
-  note              String
-  owner             String
-  itemName          String
+model rcLootItem {
+  id            String   @id
+  player        String
+  date          DateTime
+  time          DateTime
+  itemId        Int
+  itemString    String
+  response      String
+  votes         Int
+  class         String
+  instance      String
+  boss          String
+  gear1         String
+  gear2         String
+  responseId    String
+  isAwardReason Boolean
+  rollType      String
+  subType       String
+  equipLoc      String
+  note          String
+  owner         String
+  itemName      String
+  // bLootDBItem   blizzardDBItem? @relation(fields: [itemId], references: [id])
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-}
-
-model blizzardDBItem {
-  id              Int @id
-  name            String
-  quality         Quality
-  level           Int
-  requiredLevel   Int
-  media           Media
-  itemClass       ItemClass
-  itemSubclass    ItemSubclass
-  inventoryType   InventoryType
-  purchasePrice   Int
-  sellPrice       Int
-  maxCount        Int
-  isEquippable    Boolean
-  isStackable     Boolean
-  previewItem     PreviewItem
-}
-
-model Quality {
-  type            String
-  name            String
-}
-
-model Media {
-  key             Link
-  id              Int
-}
-
-model Link {
-  href            String
-}
-
-model ItemClass {
-  key             Link
-  name            String
-  id              Int
-}
-
-model ItemSubclass {
-  key             Link
-  name            String
-  id              Int
-}
-
-model InventoryType {
-  type            String
-  name            String
-}
-
-model PreviewItem {
-  item            Item
-  quality         Quality
-  name            String
-  media           Media
-  itemClass       ItemClass
-  itemSubclass    ItemSubclass
-  inventoryType   InventoryType
-  binding         Binding
-  armor           Armor
-  stats           Stat[]
-  weaponInfo      WeaponInfo
-  spellInfo       SpellInfo
-  critChance      Float
-  critRating      Int
-  hitRating       Int
-  hasteRating     Int
-  attackPower     Int
-  rangedAttackPower Int
-  spellPower      Int
-  armorPenetrationRating Int
-  masteryRating   Int
-  dodgeRating     Int
-  parryRating     Int
-  blockRating     Int
-  block           Float
-  hasSockets      Boolean
-  socketInfo      SocketInfo
-  enchantments    Enchantment[]
-  bonuses         Bonus[]
-  context         String
-  artifactId      Int
-  artifactAppearanceId Int
-  artifactTraits  ArtifactTrait[]
-  relicInfo       RelicInfo[]
-  azeritePowerIds Int[]
-  azeriteEmpoweredItemInfo AzeriteEmpoweredItemInfo
-}
-
-model Binding {
-  type            String
-  name            String
-}
-
-model Armor {
-  value           Int
-  display         Display
-}
-
-model Display {
-  displayString   String
-  color           Color
-}
-
-model Color {
-  r               Int
-  g               Int
-  b               Int
-  a               Float
-}
-
-model Stat {
-  type            StatType
-  value           Int
-  display         Display
-}
-
-model StatType {
-  type            String
-  name            String
-}
-
-model WeaponInfo {
-  damage           Damage
-  weaponSpeed      Float
-  dps              Float
-}
-
-model Damage {
-  minimum          Float
-  maximum          Float
-  exactMin         Float
-  exactMax         Float
-}
-
-model SpellInfo {
-  spell            Spell
-  spellRange       SpellRange
-  spellPowerCost   SpellPowerCost
-  spellCastTime    SpellCastTime
-  spellCooldown    SpellCooldown
-}
-
-model Spell {
-  key             Link
-  name            String
-  id              Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
