@@ -1,46 +1,43 @@
-import { TextInput, Flex, Button, Group } from "@mantine/core";
-import { useForm } from "react-hook-form";
+import { NumberInput, Flex, Button, Group, Card } from "@mantine/core";
+import { useForm, zodResolver } from "@mantine/form";
+import * as z from "zod";
 
-interface FormValue {
-  id: number;
-}
+const schema = z.object({
+  id: z.number().min(1).max(52030),
+});
 
-const grabItemById = async (data: FormValue) => {
-  const itemId = data.id;
+const grabItemById = async (itemId: number | undefined) => {
   try {
     const response = await fetch(
-      `https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-classic-us&locale=en_US&access_token=USDb1cb2IQJnHEz8JmJ4GVT3U1lq1zBFns`
+      `https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-classic-us&locale=en_US&access_token=${process.env.BLIZZ_API_TOKEN}`
     );
     const data = await response.json();
     console.log(data);
+    return data;
   } catch (error) {
     console.error(error);
   }
 };
 
 function GrabBlizzItem() {
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm<FormValue>({ defaultValues: { id: undefined } });
+  const form = useForm({ validate: zodResolver(schema), initialValues: { id: undefined } });
+  let itemId = form.values.id;
 
   return (
     <Flex h='100vh' justify='center' align='center'>
-      <form onSubmit={handleSubmit(grabItemById)}>
-        <TextInput
-          label='Item ID'
-          placeholder='00000'
-          id='id'
-          {...register("id", {
-            onBlur: () => {},
+      <Card>
+        <form
+          onSubmit={form.onSubmit((values) => {
+            grabItemById(values.id);
           })}
-        />
-        <Group position='right' mt='xs'>
-          <Button type='submit'>Submit</Button>
-        </Group>
-      </form>
+        >
+          <NumberInput {...form.getInputProps("id")} hideControls placeholder='12345' label='Item ID' />
+          <Group position='right' mt='xs'>
+            <Button type='submit'>Submit</Button>
+          </Group>
+        </form>
+      </Card>
+      <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>test</a>
     </Flex>
   );
 }

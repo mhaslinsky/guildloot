@@ -1,10 +1,9 @@
 // import { createStandaloneToast } from "@chakra-ui/react";
-// import { theme } from "../theme/index";
 import { QueryClient, QueryKey } from "@tanstack/react-query";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { persistQueryClient, removeOldestQuery } from "@tanstack/react-query-persist-client";
 
-// const toast = createStandaloneToast({ theme });
+// const toast = createStandaloneToast();
 export let localStoragePersister: any;
 
 function queryErrorHandler(error: unknown): void {
@@ -33,7 +32,7 @@ if (typeof window !== "undefined") {
   localStoragePersister = createSyncStoragePersister({
     storage: window.localStorage,
     retry: removeOldestQuery,
-    key: "lazyday",
+    key: "loottracker",
   });
 } else {
   localStoragePersister = createSyncStoragePersister({ storage: undefined });

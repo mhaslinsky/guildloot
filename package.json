@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
+    "@hookform/resolvers": "^2.9.10",
     "@mantine/carousel": "^5.9.5",
     "@mantine/core": "^5.9.5",
     "@mantine/dates": "^5.9.5",
@@ -49,7 +50,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.41.0",
-    "sass": "^1.57.0"
+    "sass": "^1.57.0",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@types/node": "^18.11.17",

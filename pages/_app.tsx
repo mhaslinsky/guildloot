@@ -6,6 +6,7 @@ import { MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "../utils/queryClient";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,8 @@ export default function App({ Component, pageProps }: AppProps) {
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <link rel='icon' href='/favicon.ico' />
         </Head>
+        {/* <Script>const whTooltips = {colorLinks: true, boxlinks: true, iconizeLinks: true, renameLinks: true};</Script> */}
+        <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
         <main className={inter.className}>
           <Component {...pageProps} />{" "}
         </main>
