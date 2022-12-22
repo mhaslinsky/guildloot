@@ -32,7 +32,90 @@ model rcLootItem {
   note          String
   owner         String
   itemName      String
-  // bLootDBItem   blizzardDBItem? @relation(fields: [itemId], references: [id])
+
+  bLootDBItem blizzAPIItem? @relation(fields: [itemId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model blizzAPIItem {
+  id               Int     @id @default(autoincrement())
+  href             String
+  name             String
+  qualityType      String
+  qualityName      String
+  level            Int
+  requiredLevel    Int
+  mediaId          Int
+  mediaHref        String
+  itemClassId      Int
+  itemClassName    String
+  itemClassHref    String
+  itemSubclassId   Int
+  itemSubclassName String
+  itemSubclassHref String
+  inventoryType    String
+  inventoryName    String
+  purchasePrice    Int
+  sellPrice        Int
+  maxCount         Int
+  isEquippable     Boolean
+  isStackable      Boolean
+  thumbnail        String
+
+  dropList      rcLootItem[]
+  previewItem   PreviewItem  @relation(fields: [previewItemId], references: [id])
+  previewItemId Int          @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PreviewItem {
+  id                 Int           @id @default(autoincrement())
+  itemHref           String
+  itemId             Int
+  qualityType        String
+  qualityName        String
+  name               String
+  mediaHref          String
+  mediaId            Int
+  itemClassHref      String
+  itemClassName      String
+  itemClassId        Int
+  itemSubclassHref   String
+  itemSubclassName   String
+  itemSubclassId     Int
+  inventoryType      String
+  inventoryName      String
+  bindingType        String
+  bindingName        String
+  uniqueEquipped     String
+  weaponMinDamage    Int
+  weaponMaxDamage    Int
+  weaponDamageString String
+  weaponDamageType   String
+  weaponDamageName   String
+  weaponAttackSpeed  Float
+  weaponAttackString String
+  weaponDps          Float
+  weaponDpsString    String
+  sellPriceValue     Int
+  sellPriceHeader    String
+  sellPriceGold      String
+  sellPriceSilver    String
+  sellPriceCopper    String
+  levelValue         Int
+  levelString        String
+  isSubclassHidden   Boolean
+  rewardType         String
+  rewardName         String
+  rewardQuantity     Int
+  rewardTitleType    String
+  rewardTitleId      Int
+  rewardTitleName    String
+  blizzAPIItem       blizzAPIItem?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

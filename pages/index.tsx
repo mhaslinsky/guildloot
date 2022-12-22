@@ -37,7 +37,8 @@ export default function Home() {
       setItemThumb(itemIcon);
       setIsLoading(false);
     } catch (error) {
-      //TODO: add error handling
+      setItemName("item not found");
+      setIsLoading(false);
       console.error(error);
     }
   };
@@ -46,15 +47,24 @@ export default function Home() {
     <>
       <Flex mt='xl' mb='xl' justify='center' align='center' sx={{ position: "relative" }}>
         <LoadingOverlay overlayBlur={2} visible={isLoading} />
-        <Flex justify='flex-start' align='center' direction='column'>
-          {itemName && <Text>{itemName}</Text>}
-          {(itemThumb || isLoading) && (
-            <Box w={75} h={75}>
-              {itemThumb && <Image alt={`${itemName}`} src={itemThumb} />}
-            </Box>
-          )}
-        </Flex>
-        <Card>
+        {itemName && (
+          <Card h={130} mr={"sm"}>
+            <Flex justify='flex-start' align='center' direction='column'>
+              {itemName && <Text>{itemName}</Text>}
+              {(itemThumb || isLoading) && (
+                <Box w={75} h={75}>
+                  {itemThumb && (
+                    <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>
+                      <Image alt={`${itemName}`} src={itemThumb} />
+                    </a>
+                  )}
+                </Box>
+              )}
+            </Flex>
+          </Card>
+        )}
+
+        <Card h={130}>
           <form
             onSubmit={form.onSubmit((values) => {
               grabItemInfoById(values.id);
@@ -66,7 +76,6 @@ export default function Home() {
             </Group>
           </form>
         </Card>
-        <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>Hover!</a>
       </Flex>
 
       <TableSort data={DATA} />
