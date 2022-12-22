@@ -1,51 +1,75 @@
-import { NumberInput, Flex, Button, Group, Card } from "@mantine/core";
+import { NumberInput, Flex, Button, Group, Card, Box, Image, LoadingOverlay, Text } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import * as z from "zod";
+import { TableSort } from "../components/TableExample";
+import blizzAPI from "../utils/blizzApi";
+import { useState } from "react";
+import type { blizzAPIItem, blizzAPIMedia } from "../utils/types";
+
+let DATA: any = [];
 
 const schema = z.object({
   id: z.number().min(1).max(52030),
 });
 
-const grabItemById = async (itemId: number | undefined) => {
-  try {
-    const response = await fetch(
-      `https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-classic-us&locale=en_US&access_token=${process.env.BLIZZ_API_TOKEN}`
-    );
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-function GrabBlizzItem() {
+export default function Home() {
   const form = useForm({ validate: zodResolver(schema), initialValues: { id: undefined } });
+  const [itemThumb, setItemThumb] = useState<string>("");
+  const [itemName, setItemName] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   let itemId = form.values.id;
 
-  return (
-    <Flex h='100vh' justify='center' align='center'>
-      <Card>
-        <form
-          onSubmit={form.onSubmit((values) => {
-            grabItemById(values.id);
-          })}
-        >
-          <NumberInput {...form.getInputProps("id")} hideControls placeholder='12345' label='Item ID' />
-          <Group position='right' mt='xs'>
-            <Button type='submit'>Submit</Button>
-          </Group>
-        </form>
-      </Card>
-      <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>test</a>
-    </Flex>
-  );
-}
+  const grabItemInfoById = async (itemId: number | undefined) => {
+    try {
+      setIsLoading(true);
+      //@ts-ignore
+      const data: blizzAPIItem = await blizzAPI.query(
+        `/data/wow/item/${itemId}?namespace=static-classic-us&locale=en_US`
+      );
+      const itemName = data.name;
+      const mediaEndpoint = data.media.key.href;
+      //@ts-ignore
+      const itemIconData: blizzAPIMedia = await blizzAPI.query(
+        mediaEndpoint.replace("https://us.api.blizzard.com", "")
+      );
+      const itemIcon = itemIconData.assets[0].value;
+      setItemName(itemName);
+      setItemThumb(itemIcon);
+      setIsLoading(false);
+    } catch (error) {
+      //TODO: add error handling
+      console.error(error);
+    }
+  };
 
-export default function Home() {
   return (
     <>
-      <GrabBlizzItem />
+      <Flex mt='xl' mb='xl' justify='center' align='center' sx={{ position: "relative" }}>
+        <LoadingOverlay overlayBlur={2} visible={isLoading} />
+        <Flex justify='flex-start' align='center' direction='column'>
+          {itemName && <Text>{itemName}</Text>}
+          {(itemThumb || isLoading) && (
+            <Box w={75} h={75}>
+              {itemThumb && <Image alt={`${itemName}`} src={itemThumb} />}
+            </Box>
+          )}
+        </Flex>
+        <Card>
+          <form
+            onSubmit={form.onSubmit((values) => {
+              grabItemInfoById(values.id);
+            })}
+          >
+            <NumberInput {...form.getInputProps("id")} hideControls placeholder='12345' label='Item ID' />
+            <Group position='right' mt='xs'>
+              <Button type='submit'>Submit</Button>
+            </Group>
+          </form>
+        </Card>
+        <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>Hover!</a>
+      </Flex>
+
+      <TableSort data={DATA} />
     </>
   );
 }

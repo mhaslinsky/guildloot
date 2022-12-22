@@ -7,20 +7,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "../utils/queryClient";
 import Script from "next/script";
+import theme from "../styles/theme";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: "dark",
-        }}
-      >
+      <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
         <Head>
           <title>Create Next App</title>
           <meta name='viewport' content='width=device-width, initial-scale=1' />
