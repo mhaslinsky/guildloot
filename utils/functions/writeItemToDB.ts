@@ -5,6 +5,7 @@ async function createBlizzAPIItem(item: blizzAPIItem, media: blizzAPIMedia) {
   try {
     await prisma.blizzAPIItem.create({
       data: {
+        id: item.id,
         href: item._links.self.href,
         name: item.name,
         qualityType: item.quality.type,

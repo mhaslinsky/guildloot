@@ -40,28 +40,28 @@ model rcLootItem {
 }
 
 model blizzAPIItem {
-  id               Int     @id @default(autoincrement())
-  href             String
-  name             String
-  qualityType      String
-  qualityName      String
-  level            Int
-  requiredLevel    Int
-  mediaId          Int
-  mediaHref        String
-  itemClassId      Int
-  itemClassName    String
-  itemClassHref    String
-  itemSubclassId   Int
-  itemSubclassName String
-  itemSubclassHref String
-  inventoryType    String
-  inventoryName    String
-  purchasePrice    Int
-  sellPrice        Int
-  maxCount         Int
-  isEquippable     Boolean
-  isStackable      Boolean
+  id                        Int     @id
+  href                      String
+  name                      String
+  qualityType               String
+  qualityName               String
+  level                     Int
+  requiredLevel             Int
+  mediaId                   Int
+  mediaHref                 String
+  itemClassId               Int
+  itemClassName             String
+  itemClassHref             String
+  itemSubclassId            Int
+  itemSubclassName          String
+  itemSubclassHref          String
+  inventoryType             String
+  inventoryName             String
+  purchasePrice             Int
+  sellPrice                 Int
+  maxCount                  Int
+  isEquippable              Boolean
+  isStackable               Boolean
   previewItemId             Int
   previewQualityType        String
   previewQualityName        String
@@ -102,9 +102,9 @@ model blizzAPIItem {
   previewRewardTitleType    String
   previewRewardTitleId      Int
   previewRewardTitleName    String
-  thumbnail        String
+  thumbnail                 String
 
-  dropList      rcLootItem[]
+  dropList rcLootItem[]
   // previewItem   PreviewItem  @relation(fields: [previewItemId], references: [id])
   // previewItemId Int          @unique
 

@@ -80,12 +80,24 @@ export type PreviewItem = {
     type: string;
     name: string;
   };
-  binding: {
+  binding?: {
     type: string;
     name: string;
   };
-  unique_equipped: string;
-  weapon: {
+  unique_equipped?: string;
+  armor?: {
+    value: number;
+    display: {
+      display_string: string;
+      color: {
+        r: number;
+        g: number;
+        b: number;
+        a: number;
+      };
+    };
+  };
+  weapon?: {
     damage: {
       min_value: number;
       max_value: number;
@@ -139,7 +151,7 @@ export type PreviewItem = {
     };
     description: string;
   }[];
-  sell_price: {
+  sell_price?: {
     value: number;
     display_strings: {
       header: string;
@@ -148,10 +160,21 @@ export type PreviewItem = {
       copper: string;
     };
   };
-  requirements: {
-    level: {
-      value: number;
-      display_string: string;
+  requirements?: {
+    level?:
+      | {
+          value: number;
+          display_string: string;
+        }
+      | number;
+    display_string?: string;
+    skill?: {
+      profession?: {
+        name: string;
+        id: number;
+      };
+      level?: string;
+      display_string?: string;
     };
   };
   is_subclass_hidden: boolean;
