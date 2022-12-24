@@ -47,22 +47,21 @@ export default function Home() {
     <>
       <Flex mt='xl' mb='xl' justify='center' align='center' sx={{ position: "relative" }}>
         <LoadingOverlay overlayBlur={2} visible={isLoading} />
-        {itemName && (
-          <Card h={130} mr={"sm"}>
-            <Flex justify='flex-start' align='center' direction='column'>
-              {itemName && <Text>{itemName}</Text>}
-              {(itemThumb || isLoading) && (
-                <Box w={75} h={75}>
-                  {itemThumb && (
-                    <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>
-                      <Image alt={`${itemName}`} src={itemThumb} />
-                    </a>
-                  )}
-                </Box>
-              )}
-            </Flex>
-          </Card>
-        )}
+
+        <Card w={250} h={130} mr={"sm"}>
+          <Flex justify='flex-start' align='center' direction='column'>
+            {itemName && <Text>{itemName}</Text>}
+            {(itemThumb || isLoading) && (
+              <Box w={75} h={75}>
+                {itemThumb && (
+                  <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>
+                    <Image alt={`${itemName}`} src={itemThumb} />
+                  </a>
+                )}
+              </Box>
+            )}
+          </Flex>
+        </Card>
 
         <Card h={130}>
           <form

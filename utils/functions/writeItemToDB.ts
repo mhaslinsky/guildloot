@@ -1,0 +1,77 @@
+import { prisma } from "../../server/db/client";
+import { blizzAPIItem, blizzAPIMedia, PreviewItem } from "../types";
+
+async function createBlizzAPIItem(item: blizzAPIItem, media: blizzAPIMedia) {
+  try {
+    await prisma.blizzAPIItem.create({
+      data: {
+        href: item._links.self.href,
+        name: item.name,
+        qualityType: item.quality.type,
+        qualityName: item.quality.name,
+        level: item.level,
+        requiredLevel: item.required_level,
+        mediaId: item.media.id,
+        mediaHref: item.media.key.href,
+        itemClassId: item.item_class.id,
+        itemClassName: item.item_class.name,
+        itemClassHref: item.item_class.key.href,
+        itemSubclassId: item.item_subclass.id,
+        itemSubclassName: item.item_subclass.name,
+        itemSubclassHref: item.item_subclass.key.href,
+        inventoryType: item.inventory_type.type,
+        inventoryName: item.inventory_type.name,
+        purchasePrice: item.purchase_price,
+        sellPrice: item.sell_price,
+        maxCount: item.max_count,
+        isEquippable: item.is_equippable,
+        isStackable: item.is_stackable,
+        //PreviewItem
+        previewItemId: item.preview_item.item.id,
+        previewQualityType: item.preview_item.quality.type,
+        previewQualityName: item.preview_item.quality.name,
+        previewName: item.preview_item.name,
+        previewMediaHref: item.preview_item.media.key.href,
+        previewMediaId: item.preview_item.media.id,
+        previewItemClassHref: item.preview_item.item_class.key.href,
+        previewItemClassName: item.preview_item.item_class.name,
+        previewItemClassId: item.preview_item.item_class.id,
+        previewItemSubclassHref: item.preview_item.item_subclass.key.href,
+        previewItemSubclassName: item.preview_item.item_subclass.name,
+        previewItemSubclassId: item.preview_item.item_subclass.id,
+        previewInventoryType: item.preview_item.inventory_type.type,
+        previewInventoryName: item.preview_item.inventory_type.name,
+        previewBindingType: item.preview_item.binding.type,
+        previewBindingName: item.preview_item.binding.name,
+        previewUniqueEquipped: item.preview_item.unique_equipped,
+        previewWeaponMinDamage: item.preview_item.weapon.damage.min_value,
+        previewWeaponMaxDamage: item.preview_item.weapon.damage.max_value,
+        previewWeaponDamageString: item.preview_item.weapon.damage.display_string,
+        previewWeaponDamageType: item.preview_item.weapon.damage.damage_class.type,
+        previewWeaponDamageName: item.preview_item.weapon.damage.damage_class.name,
+        previewWeaponAttackSpeed: item.preview_item.weapon.attack_speed.value,
+        previewWeaponAttackString: item.preview_item.weapon.attack_speed.display_string,
+        previewWeaponDps: item.preview_item.weapon.dps.value,
+        previewWeaponDpsString: item.preview_item.weapon.dps.display_string,
+        previewSellPriceValue: item.preview_item.sell_price.value,
+        previewSellPriceHeader: item.preview_item.sell_price.display_strings.header,
+        previewSellPriceGold: item.preview_item.sell_price.display_strings.gold,
+        previewSellPriceSilver: item.preview_item.sell_price.display_strings.silver,
+        previewSellPriceCopper: item.preview_item.sell_price.display_strings.copper,
+        previewLevelValue: item.preview_item.requirements.level.value,
+        previewLevelString: item.preview_item.requirements.level.display_string,
+        previewIsSubclassHidden: item.preview_item.is_subclass_hidden,
+        previewRewardType: item.preview_item.reward_data.reward_title.type,
+        previewRewardName: item.preview_item.reward_data.reward_title.name,
+        previewRewardQuantity: item.preview_item.reward_data.reward_title.quantity,
+        previewRewardTitleType: item.preview_item.reward_data.reward_title.title.type,
+        previewRewardTitleId: item.preview_item.reward_data.reward_title.title.id,
+        previewRewardTitleName: item.preview_item.reward_data.reward_title.title.name,
+        // Media
+        thumbnail: media.assets[0].value,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}

@@ -44,7 +44,7 @@ export type blizzAPIItem = {
   preview_item: PreviewItem;
 };
 
-type PreviewItem = {
+export type PreviewItem = {
   item: {
     key: {
       href: string;
@@ -113,7 +113,7 @@ type PreviewItem = {
       };
     }[];
   };
-  stats: {
+  stats?: {
     type: {
       type: string;
       name: string;
@@ -128,6 +128,16 @@ type PreviewItem = {
         a: number;
       };
     };
+  }[];
+  spells?: {
+    spell: {
+      key: {
+        href: string;
+      };
+      name: string;
+      id: number;
+    };
+    description: string;
   }[];
   sell_price: {
     value: number;
