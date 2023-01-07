@@ -5,11 +5,12 @@ import { TableSort } from "../components/TableExample";
 import blizzAPI from "../utils/blizzApi";
 import { useState } from "react";
 import type { blizzAPIItem, blizzAPIMedia } from "../utils/types";
+import axios, { AxiosError } from "axios";
 
 let DATA: any = [];
 
 const schema = z.object({
-  id: z.number().min(1).max(52030),
+  id: z.number().min(35).max(52030),
 });
 
 export default function Home() {
@@ -33,13 +34,23 @@ export default function Home() {
         mediaEndpoint.replace("https://us.api.blizzard.com", "")
       );
       const itemIcon = itemIconData.assets[0].value;
+      const reqBody: blizzAPIItem & blizzAPIMedia = { ...data, ...itemIconData };
+      axios({ method: "post", url: "/api/grabBlizzData", data: reqBody }).then((res) => {
+        if (res.status === 200) {
+          console.log("itemID " + res.data.item + res.data.message);
+        }
+        if ((res.status = 500)) {
+          console.log("server error with itemID: " + res.data.item);
+        }
+      });
       setItemName(itemName);
       setItemThumb(itemIcon);
       setIsLoading(false);
     } catch (error) {
+      console.log("itemID " + itemId + " not found");
+      const err = error as AxiosError;
       setItemName("item not found");
       setIsLoading(false);
-      console.error(error);
     }
   };
 
@@ -66,7 +77,10 @@ export default function Home() {
         <Card h={130}>
           <form
             onSubmit={form.onSubmit((values) => {
-              grabItemInfoById(values.id);
+              for (let i = 240; i <= 400; i++) {
+                grabItemInfoById(i);
+              }
+              // grabItemInfoById(values.id);
             })}
           >
             <NumberInput {...form.getInputProps("id")} hideControls placeholder='12345' label='Item ID' />

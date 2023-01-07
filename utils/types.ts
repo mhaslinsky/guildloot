@@ -80,7 +80,7 @@ export type PreviewItem = {
     type: string;
     name: string;
   };
-  binding?: {
+  binding: {
     type: string;
     name: string;
   };
@@ -168,6 +168,16 @@ export type PreviewItem = {
         }
       | number;
     display_string?: string;
+    playable_races?: {
+      links: {
+        key: {
+          href: string;
+        };
+        name: string;
+        id: number;
+      }[];
+      display_string: string;
+    };
     skill?: {
       profession?: {
         name: string;
@@ -177,19 +187,24 @@ export type PreviewItem = {
       display_string?: string;
     };
   };
-  is_subclass_hidden: boolean;
-  reward_data: {
-    reward_title: {
-      type: string;
+  set?: {
+    item_set: {
       name: string;
-      quantity: number;
-      title: {
-        type: string;
-        id: number;
+      id: number;
+    };
+    items: {
+      item: {
+        key: {
+          href: string;
+        };
         name: string;
-      };
+        id: number;
+      }[];
+      effects?: { display_string: string; required_count: number }[];
+      display_string: string;
     };
   };
+  is_subclass_hidden?: boolean;
 };
 
 export type blizzAPIMedia = {

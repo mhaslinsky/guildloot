@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
         <Head>
-          <title>Create Next App</title>
+          <title>Guild Loot</title>
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <link rel='icon' href='/favicon.ico' />
         </Head>
