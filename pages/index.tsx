@@ -6,11 +6,17 @@ import blizzAPI from "../utils/blizzApi";
 import { useState } from "react";
 import type { blizzAPIItem, blizzAPIMedia } from "../utils/types";
 import axios, { AxiosError } from "axios";
+import Bottleneck from "bottleneck";
 
 let DATA: any = [];
 
 const schema = z.object({
   id: z.number().min(35).max(52030),
+});
+
+const limiter = new Bottleneck({
+  maxConcurrent: 1,
+  minTime: 100,
 });
 
 export default function Home() {
@@ -38,8 +44,7 @@ export default function Home() {
       axios({ method: "post", url: "/api/grabBlizzData", data: reqBody }).then((res) => {
         if (res.status === 200) {
           console.log("itemID " + res.data.item + res.data.message);
-        }
-        if ((res.status = 500)) {
+        } else if (res.status === 500) {
           console.log("server error with itemID: " + res.data.item);
         }
       });
@@ -76,9 +81,9 @@ export default function Home() {
 
         <Card h={130}>
           <form
-            onSubmit={form.onSubmit((values) => {
-              for (let i = 240; i <= 400; i++) {
-                grabItemInfoById(i);
+            onSubmit={form.onSubmit(async (values) => {
+              for (let i = 26970; i <= 53000; i++) {
+                await limiter.schedule(() => grabItemInfoById(i));
               }
               // grabItemInfoById(values.id);
             })}
