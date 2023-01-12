@@ -1,0 +1,183 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/item/40474?namespace=static-3.4.0_45264-classic-us"
+    }
+  },
+  "id": 40474,
+  "name": "Surge Needle Ring",
+  "quality": {
+    "type": "EPIC",
+    "name": "Epic"
+  },
+  "level": 213,
+  "required_level": 80,
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/item/40474?namespace=static-3.4.0_45264-classic-us"
+    },
+    "id": 40474
+  },
+  "item_class": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/4?namespace=static-3.4.0_45264-classic-us"
+    },
+    "name": "Armor",
+    "id": 4
+  },
+  "item_subclass": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/4/item-subclass/0?namespace=static-3.4.0_45264-classic-us"
+    },
+    "name": "Miscellaneous",
+    "id": 0
+  },
+  "inventory_type": {
+    "type": "FINGER",
+    "name": "Finger"
+  },
+  "purchase_price": 302495,
+  "sell_price": 75623,
+  "max_count": 0,
+  "is_equippable": true,
+  "is_stackable": false,
+
+  "preview_item": {
+    "item": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/40474?namespace=static-3.4.0_45264-classic-us"
+      },
+      "id": 40474
+    },
+    "quality": {
+      "type": "EPIC",
+      "name": "Epic"
+    },
+    "name": "Surge Needle Ring",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/item/40474?namespace=static-3.4.0_45264-classic-us"
+      },
+      "id": 40474
+    },
+    "item_class": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/4?namespace=static-3.4.0_45264-classic-us"
+      },
+      "name": "Armor",
+      "id": 4
+    },
+    "item_subclass": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/4/item-subclass/0?namespace=static-3.4.0_45264-classic-us"
+      },
+      "name": "Miscellaneous",
+      "id": 0
+    },
+    "inventory_type": {
+      "type": "FINGER",
+      "name": "Finger"
+    },
+    "binding": {
+      "type": "ON_EQUIP",
+      "name": "Binds when equipped"
+    },
+    "unique_equipped": "Unique-Equipped",
+    "stats": [
+      {
+        "type": {
+          "type": "AGILITY",
+          "name": "Agility"
+        },
+        "value": 41,
+        "display": {
+          "display_string": "+41 Agility",
+          "color": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "STAMINA",
+          "name": "Stamina"
+        },
+        "value": 42,
+        "display": {
+          "display_string": "+42 Stamina",
+          "color": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "HIT_RATING",
+          "name": "Improves hit rating by %s."
+        },
+        "value": 32,
+        "is_equip_bonus": true,
+        "display": {
+          "display_string": "Equip: Improves hit rating by 32.",
+          "color": {
+            "r": 0,
+            "g": 255,
+            "b": 0,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "CRIT_RATING",
+          "name": "Improves critical strike rating by %s."
+        },
+        "value": 43,
+        "is_equip_bonus": true,
+        "display": {
+          "display_string": "Equip: Improves critical strike rating by 43.",
+          "color": {
+            "r": 0,
+            "g": 255,
+            "b": 0,
+            "a": 1
+          }
+        }
+      }
+    ],
+    "spells": [
+      {
+        "spell": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/spell/36069?namespace=static-3.4.0_45264-classic-us"
+          },
+          "name": "Attack Power 112",
+          "id": 36069
+        },
+        "description": "Equip: Increases attack power by 112."
+      }
+    ],
+    "sell_price": {
+      "value": 75623,
+      "display_strings": {
+        "header": "Sell Price:",
+        "gold": "7",
+        "silver": "56",
+        "copper": "23"
+      }
+    },
+    "requirements": {
+      "level": {
+        "value": 80,
+        "display_string": "Requires Level 80"
+      }
+    },
+    "is_subclass_hidden": true
+  }
+}

@@ -1,11 +1,10 @@
-import { NumberInput, Flex, Button, Group, Card, Box, Image, LoadingOverlay, Text } from "@mantine/core";
+import { Flex, Button, Group, Card, Text } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import * as z from "zod";
-import { TableSort } from "../components/TableExample";
 import Bottleneck from "bottleneck";
-import { useGrabItemInfoById } from "../utils/hooks/useGrabItemInfoById";
-
-let DATA: any = [];
+import { useState } from "react";
+import FloatingLabelTextarea from "../components/floatingLabelTextarea";
+// import { useGrabItemInfoById } from "../utils/hooks/useGrabItemInfoById";
 
 const schema = z.object({
   id: z.number().min(21).max(56807),
@@ -17,47 +16,38 @@ const limiter = new Bottleneck({
 });
 
 export default function Home() {
-  const form = useForm({ validate: zodResolver(schema), initialValues: { id: undefined } });
-  const { itemThumb, itemName, isLoading, getBlizzItem } = useGrabItemInfoById();
-  let itemId = form.values.id;
+  const form = useForm({ validate: zodResolver(schema), initialValues: { rawLootJSON: undefined } });
+  const [value, setValue] = useState("");
+
+  const inputChangeHandler = (value: string) => {
+    setValue(value);
+  };
+  // const { itemThumb, itemName, isLoading, getBlizzItem } = useGrabItemInfoById();
 
   return (
     <>
-      <Flex mt='xl' mb='xl' justify='center' align='center' sx={{ position: "relative" }}>
-        <LoadingOverlay overlayBlur={2} visible={isLoading} />
-        <Card w={250} h={130} mr={"sm"}>
-          <Flex justify='flex-start' align='center' direction='column'>
-            {itemName && <Text>{itemName}</Text>}
-            {(itemThumb || isLoading) && (
-              <Box w={75} h={75}>
-                {itemThumb && (
-                  <a href={`https://www.wowhead.com/wotlk/item=${itemId}/`}>
-                    <Image alt={`${itemName}`} src={itemThumb} />
-                  </a>
-                )}
-              </Box>
-            )}
-          </Flex>
-        </Card>
-
-        <Card h={130}>
+      <Flex mt='xl' mb='xl' justify='center' align='center'>
+        <Card w='100%' m='xs'>
           <form
-            onSubmit={form.onSubmit(async (values) => {
-              // for (let i = 53000; i <= 60000; i++) {
-              //   await limiter.schedule(() => grabItemInfoById(i));
-              // }
-              await getBlizzItem(values.id);
+            onSubmit={form.onSubmit((values) => {
+              console.log(values.rawLootJSON);
             })}
           >
-            <NumberInput {...form.getInputProps("id")} hideControls placeholder='12345' label='Item ID' />
+            <FloatingLabelTextarea
+              minRows={4}
+              maxRows={10}
+              value={value}
+              inputValueChange={inputChangeHandler}
+              placeholder='Paste your RCLootCouncil JSON data here'
+              label='RCLootCouncil JSON'
+            />
             <Group position='right' mt='xs'>
               <Button type='submit'>Submit</Button>
             </Group>
+            <Text>{value}</Text>
           </form>
         </Card>
       </Flex>
-
-      <TableSort data={DATA} />
     </>
   );
 }

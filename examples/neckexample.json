@@ -1,0 +1,170 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/item/42647?namespace=static-3.4.0_45264-classic-us"
+    }
+  },
+  "id": 42647,
+  "name": "Titanium Spellshock Necklace",
+  "quality": {
+    "type": "EPIC",
+    "name": "Epic"
+  },
+  "level": 200,
+  "required_level": 80,
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/item/42647?namespace=static-3.4.0_45264-classic-us"
+    },
+    "id": 42647
+  },
+  "item_class": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/4?namespace=static-3.4.0_45264-classic-us"
+    },
+    "name": "Armor",
+    "id": 4
+  },
+  "item_subclass": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/4/item-subclass/0?namespace=static-3.4.0_45264-classic-us"
+    },
+    "name": "Miscellaneous",
+    "id": 0
+  },
+  "inventory_type": {
+    "type": "NECK",
+    "name": "Neck"
+  },
+  "purchase_price": 284983,
+  "sell_price": 71245,
+  "max_count": 0,
+  "is_equippable": true,
+  "is_stackable": false,
+
+  "preview_item": {
+    "item": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/42647?namespace=static-3.4.0_45264-classic-us"
+      },
+      "id": 42647
+    },
+    "quality": {
+      "type": "EPIC",
+      "name": "Epic"
+    },
+    "name": "Titanium Spellshock Necklace",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/item/42647?namespace=static-3.4.0_45264-classic-us"
+      },
+      "id": 42647
+    },
+    "item_class": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/4?namespace=static-3.4.0_45264-classic-us"
+      },
+      "name": "Armor",
+      "id": 4
+    },
+    "item_subclass": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/4/item-subclass/0?namespace=static-3.4.0_45264-classic-us"
+      },
+      "name": "Miscellaneous",
+      "id": 0
+    },
+    "inventory_type": {
+      "type": "NECK",
+      "name": "Neck"
+    },
+    "binding": {
+      "type": "ON_EQUIP",
+      "name": "Binds when equipped"
+    },
+    "stats": [
+      {
+        "type": {
+          "type": "STAMINA",
+          "name": "Stamina"
+        },
+        "value": 43,
+        "display": {
+          "display_string": "+43 Stamina",
+          "color": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "INTELLECT",
+          "name": "Intellect"
+        },
+        "value": 36,
+        "display": {
+          "display_string": "+36 Intellect",
+          "color": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "CRIT_RATING",
+          "name": "Improves critical strike rating by %s."
+        },
+        "value": 41,
+        "is_equip_bonus": true,
+        "display": {
+          "display_string": "Equip: Improves critical strike rating by 41.",
+          "color": {
+            "r": 0,
+            "g": 255,
+            "b": 0,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "SPELL_POWER",
+          "name": "Spell Power"
+        },
+        "value": 49,
+        "is_equip_bonus": true,
+        "display": {
+          "display_string": "Equip: Spell Power",
+          "color": {
+            "r": 0,
+            "g": 255,
+            "b": 0,
+            "a": 1
+          }
+        }
+      }
+    ],
+    "sell_price": {
+      "value": 71245,
+      "display_strings": {
+        "header": "Sell Price:",
+        "gold": "7",
+        "silver": "12",
+        "copper": "45"
+      }
+    },
+    "requirements": {
+      "level": {
+        "value": 80,
+        "display_string": "Requires Level 80"
+      }
+    },
+    "is_subclass_hidden": true
+  }
+}

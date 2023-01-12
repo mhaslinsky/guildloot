@@ -1,0 +1,180 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/item/42508?namespace=static-3.4.0_45264-classic-us"
+    }
+  },
+  "id": 42508,
+  "name": "Titansteel Shield Wall",
+  "quality": {
+    "type": "EPIC",
+    "name": "Epic"
+  },
+  "level": 200,
+  "required_level": 80,
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/item/42508?namespace=static-3.4.0_45264-classic-us"
+    },
+    "id": 42508
+  },
+  "item_class": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/4?namespace=static-3.4.0_45264-classic-us"
+    },
+    "name": "Armor",
+    "id": 4
+  },
+  "item_subclass": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/4/item-subclass/6?namespace=static-3.4.0_45264-classic-us"
+    },
+    "name": "Shield",
+    "id": 6
+  },
+  "inventory_type": {
+    "type": "SHIELD",
+    "name": "Off Hand"
+  },
+  "purchase_price": 655464,
+  "sell_price": 131092,
+  "max_count": 0,
+  "is_equippable": true,
+  "is_stackable": false,
+
+  "preview_item": {
+    "item": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/42508?namespace=static-3.4.0_45264-classic-us"
+      },
+      "id": 42508
+    },
+    "quality": {
+      "type": "EPIC",
+      "name": "Epic"
+    },
+    "name": "Titansteel Shield Wall",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/item/42508?namespace=static-3.4.0_45264-classic-us"
+      },
+      "id": 42508
+    },
+    "item_class": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/4?namespace=static-3.4.0_45264-classic-us"
+      },
+      "name": "Armor",
+      "id": 4
+    },
+    "item_subclass": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/4/item-subclass/6?namespace=static-3.4.0_45264-classic-us"
+      },
+      "name": "Shield",
+      "id": 6
+    },
+    "inventory_type": {
+      "type": "SHIELD",
+      "name": "Off Hand"
+    },
+    "binding": {
+      "type": "ON_EQUIP",
+      "name": "Binds when equipped"
+    },
+    "armor": {
+      "value": 7530,
+      "display": {
+        "display_string": "7,530 Armor",
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "a": 1
+        }
+      }
+    },
+    "shield_block": {
+      "value": 211,
+      "display": {
+        "display_string": "211 Block",
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "a": 1
+        }
+      }
+    },
+    "stats": [
+      {
+        "type": {
+          "type": "STRENGTH",
+          "name": "Strength"
+        },
+        "value": 36,
+        "display": {
+          "display_string": "+36 Strength",
+          "color": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "STAMINA",
+          "name": "Stamina"
+        },
+        "value": 69,
+        "display": {
+          "display_string": "+69 Stamina",
+          "color": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 1
+          }
+        }
+      },
+      {
+        "type": {
+          "type": "DEFENSE_SKILL_RATING",
+          "name": "Increases defense rating by %s."
+        },
+        "value": 64,
+        "is_equip_bonus": true,
+        "display": {
+          "display_string": "Equip: Increases defense rating by 64.",
+          "color": {
+            "r": 0,
+            "g": 255,
+            "b": 0,
+            "a": 1
+          }
+        }
+      }
+    ],
+    "sell_price": {
+      "value": 131092,
+      "display_strings": {
+        "header": "Sell Price:",
+        "gold": "13",
+        "silver": "10",
+        "copper": "92"
+      }
+    },
+    "requirements": {
+      "level": {
+        "value": 80,
+        "display_string": "Requires Level 80"
+      }
+    },
+    "durability": {
+      "value": 120,
+      "display_string": "Durability 120 / 120"
+    }
+  }
+}
