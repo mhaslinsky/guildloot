@@ -44,8 +44,7 @@ const useStyles = createStyles((theme, { floating }: { floating: boolean }) => (
   },
 }));
 
-function FloatingLabelTextarea(props: AppProps & TextareaProps, ref: React.ForwardedRef<HTMLTextAreaElement>) {
-  const { children, ...otherProps } = props;
+function FloatingLabelTextarea(props: AppProps & TextareaProps) {
   const [focused, setFocused] = useState(false);
   //sends a true or false to the useStyles function based on the value of the input/focus
   const valueCheck = props.value ? props.value : "";
@@ -58,8 +57,11 @@ function FloatingLabelTextarea(props: AppProps & TextareaProps, ref: React.Forwa
 
   return (
     <Textarea
-      ref={ref}
-      {...otherProps}
+      autosize
+      minRows={props.minRows || undefined}
+      maxRows={props.maxRows || undefined}
+      placeholder={props.placeholder || undefined}
+      label={props.label || undefined}
       classNames={classes}
       value={props.value}
       onChange={(event) => inputValueChangeHandler(event)}
@@ -70,4 +72,4 @@ function FloatingLabelTextarea(props: AppProps & TextareaProps, ref: React.Forwa
   );
 }
 
-export default forwardRef(FloatingLabelTextarea);
+export default FloatingLabelTextarea;

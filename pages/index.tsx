@@ -1,42 +1,41 @@
 import { Flex, Button, Group, Card, Text } from "@mantine/core";
-import { useForm, zodResolver } from "@mantine/form";
-import * as z from "zod";
-import Bottleneck from "bottleneck";
 import { useState } from "react";
 import FloatingLabelTextarea from "../components/floatingLabelTextarea";
-// import { useGrabItemInfoById } from "../utils/hooks/useGrabItemInfoById";
-
-const schema = z.object({
-  id: z.number().min(21).max(56807),
-});
-
-const limiter = new Bottleneck({
-  maxConcurrent: 2,
-  minTime: 100,
-});
+import axios from "axios";
 
 export default function Home() {
-  const form = useForm({ validate: zodResolver(schema), initialValues: { rawLootJSON: undefined } });
-  const [value, setValue] = useState("");
+  const [lootData, setLootData] = useState("");
 
   const inputChangeHandler = (value: string) => {
-    setValue(value);
+    setLootData(value);
   };
-  // const { itemThumb, itemName, isLoading, getBlizzItem } = useGrabItemInfoById();
+
+  const onSubmit = async (rcLootData: any) => {
+    axios
+      .post("/api/loot", { rcLootData })
+      .then((res) => {
+        console.log(res.data);
+        setLootData("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <>
       <Flex mt='xl' mb='xl' justify='center' align='center'>
         <Card w='100%' m='xs'>
           <form
-            onSubmit={form.onSubmit((values) => {
-              console.log(values.rawLootJSON);
-            })}
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSubmit(lootData);
+            }}
           >
             <FloatingLabelTextarea
-              minRows={4}
-              maxRows={10}
-              value={value}
+              minRows={6}
+              maxRows={20}
+              value={lootData}
               inputValueChange={inputChangeHandler}
               placeholder='Paste your RCLootCouncil JSON data here'
               label='RCLootCouncil JSON'
@@ -44,7 +43,6 @@ export default function Home() {
             <Group position='right' mt='xs'>
               <Button type='submit'>Submit</Button>
             </Group>
-            <Text>{value}</Text>
           </form>
         </Card>
       </Flex>

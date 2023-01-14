@@ -13,8 +13,7 @@ datasource db {
 model rcLootItem {
   id            String   @id
   player        String
-  date          DateTime
-  time          DateTime
+  dateTime      DateTime
   itemId        Int
   itemString    String
   response      String
