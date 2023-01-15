@@ -7,7 +7,7 @@ import { useGrabItemInfoById } from "../utils/hooks/useGrabItemInfoById";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
 
-const Home: NextPage<{ drops: RCLootItem[] }> = (props) => {
+const Home: NextPage<{ data: RCLootItem[] }> = (props) => {
   const [lootData, setLootData] = useState<string>("");
   const { getBlizzItem } = useGrabItemInfoById();
   const limiter = new Bottleneck({ maxConcurrent: 8, minTime: 200 });
@@ -29,12 +29,16 @@ const Home: NextPage<{ drops: RCLootItem[] }> = (props) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios({ url: "/api/loot", method: "GET" });
-      console.log(response.data);
-    };
-    fetchData();
-  }, []);
+    console.log(props.data);
+  }, [props.data]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const response = await axios({ url: "/api/loot", method: "GET" });
+  //     console.log(response.data);
+  //   };
+  //   fetchData();
+  // }, []);
 
   return (
     <>
@@ -66,14 +70,9 @@ const Home: NextPage<{ drops: RCLootItem[] }> = (props) => {
 
 export default Home;
 
-// export async function getServerSideProps(context: any) {
-//   let response;
-//   try {
-//     response = await axios({ url: "/api/loot", method: "GET" });
-//   } catch (err) {
-//     console.warn(err);
-//   }
-//   return {
-//     props: { response }, // will be passed to the page component as props
-//   };
-// }
+export async function getServerSideProps(context: any) {
+  const { data } = await axios({ url: "http://localhost:3000/api/loot", method: "GET" });
+  return {
+    props: { data }, // will be passed to the page component as props
+  };
+}

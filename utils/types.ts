@@ -221,6 +221,31 @@ export type blizzAPIMedia = {
   id: number;
 };
 
+export type blizzDBItem = {
+  id: number;
+  name: string;
+  qualityType: string;
+  level?: number;
+  requiredLevel?: number;
+  mediaHref?: string;
+  itemClassName?: string;
+  itemSubclassName?: string;
+  inventoryType?: string;
+  inventoryName?: string;
+  bindingType?: string;
+  bindingName?: string;
+  uniqueEquipped?: string;
+  previewArmor?: any;
+  previewWeapon?: any;
+  previewStats?: any;
+  previewSpells?: any;
+  previewRequirements?: any;
+  previewSet?: any;
+  thumbnail: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
 export type RCLootItem = {
   player: string;
   date?: string;
@@ -244,5 +269,5 @@ export type RCLootItem = {
   note: string;
   owner: string;
   itemName: string;
-  bLootDBItem?: blizzAPIItem;
+  bLootDBItem?: blizzDBItem;
 };
