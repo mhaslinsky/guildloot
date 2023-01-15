@@ -1,15 +1,14 @@
-import { isValidTimeout } from "@tanstack/query-core/build/lib/utils";
 import { prisma } from "../../server/db/client";
 import { RCLootItem } from "../types";
 
 export default async function createRCLootItemRecord(item: RCLootItem) {
+  const linkID = item.itemID;
   try {
     await prisma.rcLootItem.create({
       data: {
         id: item.id,
         player: item.player,
-        dateTime: item.dateTime,
-        itemId: item.itemID,
+        dateTime: item.dateTime != null ? item.dateTime : undefined,
         itemString: item.itemString,
         response: item.response,
         votes: item.votes,
@@ -26,10 +25,11 @@ export default async function createRCLootItemRecord(item: RCLootItem) {
         note: item.note,
         owner: item.owner,
         itemName: item.itemName,
+        bLootDBItem: { connect: { id: linkID } },
       },
     });
   } catch (error) {
-    console.log(error);
+    console.log("rclootID: " + item.id + error);
     throw error;
   }
 }

@@ -11,9 +11,9 @@ datasource db {
 }
 
 model rcLootItem {
-  id            String   @id
+  id            String    @id
   player        String
-  dateTime      DateTime
+  dateTime      DateTime?
   itemId        Int
   itemString    String
   response      String
@@ -42,13 +42,13 @@ model blizzAPIItem {
   id                  Int     @id
   name                String
   qualityType         String
-  level               Int
-  requiredLevel       Int
-  mediaHref           String
-  itemClassName       String
-  itemSubclassName    String
-  inventoryType       String
-  inventoryName       String
+  level               Int?
+  requiredLevel       Int?
+  mediaHref           String?
+  itemClassName       String?
+  itemSubclassName    String?
+  inventoryType       String?
+  inventoryName       String?
   bindingType         String?
   bindingName         String?
   uniqueEquipped      String?
@@ -61,8 +61,6 @@ model blizzAPIItem {
   thumbnail           String
 
   dropList rcLootItem[]
-  // previewItem   PreviewItem  @relation(fields: [previewItemId], references: [id])
-  // previewItemId Int          @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

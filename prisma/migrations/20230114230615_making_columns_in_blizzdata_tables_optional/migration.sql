@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "blizzAPIItem" ALTER COLUMN "level" DROP NOT NULL,
+ALTER COLUMN "requiredLevel" DROP NOT NULL,
+ALTER COLUMN "mediaHref" DROP NOT NULL,
+ALTER COLUMN "itemClassName" DROP NOT NULL,
+ALTER COLUMN "itemSubclassName" DROP NOT NULL,
+ALTER COLUMN "inventoryType" DROP NOT NULL,
+ALTER COLUMN "inventoryName" DROP NOT NULL;

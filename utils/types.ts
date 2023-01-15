@@ -32,9 +32,9 @@ export type blizzAPIItem = {
     name: string;
     id: number;
   };
-  inventory_type: {
-    type: string;
-    name: string;
+  inventory_type?: {
+    type?: string;
+    name?: string;
   };
   purchase_price: number;
   sell_price: number;
@@ -223,8 +223,9 @@ export type blizzAPIMedia = {
 
 export type RCLootItem = {
   player: string;
-  date: string;
-  time: string;
+  date?: string;
+  time?: string;
+  dateTime?: Date;
   id: string;
   itemID: number;
   itemString: string;
@@ -243,4 +244,5 @@ export type RCLootItem = {
   note: string;
   owner: string;
   itemName: string;
+  bLootDBItem?: blizzAPIItem;
 };

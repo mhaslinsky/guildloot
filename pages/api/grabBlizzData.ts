@@ -4,8 +4,8 @@ import type { blizzAPIItem, blizzAPIMedia } from "../../utils/types";
 import blizzAPI from "../../utils/blizzApi";
 
 export default async function writeBlizzDatatoLocal(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
-    const itemId = req.body.itemId;
+  const itemId = req.body.itemId;
+  if (req.method == "POST") {
     try {
       //@ts-ignore
       const data: blizzAPIItem = await blizzAPI.query(

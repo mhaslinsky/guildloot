@@ -28,7 +28,6 @@ export default async function createBlizzAPIItem(item: blizzAPIItem & blizzAPIMe
       },
     });
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }

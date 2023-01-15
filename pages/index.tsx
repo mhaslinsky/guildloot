@@ -1,16 +1,22 @@
 import { Flex, Button, Group, Card, Text } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FloatingLabelTextarea from "../components/floatingLabelTextarea";
 import axios from "axios";
+import Bottleneck from "bottleneck";
+import { useGrabItemInfoById } from "../utils/hooks/useGrabItemInfoById";
+import { NextPage } from "next";
+import { RCLootItem } from "../utils/types";
 
-export default function Home() {
-  const [lootData, setLootData] = useState("");
+const Home: NextPage<{ drops: RCLootItem[] }> = (props) => {
+  const [lootData, setLootData] = useState<string>("");
+  const { getBlizzItem } = useGrabItemInfoById();
+  const limiter = new Bottleneck({ maxConcurrent: 8, minTime: 200 });
 
   const inputChangeHandler = (value: string) => {
     setLootData(value);
   };
 
-  const onSubmit = async (rcLootData: any) => {
+  const onSubmit = async (rcLootData: string) => {
     axios
       .post("/api/loot", { rcLootData })
       .then((res) => {
@@ -22,12 +28,20 @@ export default function Home() {
       });
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios({ url: "/api/loot", method: "GET" });
+      console.log(response.data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <>
       <Flex mt='xl' mb='xl' justify='center' align='center'>
         <Card w='100%' m='xs'>
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               onSubmit(lootData);
             }}
@@ -48,4 +62,18 @@ export default function Home() {
       </Flex>
     </>
   );
-}
+};
+
+export default Home;
+
+// export async function getServerSideProps(context: any) {
+//   let response;
+//   try {
+//     response = await axios({ url: "/api/loot", method: "GET" });
+//   } catch (err) {
+//     console.warn(err);
+//   }
+//   return {
+//     props: { response }, // will be passed to the page component as props
+//   };
+// }
