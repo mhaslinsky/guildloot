@@ -1,0 +1,142 @@
+{
+  "id": "1668586197-44",
+  "player": "Soulfly-Skyfury",
+  "dateTime": "2022-11-16T03:09:57.000Z",
+  "itemId": 40234,
+  "itemString": "item:40234::::::::80",
+  "response": "Offspec",
+  "votes": 0,
+  "class": "SHAMAN",
+  "instance": "Naxxramas-25 Player",
+  "boss": "Heigan the Unclean",
+  "gear1": "[Valorous Earthshatter Tunic]",
+  "gear2": "",
+  "responseId": "3",
+  "isAwardReason": false,
+  "rollType": "normal",
+  "subType": "Cloth",
+  "equipLoc": "Chest",
+  "note": "",
+  "owner": "Heigan the Unclean",
+  "itemName": "Heigan's Putrid Vestments",
+  "createdAt": "2023-01-15T02:25:25.134Z",
+  "updatedAt": "2023-01-15T02:25:25.134Z",
+  "bLootDBItem": {
+    "id": 40234,
+    "name": "Heigan's Putrid Vestments",
+    "qualityType": "EPIC",
+    "level": 213,
+    "requiredLevel": 80,
+    "mediaHref": "https://us.api.blizzard.com/data/wow/media/item/40234?namespace=static-3.4.0_45264-classic-us",
+    "itemClassName": "Armor",
+    "itemSubclassName": "Cloth",
+    "inventoryType": "ROBE",
+    "inventoryName": "Chest",
+    "bindingType": null,
+    "bindingName": null,
+    "uniqueEquipped": null,
+    "previewArmor": {
+      "value": 308,
+      "display": {
+        "color": {
+          "a": 1,
+          "b": 255,
+          "g": 255,
+          "r": 255
+        },
+        "display_string": "308 Armor"
+      }
+    },
+    "previewWeapon": null,
+    "previewStats": [
+      {
+        "type": {
+          "name": "Stamina",
+          "type": "STAMINA"
+        },
+        "value": 99,
+        "display": {
+          "color": {
+            "a": 1,
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
+          "display_string": "+99 Stamina"
+        }
+      },
+      {
+        "type": {
+          "name": "Intellect",
+          "type": "INTELLECT"
+        },
+        "value": 77,
+        "display": {
+          "color": {
+            "a": 1,
+            "b": 255,
+            "g": 255,
+            "r": 255
+          },
+          "display_string": "+77 Intellect"
+        }
+      },
+      {
+        "type": {
+          "name": "Improves hit rating by %s.",
+          "type": "HIT_RATING"
+        },
+        "value": 49,
+        "display": {
+          "color": {
+            "a": 1,
+            "b": 0,
+            "g": 255,
+            "r": 0
+          },
+          "display_string": "Equip: Improves hit rating by 49."
+        },
+        "is_equip_bonus": true
+      },
+      {
+        "type": {
+          "name": "Improves haste rating by %s.",
+          "type": "HASTE_RATING"
+        },
+        "value": 51,
+        "display": {
+          "color": {
+            "a": 1,
+            "b": 0,
+            "g": 255,
+            "r": 0
+          },
+          "display_string": "Equip: Improves haste rating by 51."
+        },
+        "is_equip_bonus": true
+      }
+    ],
+    "previewSpells": [
+      {
+        "spell": {
+          "id": 54230,
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/spell/54230?namespace=static-3.4.0_45264-classic-us"
+          },
+          "name": "Increase Spell Dam 99"
+        },
+        "description": "Equip: Increases spell power by 99."
+      }
+    ],
+    "previewRequirements": {
+      "level": {
+        "value": 80,
+        "display_string": "Requires Level 80"
+      }
+    },
+    "previewSet": null,
+    "thumbnail": "https://render.worldofwarcraft.com/classic-us/icons/56/inv_chest_cloth_41.jpg",
+    "createdAt": "2023-01-09T09:06:23.516Z",
+    "updatedAt": "2023-01-09T09:06:23.516Z"
+  }
+}

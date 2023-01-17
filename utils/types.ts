@@ -271,3 +271,12 @@ export type RCLootItem = {
   itemName: string;
   bLootDBItem?: blizzDBItem;
 };
+
+export type LootRow = {
+  player: string;
+  itemName: string;
+  boss: string;
+  instance: string;
+  response: string;
+  dateTime: Date;
+};
