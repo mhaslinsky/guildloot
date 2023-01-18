@@ -1,11 +1,14 @@
 import { RCLootItem } from "../utils/types";
-import { Table as Mtable } from "@mantine/core";
+import { Flex, Table as Mtable } from "@mantine/core";
 import { flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { Anchor } from "@mantine/core";
+import { Anchor, Box } from "@mantine/core";
+import { SortAscending, SortDescending } from "tabler-icons-react";
 import { useState } from "react";
+import { useStyles } from "../styles/theme";
 
 const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { classes } = useStyles();
 
   const table = useReactTable({
     columns: props.columns,
@@ -26,7 +29,16 @@ const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
-                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                {header.isPlaceholder ? null : (
+                  <Flex className={classes.tHeader} gap='sm'>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {
+                      { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
+                        header.column.getIsSorted() as string
+                      ]
+                    }
+                  </Flex>
+                )}
               </th>
             ))}
           </tr>
