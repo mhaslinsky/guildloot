@@ -252,7 +252,7 @@ export type RCLootItem = {
   time?: string;
   dateTime?: Date;
   id: string;
-  itemID: number;
+  itemId: number;
   itemString: string;
   response: string;
   votes: number;

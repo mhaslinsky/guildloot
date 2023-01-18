@@ -1,15 +1,17 @@
 import { Flex, Button, Group, Card, Text } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import FloatingLabelTextarea from "../components/floatingLabelTextarea";
+import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
 import { RCLootItem, LootRow } from "../utils/types";
 import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
+import { ExclamationMark } from "tabler-icons-react";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
-  const [sendLoot, setSendLoot] = useState<string>("");
+  const [sendLoot, setSendLoot] = useState<string | undefined>(undefined);
   const [loot, setLoot] = useState<RCLootItem[]>([]);
   const router = useRouter();
 
@@ -22,15 +24,30 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
     setLoot(data);
   }
 
-  const onSubmit = async (rcLootData: string) => {
+  const onSubmit = async (rcLootData: string | undefined) => {
+    if (!rcLootData) {
+      showNotification({
+        title: "Error",
+        message: "Please enter some loot",
+        color: "red",
+        icon: <ExclamationMark />,
+      });
+      return;
+    }
     axios
       .post("/api/loot", { rcLootData })
       .then((res) => {
-        setSendLoot("");
+        setSendLoot(undefined);
         grabLoot();
       })
       .catch((err) => {
         console.log(err);
+        showNotification({
+          title: "Error",
+          message: err.response.data.message,
+          color: "red",
+          icon: <ExclamationMark />,
+        });
       });
   };
 

@@ -1,13 +1,21 @@
 import { RCLootItem } from "../utils/types";
 import { Table as Mtable } from "@mantine/core";
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Anchor } from "@mantine/core";
+import { useState } from "react";
 
 const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     columns: props.columns,
     data: props.data,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     columnResizeMode: "onChange",
   });
 
@@ -17,7 +25,7 @@ const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <th key={header.id}>
+              <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
               </th>
             ))}
@@ -29,12 +37,11 @@ const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
           return (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => {
-                console.log(cell);
                 if (cell.column.id === "itemName") {
                   return (
                     <td key={cell.id}>
                       <Anchor
-                        key={cell.row.original.itemID}
+                        key={cell.row.original.itemId}
                         href={`https://www.wowhead.com/wotlk/item=${cell.row.original.itemId}`}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

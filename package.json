@@ -55,6 +55,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.41.0",
     "sass": "^1.57.0",
+    "tabler-icons-react": "^1.56.0",
     "zod": "^3.20.2"
   },
   "devDependencies": {
