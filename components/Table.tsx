@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useStyles } from "../styles/theme";
 
 const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const { classes } = useStyles();
 
   const table = useReactTable({
