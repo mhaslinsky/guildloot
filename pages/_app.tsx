@@ -9,6 +9,8 @@ import { queryClient } from "../utils/queryClient";
 import Script from "next/script";
 import theme from "../styles/theme";
 import { NotificationsProvider } from "@mantine/notifications";
+import { AppShell, Navbar, Header } from "@mantine/core";
+import { NavbarSimple } from "../components/NavbarSimple";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,10 +24,11 @@ export default function App({ Component, pageProps }: AppProps) {
             <meta name='viewport' content='width=device-width, initial-scale=1' />
             <link rel='icon' href='/favicon.ico' />
           </Head>
-          {/* <Script>const whTooltips = {colorLinks: true, boxlinks: true, iconizeLinks: true, renameLinks: true};</Script> */}
           <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
           <main className={inter.className}>
-            <Component {...pageProps} />{" "}
+            <AppShell navbar={<NavbarSimple />}>
+              <Component {...pageProps} />
+            </AppShell>
           </main>
         </NotificationsProvider>
       </MantineProvider>

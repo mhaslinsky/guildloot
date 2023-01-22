@@ -1,4 +1,4 @@
-import { Flex, Button, Group, Card, Text } from "@mantine/core";
+import { Flex, Button, Group, Card } from "@mantine/core";
 import { useEffect, useState } from "react";
 import FloatingLabelTextarea from "../components/floatingLabelTextarea";
 import { showNotification } from "@mantine/notifications";
@@ -103,7 +103,7 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
 
   return (
     <>
-      <Flex mt='xl' mb='xl' justify='center' align='center'>
+      <Flex justify='center' align='center'>
         <Card w='100%' m='xs'>
           <form
             onSubmit={async (e) => {
