@@ -1,19 +1,20 @@
-import { Flex, Button, Group, Card } from "@mantine/core";
+import { Flex, Button, Group, Card, MediaQuery, Burger } from "@mantine/core";
 import { useEffect, useState } from "react";
 import FloatingLabelTextarea from "../components/floatingLabelTextarea";
 import { showNotification } from "@mantine/notifications";
 import axios from "axios";
-import { useRouter } from "next/router";
 import { NextPage } from "next";
 import { RCLootItem, LootRow } from "../utils/types";
 import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
+import { useNavBarStore } from "../utils/store/store";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   const [sendLoot, setSendLoot] = useState<string | undefined>(undefined);
   const [loot, setLoot] = useState<RCLootItem[]>([]);
-  const router = useRouter();
+  const toggle = useNavBarStore((state) => state.toggleNavBar);
+  const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
@@ -104,7 +105,10 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   return (
     <>
       <Flex justify='center' align='center'>
-        <Card w='100%' m='xs'>
+        <Card w='100%'>
+          <MediaQuery largerThan='sm' styles={{ display: "none" }}>
+            <Burger opened={isNavBarOpen} onClick={toggle} size='sm' mr='xl' />
+          </MediaQuery>
           <form
             onSubmit={async (e) => {
               e.preventDefault();

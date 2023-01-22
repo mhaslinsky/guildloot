@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { createStyles, Navbar, Group, Code, Image } from "@mantine/core";
+import { createStyles, Navbar, Group, Code, Image, MediaQuery, Burger } from "@mantine/core";
 import { IconBellRinging, IconSwitchHorizontal, IconLogout } from "@tabler/icons";
+import { useNavBarStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -61,6 +62,8 @@ const data = [{ link: "", label: "Notifications", icon: IconBellRinging }];
 export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Billing");
+  const toggle = useNavBarStore((state) => state.toggleNavBar);
+  const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
 
   const links = data.map((item) => (
     <a
@@ -78,11 +81,13 @@ export function NavbarSimple() {
   ));
 
   return (
-    <Navbar width={{ sm: 300 }} p='md'>
+    <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
+      <MediaQuery largerThan='sm' styles={{ display: "none" }}>
+        <Burger opened={isNavBarOpen} onClick={toggle} size='sm' mr='xl' />
+      </MediaQuery>
       <Navbar.Section grow>
         <Group className={classes.header} position='apart'>
-          <Image withPlaceholder src={null} alt='placeholder logo' />
-          <Code sx={{ fontWeight: 700 }}>v3.1.2</Code>
+          <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
         </Group>
         {links}
       </Navbar.Section>
