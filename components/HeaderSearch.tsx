@@ -1,7 +1,8 @@
-import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Image, Flex } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Image, Flex, Text } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useNavBarStore } from "../utils/store/store";
+import { useGrabLoot } from "../utils/hooks/useGrabLoot";
+import { forwardRef, useEffect, useState } from "react";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -46,14 +47,33 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   const { classes } = useStyles();
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const toggle = useNavBarStore((state) => state.toggleNavBar);
+  const { data } = useGrabLoot();
+  const [autoCompleteData, setAutoCompleteData] = useState<any>([]);
 
-  //   const items = links
-  //     ? links.map((link) => (
-  //         <a key={link.label} href={link.link} className={classes.link} onClick={(event) => event.preventDefault()}>
-  //           {link.label}
-  //         </a>
-  //       ))
-  //     : null;
+  useEffect(() => {
+    if (!data) return;
+    const newData = data.map((item) => {
+      return { key: item.id, value: item.player, label: item.response, item: item.itemName };
+    });
+    console.log(newData);
+    setAutoCompleteData(newData);
+  }, [data]);
+
+  const AutoCompleteItem = (props: any) => (
+    <div>
+      <Group noWrap>
+        <div>
+          <Text>{props.value}</Text>
+          <Text size='xs' color='dimmed'>
+            {props.item}
+          </Text>
+          <Text size='xs' color='dimmed'>
+            {props.label}
+          </Text>
+        </div>
+      </Group>
+    </div>
+  );
 
   return (
     <Header height={56} className={classes.header} mb={120}>
@@ -68,9 +88,10 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
         </Flex>
         <Group>
           <Autocomplete
+            itemComponent={AutoCompleteItem}
             placeholder='Search'
             icon={<IconSearch size={16} stroke={1.5} />}
-            data={["React", "Angular", "Vue", "Next.js", "Riot.js", "Svelte", "Blitz.js"]}
+            data={autoCompleteData}
           />
         </Group>
       </div>

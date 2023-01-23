@@ -12,9 +12,8 @@ import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   const [sendLoot, setSendLoot] = useState<string | undefined>(undefined);
-  const [loot, setLoot] = useState<RCLootItem[]>([]);
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const { data, isLoading, isFetching } = useGrabLoot();
+  const { data, isFetching } = useGrabLoot();
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
