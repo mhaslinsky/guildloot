@@ -1,22 +1,42 @@
 import { RCLootItem } from "../utils/types";
-import { Flex, Table as Mtable } from "@mantine/core";
+import { Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
-  VisibilityState,
+  FilterFn,
 } from "@tanstack/react-table";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
 import { SortAscending, SortDescending } from "tabler-icons-react";
 import { useEffect, useState } from "react";
 import { useStyles } from "../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
 
-const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+  // Store the itemRank info
+  addMeta({ itemRank });
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
+
+const Table: React.FC<{ loading: boolean; columns: any; data: RCLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
   const { classes } = useStyles();
   const isMobile = useMediaQuery("(max-width: 600px)");
 
@@ -24,10 +44,15 @@ const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
     columns: props.columns,
     enableHiding: true,
     data: props.data,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
     state: {
       sorting,
       columnVisibility,
+      globalFilter,
     },
+    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -45,7 +70,8 @@ const Table: React.FC<{ columns: any; data: RCLootItem[] }> = (props) => {
   }, [isMobile, table]);
 
   return (
-    <Mtable>
+    <Mtable style={{ position: "relative" }}>
+      <LoadingOverlay visible={props.loading} />
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>

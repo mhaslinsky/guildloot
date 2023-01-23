@@ -11,6 +11,7 @@ import theme from "../styles/theme";
 import { NotificationsProvider } from "@mantine/notifications";
 import { AppShell, Header } from "@mantine/core";
 import { NavbarSimple } from "../components/NavbarSimple";
+import { HeaderSearch } from "../components/HeaderSearch";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,14 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
           </Head>
           <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
           <main className={inter.className}>
-            <AppShell
-              header={
-                <Header height={5}>
-                  <Text></Text>
-                </Header>
-              }
-              navbar={<NavbarSimple />}
-            >
+            <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
               <Component {...pageProps} />
             </AppShell>
           </main>

@@ -1,19 +1,16 @@
-// import { createStandaloneToast } from "@chakra-ui/react";
 import { QueryClient, QueryKey } from "@tanstack/react-query";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { persistQueryClient, removeOldestQuery } from "@tanstack/react-query-persist-client";
+import { showNotification } from "@mantine/notifications";
+import { ExclamationMark } from "tabler-icons-react";
 
-// const toast = createStandaloneToast();
 export let localStoragePersister: any;
 
 function queryErrorHandler(error: unknown): void {
   // error is type unknown because in js, anything can be an error (e.g. throw(5))
   const id = "react-query-error";
-  const title = error instanceof Error ? error.message : "error connecting to server";
-
-  // prevent duplicate toasts
-  //   toast.closeAll();
-  //   toast({ id, title, status: "error", variant: "subtle", isClosable: true });
+  const message = error instanceof Error ? error.message : "error connecting to server";
+  showNotification({ title: "Error", message, color: "red" });
 }
 
 export const queryClient = new QueryClient({
@@ -23,6 +20,7 @@ export const queryClient = new QueryClient({
     queries: {
       onError: queryErrorHandler,
       cacheTime: 86400000, //1 day
+      staleTime: 1000 * 1800, //30 minutes
     },
     mutations: { onError: queryErrorHandler },
   },
@@ -38,18 +36,18 @@ if (typeof window !== "undefined") {
   localStoragePersister = createSyncStoragePersister({ storage: undefined });
 }
 
-persistQueryClient({
-  queryClient,
-  persister: localStoragePersister,
-  buster: "mybuster",
-  maxAge: 86400000, //1 day
-  dehydrateOptions: {
-    // shouldDehydrateQuery: ({ queryKey }: any) => {
-    //   //telling RQ to only dehydrate(persist) the user data in cache
-    //   if (queryKey.toString().includes("user")) {
-    //     return true;
-    //   }
-    //   return false;
-    // },
-  },
-});
+// persistQueryClient({
+//   queryClient,
+//   persister: localStoragePersister,
+//   buster: "mybuster",
+//   maxAge: 86400000, //1 day
+//   dehydrateOptions: {
+//     shouldDehydrateQuery: ({ queryKey }: any) => {
+//       //telling RQ to only dehydrate(persist) the user data in cache
+//       if (queryKey.toString().includes("user")) {
+//         return true;
+//       }
+//       return false;
+//     },
+//   },
+// });

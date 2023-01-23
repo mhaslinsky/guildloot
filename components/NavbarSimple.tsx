@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createStyles, Navbar, Group, Code, Image, MediaQuery, Burger } from "@mantine/core";
+import { createStyles, Navbar, Group, Image, MediaQuery } from "@mantine/core";
 import { IconBellRinging, IconSwitchHorizontal, IconLogout } from "@tabler/icons";
 import { useNavBarStore } from "../utils/store/store";
 
@@ -62,7 +62,6 @@ const data = [{ link: "", label: "Notifications", icon: IconBellRinging }];
 export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Billing");
-  const toggle = useNavBarStore((state) => state.toggleNavBar);
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
 
   const links = data.map((item) => (
@@ -82,22 +81,19 @@ export function NavbarSimple() {
 
   return (
     <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
-      <MediaQuery largerThan='sm' styles={{ display: "none" }}>
-        <Burger opened={isNavBarOpen} onClick={toggle} size='sm' mr='xl' />
-      </MediaQuery>
       <Navbar.Section grow>
-        <Group className={classes.header} position='apart'>
-          <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
-        </Group>
+        <MediaQuery largerThan='sm' styles={{ display: "none" }}>
+          <Group className={classes.header} position='apart'>
+            <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
+          </Group>
+        </MediaQuery>
         {links}
       </Navbar.Section>
-
       <Navbar.Section className={classes.footer}>
         <a href='#' className={classes.link} onClick={(event) => event.preventDefault()}>
           <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
           <span>Change account</span>
         </a>
-
         <a href='#' className={classes.link} onClick={(event) => event.preventDefault()}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>

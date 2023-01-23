@@ -1,4 +1,4 @@
-import { Flex, Button, Group, Card, MediaQuery, Burger } from "@mantine/core";
+import { Flex, Button, Group, Card } from "@mantine/core";
 import { useEffect, useState } from "react";
 import FloatingLabelTextarea from "../components/floatingLabelTextarea";
 import { showNotification } from "@mantine/notifications";
@@ -8,22 +8,17 @@ import { RCLootItem, LootRow } from "../utils/types";
 import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
-import { useNavBarStore } from "../utils/store/store";
+import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   const [sendLoot, setSendLoot] = useState<string | undefined>(undefined);
   const [loot, setLoot] = useState<RCLootItem[]>([]);
-  const toggle = useNavBarStore((state) => state.toggleNavBar);
-  const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
+  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+  const { data, isLoading, isFetching } = useGrabLoot();
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
   };
-
-  async function grabLoot() {
-    const { data } = await axios({ url: "/api/loot", method: "GET" });
-    setLoot(data);
-  }
 
   const onSubmit = async (rcLootData: string | undefined) => {
     if (!rcLootData) {
@@ -39,7 +34,7 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
       .post("/api/loot", { rcLootData })
       .then((res) => {
         setSendLoot(undefined);
-        grabLoot();
+        // grabLoot();
       })
       .catch((err) => {
         console.log(err);
@@ -53,7 +48,7 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   };
 
   useEffect(() => {
-    grabLoot();
+    setInitialRenderComplete(true);
   }, []);
 
   const columnHelper = createColumnHelper<LootRow>();
@@ -106,9 +101,6 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
     <>
       <Flex justify='center' align='center'>
         <Card w='100%'>
-          <MediaQuery largerThan='sm' styles={{ display: "none" }}>
-            <Burger opened={isNavBarOpen} onClick={toggle} size='sm' mr='xl' />
-          </MediaQuery>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
@@ -126,7 +118,7 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
             <Group position='right' mt='xs'>
               <Button type='submit'>Submit</Button>
             </Group>
-            <Table columns={columns} data={loot} />
+            {initialRenderComplete && <Table loading={isFetching} columns={columns} data={data || []} />}
           </form>
         </Card>
       </Flex>
