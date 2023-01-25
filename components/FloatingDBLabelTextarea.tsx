@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { createStyles, Textarea } from "@mantine/core";
 import type { TextareaProps } from "@mantine/core";
-import { forwardRef } from "react";
-
-type AppProps = {
-  inputValueChange: (change: string) => void;
-};
+import { useEffect } from "react";
 
 const useStyles = createStyles((theme, { floating }: { floating: boolean }) => ({
   root: {
@@ -44,16 +40,34 @@ const useStyles = createStyles((theme, { floating }: { floating: boolean }) => (
   },
 }));
 
-function FloatingLabelTextarea(props: AppProps & TextareaProps) {
+function FloatingDBLabelTextarea({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: { onChange: (change: string) => void; debounce?: number } & TextareaProps &
+  Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
   const [focused, setFocused] = useState(false);
+  // function inputValueChangeHandler(event: React.ChangeEvent<HTMLTextAreaElement>) {
+  //   props.inputValueChange(event.currentTarget.value);
+  // }
+  const [value, setValue] = useState<any>(initialValue);
+  const valueCheck = value ? value : "";
   //sends a true or false to the useStyles function based on the value of the input/focus
-  const valueCheck = props.value ? props.value : "";
-  //@ts-ignore
   const { classes } = useStyles({ floating: valueCheck.trim().length !== 0 || focused });
 
-  function inputValueChangeHandler(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    props.inputValueChange(event.currentTarget.value);
-  }
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+      console.log("sending value: ", value);
+    }, debounce);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onChange, value]);
 
   return (
     <Textarea
@@ -63,8 +77,8 @@ function FloatingLabelTextarea(props: AppProps & TextareaProps) {
       placeholder={props.placeholder || undefined}
       label={props.label || undefined}
       classNames={classes}
-      value={props.value}
-      onChange={(event) => inputValueChangeHandler(event)}
+      value={value}
+      onChange={(event) => setValue(event.target.value)}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       mt='md'
@@ -72,4 +86,4 @@ function FloatingLabelTextarea(props: AppProps & TextareaProps) {
   );
 }
 
-export default FloatingLabelTextarea;
+export default FloatingDBLabelTextarea;

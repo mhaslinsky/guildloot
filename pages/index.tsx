@@ -1,17 +1,17 @@
 import { Flex, Button, Group, Card } from "@mantine/core";
-import { useEffect, useState } from "react";
-import FloatingLabelTextarea from "../components/floatingLabelTextarea";
+import { useEffect, useMemo, useState } from "react";
+import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
 import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { NextPage } from "next";
 import { RCLootItem, LootRow } from "../utils/types";
 import Table from "../components/Table";
-import { createColumnHelper } from "@tanstack/react-table";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
-  const [sendLoot, setSendLoot] = useState<string | undefined>(undefined);
+  const [sendLoot, setSendLoot] = useState<string | undefined>("");
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
 
@@ -50,10 +50,10 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
     setInitialRenderComplete(true);
   }, []);
 
-  const columnHelper = createColumnHelper<LootRow>();
+  const columnHelper = createColumnHelper<RCLootItem>();
 
   const columns = [
-    columnHelper.accessor("player", {
+    columnHelper.accessor((row) => `${row.player}`, {
       header: "Player",
       cell: (info) => {
         const name = info.getValue().split("-");
@@ -88,13 +88,16 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
     columnHelper.accessor("dateTime", {
       header: "Date",
       cell: (info) => {
-        const date = new Date(info.getValue()).toLocaleDateString("en-US");
-        const time = new Date(info.getValue()).toLocaleTimeString("en-US");
+        if (!info) return "N/A";
+        const date = new Date(info.getValue()!).toLocaleDateString("en-US");
+        const time = new Date(info.getValue()!).toLocaleTimeString("en-US");
         return `${date} ${time}`;
       },
       footer: "Date",
     }),
   ];
+
+  // const columnsTest = useMemo<ColumnDef<RCLootItem, any[]>>(() => [], [columns]);
 
   return (
     <>
@@ -106,18 +109,19 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
               onSubmit(sendLoot);
             }}
           >
-            <FloatingLabelTextarea
+            <FloatingDBLabelTextarea
+              debounce={500}
               minRows={6}
               maxRows={20}
               value={sendLoot}
-              inputValueChange={inputChangeHandler}
+              onChange={(value) => inputChangeHandler(String(value))}
               placeholder='Paste your RCLootCouncil JSON data here'
               label='RCLootCouncil JSON'
             />
             <Group position='right' mt='xs'>
               <Button type='submit'>Submit</Button>
             </Group>
-            {initialRenderComplete && <Table loading={isFetching} columns={columns} data={data || []} />}
+            {initialRenderComplete && <Table columns={columns} loading={isFetching} data={data || []} />}
           </form>
         </Card>
       </Flex>

@@ -1,6 +1,6 @@
 import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Image, Flex, Text } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
-import { useNavBarStore } from "../utils/store/store";
+import { useGlobalFilterStore, useNavBarStore } from "../utils/store/store";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { forwardRef, useEffect, useState } from "react";
 
@@ -49,6 +49,7 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   const toggle = useNavBarStore((state) => state.toggleNavBar);
   const { data } = useGrabLoot();
   const [autoCompleteData, setAutoCompleteData] = useState<any>([]);
+  const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
 
   useEffect(() => {
     if (!data) return;
@@ -92,6 +93,7 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
             placeholder='Search'
             icon={<IconSearch size={16} stroke={1.5} />}
             data={autoCompleteData}
+            onChange={(value) => setGlobalFilter(value)}
           />
         </Group>
       </div>
