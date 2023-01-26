@@ -19,3 +19,5 @@ export const useGlobalFilterStore = create<globalFilterState>((set) => ({
   globalFilter: "",
   setGlobalFilter: (filter: string) => set({ globalFilter: filter }),
 }));
+
+export const useAutoCompleteDataStore = create((set) => ({}));

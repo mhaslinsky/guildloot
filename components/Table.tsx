@@ -13,6 +13,7 @@ import {
   getFacetedUniqueValues,
   getFacetedRowModel,
   createColumnHelper,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
@@ -47,14 +48,8 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const { classes } = useStyles();
   const isMobile = useMediaQuery("(max-width: 600px)");
-  // const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
-  // const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
-  const columnHelper = createColumnHelper<RCLootItem>();
-
-  useEffect(() => {
-    console.log("rerender");
-  }, []);
+  const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
+  const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
 
   const table = useReactTable({
     data: props.data,
@@ -75,17 +70,11 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    enableGlobalFilter: true,
-    columnResizeMode: "onChange",
     onColumnVisibilityChange: setColumnVisibility,
   });
-
-  useEffect(() => {
-    console.log(globalFilter);
-  }, [globalFilter]);
 
   useEffect(() => {
     if (isMobile) {
@@ -97,32 +86,34 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
 
   return (
     <>
-      {JSON.stringify(table.getState())}
-      <DebouncedInput
+      {/* <DebouncedInput
         value={globalFilter ?? ""}
         onChange={(value) => setGlobalFilter(String(value))}
         placeholder='Search all columns...'
-      />
+      /> */}
       <Mtable style={{ position: "relative" }}>
         <LoadingOverlay visible={props.loading} />
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
-                  <>
-                    {header.isPlaceholder ? null : (
-                      <Flex className={classes.tHeader} gap='md'>
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {
-                          { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
-                            header.column.getIsSorted() as string
-                          ]
-                        }
-                      </Flex>
-                    )}
-                  </>
-                </th>
+                <>
+                  {console.log(header.column.getFacetedUniqueValues())}
+                  <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
+                    <>
+                      {header.isPlaceholder ? null : (
+                        <Flex className={classes.tHeader} gap='md'>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {
+                            { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
+                              header.column.getIsSorted() as string
+                            ]
+                          }
+                        </Flex>
+                      )}
+                    </>
+                  </th>
+                </>
               ))}
             </tr>
           ))}
@@ -132,7 +123,6 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
             return (
               <tr key={row.id}>
                 <>
-                  {console.log(row.getVisibleCells())}
                   {row.getVisibleCells().map((cell) => {
                     if (cell.column.id === "itemName") {
                       return (

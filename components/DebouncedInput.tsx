@@ -19,9 +19,7 @@ export default function DebouncedInput({
   useEffect(() => {
     const timeout = setTimeout(() => {
       onChange(value);
-      console.log("sending value: ", value);
     }, debounce);
-
     return () => clearTimeout(timeout);
   }, [debounce, onChange, value]);
 

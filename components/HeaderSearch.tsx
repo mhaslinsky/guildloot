@@ -3,6 +3,7 @@ import { IconSearch } from "@tabler/icons";
 import { useGlobalFilterStore, useNavBarStore } from "../utils/store/store";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { forwardRef, useEffect, useState } from "react";
+import { useDebouncedState } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -50,14 +51,19 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   const { data } = useGrabLoot();
   const [autoCompleteData, setAutoCompleteData] = useState<any>([]);
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
+  const [value, setValue] = useDebouncedState("", 500);
 
   useEffect(() => {
-    if (!data) return;
-    const newData = data.map((item) => {
-      return { key: item.id, value: item.player, label: item.response, item: item.itemName };
-    });
-    console.log(newData);
-    setAutoCompleteData(newData);
+    setGlobalFilter(value);
+  }, [setGlobalFilter, value]);
+
+  useEffect(() => {
+    // if (!data) return;
+    // const newData = data.map((item) => {
+    //   return { key: item.id, value: item.player, label: item.response, item: item.itemName };
+    // });
+    // console.log(newData);
+    // setAutoCompleteData(newData);
   }, [data]);
 
   const AutoCompleteItem = (props: any) => (
@@ -93,7 +99,7 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
             placeholder='Search'
             icon={<IconSearch size={16} stroke={1.5} />}
             data={autoCompleteData}
-            onChange={(value) => setGlobalFilter(value)}
+            onChange={(value) => setValue(value)}
           />
         </Group>
       </div>

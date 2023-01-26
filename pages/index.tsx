@@ -61,17 +61,17 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
       },
       footer: "Player",
     }),
-    columnHelper.accessor("itemName", {
+    columnHelper.accessor(`itemName`, {
       header: "Item",
       cell: (info) => info.getValue(),
       footer: "Item",
     }),
-    columnHelper.accessor("boss", {
+    columnHelper.accessor((row) => `${row.boss}`, {
       header: "Boss",
       cell: (info) => info.getValue(),
       footer: "Boss",
     }),
-    columnHelper.accessor("instance", {
+    columnHelper.accessor((row) => `${row.instance}`, {
       header: "Instance",
       cell: (info) => {
         const name = info.getValue().split("-");
@@ -80,7 +80,7 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
       },
       footer: "Instance",
     }),
-    columnHelper.accessor("response", {
+    columnHelper.accessor((row) => `${row.response}`, {
       header: "Reason",
       cell: (info) => info.getValue(),
       footer: "Reason",

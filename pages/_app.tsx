@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
           </Head>
           <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
           <main className={inter.className}>
-            <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
+            <AppShell header={<HeaderSearch initialValue='' />} navbar={<NavbarSimple />}>
               <Component {...pageProps} />
             </AppShell>
           </main>
