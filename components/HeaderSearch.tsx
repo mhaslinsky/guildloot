@@ -1,8 +1,8 @@
 import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Image, Flex, Text } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
-import { useGlobalFilterStore, useNavBarStore } from "../utils/store/store";
+import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore } from "../utils/store/store";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
-import { forwardRef, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDebouncedState } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
@@ -49,22 +49,13 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const toggle = useNavBarStore((state) => state.toggleNavBar);
   const { data } = useGrabLoot();
-  const [autoCompleteData, setAutoCompleteData] = useState<any>([]);
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
+  const autoCompleteData = useAutoCompleteDataStore((state) => state.autoCompleteData);
   const [value, setValue] = useDebouncedState("", 500);
 
   useEffect(() => {
     setGlobalFilter(value);
   }, [setGlobalFilter, value]);
-
-  useEffect(() => {
-    // if (!data) return;
-    // const newData = data.map((item) => {
-    //   return { key: item.id, value: item.player, label: item.response, item: item.itemName };
-    // });
-    // console.log(newData);
-    // setAutoCompleteData(newData);
-  }, [data]);
 
   const AutoCompleteItem = (props: any) => (
     <div>

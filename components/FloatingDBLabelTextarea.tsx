@@ -62,7 +62,6 @@ function FloatingDBLabelTextarea({
   useEffect(() => {
     const timeout = setTimeout(() => {
       onChange(value);
-      console.log("sending value: ", value);
     }, debounce);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps

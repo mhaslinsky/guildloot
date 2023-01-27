@@ -1,6 +1,5 @@
 import { RCLootItem } from "../utils/types";
-import { Flex, LoadingOverlay, Table as Mtable, TextInput } from "@mantine/core";
-import { useDebouncedState } from "@mantine/hooks";
+import { Box, Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -8,21 +7,17 @@ import {
   SortingState,
   useReactTable,
   FilterFn,
-  ColumnFiltersState,
-  getFacetedMinMaxValues,
   getFacetedUniqueValues,
   getFacetedRowModel,
-  createColumnHelper,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
 import { SortAscending, SortDescending } from "tabler-icons-react";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStyles } from "../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
-import DebouncedInput from "./DebouncedInput";
-import { useGlobalFilterStore } from "../utils/store/store";
+import { useAutoCompleteDataStore, useGlobalFilterStore } from "../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -45,11 +40,12 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const { classes } = useStyles();
   const isMobile = useMediaQuery("(max-width: 600px)");
   const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
+  const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
+  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
 
   const table = useReactTable({
     data: props.data,
@@ -61,12 +57,10 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
     state: {
       sorting,
       columnVisibility,
-      columnFilters,
       globalFilter,
     },
     globalFilterFn: fuzzyFilter,
     onGlobalFilterChange: setGlobalFilter,
-    onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -84,36 +78,45 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
     }
   }, [isMobile, table]);
 
+  useEffect(() => {
+    setInitialRenderComplete(true);
+  }, []);
+
+  useEffect(() => {
+    if (!initialRenderComplete) return;
+    let cbData: any[] = [];
+    table.getAllColumns().forEach((column) => {
+      if (column.id === "dateTime") return;
+      cbData.push([...column.getFacetedUniqueValues().keys()]);
+    });
+    const flattened = cbData.flat();
+    setAutoCompleteData(flattened);
+  }, [initialRenderComplete, setAutoCompleteData, table]);
+
   return (
-    <>
-      {/* <DebouncedInput
-        value={globalFilter ?? ""}
-        onChange={(value) => setGlobalFilter(String(value))}
-        placeholder='Search all columns...'
-      /> */}
-      <Mtable style={{ position: "relative" }}>
-        <LoadingOverlay visible={props.loading} />
+    <Box
+      sx={(theme) => ({
+        position: "relative",
+      })}
+    >
+      <LoadingOverlay visible={props.loading} />
+      <Mtable>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <>
-                  {console.log(header.column.getFacetedUniqueValues())}
-                  <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
-                    <>
-                      {header.isPlaceholder ? null : (
-                        <Flex className={classes.tHeader} gap='md'>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {
-                            { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
-                              header.column.getIsSorted() as string
-                            ]
-                          }
-                        </Flex>
-                      )}
-                    </>
-                  </th>
-                </>
+                <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
+                  {header.isPlaceholder ? null : (
+                    <Flex className={classes.tHeader} gap='md'>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {
+                        { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
+                          header.column.getIsSorted() as string
+                        ]
+                      }
+                    </Flex>
+                  )}
+                </th>
               ))}
             </tr>
           ))}
@@ -122,24 +125,22 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
           {table.getRowModel().rows.map((row) => {
             return (
               <tr key={row.id}>
-                <>
-                  {row.getVisibleCells().map((cell) => {
-                    if (cell.column.id === "itemName") {
-                      return (
-                        <td key={cell.id}>
-                          <Anchor
-                            key={cell.row.original.itemId}
-                            href={`https://www.wowhead.com/wotlk/item=${cell.row.original.itemId}`}
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </Anchor>
-                        </td>
-                      );
-                    } else {
-                      return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>;
-                    }
-                  })}
-                </>
+                {row.getVisibleCells().map((cell) => {
+                  if (cell.column.id === "itemName") {
+                    return (
+                      <td key={cell.id}>
+                        <Anchor
+                          key={cell.row.original.itemId}
+                          href={`https://www.wowhead.com/wotlk/item=${cell.row.original.itemId}`}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Anchor>
+                      </td>
+                    );
+                  } else {
+                    return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>;
+                  }
+                })}
               </tr>
             );
           })}
@@ -156,7 +157,7 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
           ))}
         </tfoot>
       </Mtable>
-    </>
+    </Box>
   );
 };
 

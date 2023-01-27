@@ -4,9 +4,9 @@ import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
 import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { NextPage } from "next";
-import { RCLootItem, LootRow } from "../utils/types";
+import { RCLootItem } from "../utils/types";
 import Table from "../components/Table";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 
@@ -51,53 +51,98 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   }, []);
 
   const columnHelper = createColumnHelper<RCLootItem>();
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor((row) => `${row.player}`, {
+        header: "Player",
+        cell: (info) => {
+          const name = info.getValue().split("-");
+          return name[0];
+        },
+        footer: "Player",
+      }),
+      columnHelper.accessor(`itemName`, {
+        header: "Item",
+        cell: (info) => info.getValue(),
+        footer: "Item",
+      }),
+      columnHelper.accessor((row) => `${row.boss}`, {
+        header: "Boss",
+        cell: (info) => info.getValue(),
+        footer: "Boss",
+      }),
+      columnHelper.accessor((row) => `${row.instance}`, {
+        header: "Instance",
+        cell: (info) => {
+          const name = info.getValue().split("-");
+          const display = `${name[0]} (${name[1]})`;
+          return display;
+        },
+        footer: "Instance",
+      }),
+      columnHelper.accessor((row) => `${row.response}`, {
+        header: "Reason",
+        cell: (info) => info.getValue(),
+        footer: "Reason",
+      }),
+      columnHelper.accessor("dateTime", {
+        header: "Date",
+        cell: (info) => {
+          if (!info) return "N/A";
+          const date = new Date(info.getValue()!).toLocaleDateString("en-US");
+          const time = new Date(info.getValue()!).toLocaleTimeString("en-US");
+          return `${date} ${time}`;
+        },
+        footer: "Date",
+      }),
+    ],
+    [columnHelper]
+  );
 
-  const columns = [
-    columnHelper.accessor((row) => `${row.player}`, {
-      header: "Player",
-      cell: (info) => {
-        const name = info.getValue().split("-");
-        return name[0];
-      },
-      footer: "Player",
-    }),
-    columnHelper.accessor(`itemName`, {
-      header: "Item",
-      cell: (info) => info.getValue(),
-      footer: "Item",
-    }),
-    columnHelper.accessor((row) => `${row.boss}`, {
-      header: "Boss",
-      cell: (info) => info.getValue(),
-      footer: "Boss",
-    }),
-    columnHelper.accessor((row) => `${row.instance}`, {
-      header: "Instance",
-      cell: (info) => {
-        const name = info.getValue().split("-");
-        const display = `${name[0]} (${name[1]})`;
-        return display;
-      },
-      footer: "Instance",
-    }),
-    columnHelper.accessor((row) => `${row.response}`, {
-      header: "Reason",
-      cell: (info) => info.getValue(),
-      footer: "Reason",
-    }),
-    columnHelper.accessor("dateTime", {
-      header: "Date",
-      cell: (info) => {
-        if (!info) return "N/A";
-        const date = new Date(info.getValue()!).toLocaleDateString("en-US");
-        const time = new Date(info.getValue()!).toLocaleTimeString("en-US");
-        return `${date} ${time}`;
-      },
-      footer: "Date",
-    }),
-  ];
-
-  // const columnsTest = useMemo<ColumnDef<RCLootItem, any[]>>(() => [], [columns]);
+  // const columns = [
+  //   columnHelper.accessor((row) => `${row.player}`, {
+  //     header: "Player",
+  //     cell: (info) => {
+  //       const name = info.getValue().split("-");
+  //       return name[0];
+  //     },
+  //     footer: "Player",
+  //   }),
+  //   columnHelper.accessor(`itemName`, {
+  //     header: "Item",
+  //     cell: (info) => info.getValue(),
+  //     footer: "Item",
+  //   }),
+  //   columnHelper.accessor((row) => `${row.boss}`, {
+  //     header: "Boss",
+  //     cell: (info) => info.getValue(),
+  //     footer: "Boss",
+  //   }),
+  //   columnHelper.accessor((row) => `${row.instance}`, {
+  //     header: "Instance",
+  //     cell: (info) => {
+  //       const name = info.getValue().split("-");
+  //       const display = `${name[0]} (${name[1]})`;
+  //       return display;
+  //     },
+  //     footer: "Instance",
+  //   }),
+  //   columnHelper.accessor((row) => `${row.response}`, {
+  //     header: "Reason",
+  //     cell: (info) => info.getValue(),
+  //     footer: "Reason",
+  //   }),
+  //   columnHelper.accessor("dateTime", {
+  //     header: "Date",
+  //     cell: (info) => {
+  //       if (!info) return "N/A";
+  //       const date = new Date(info.getValue()!).toLocaleDateString("en-US");
+  //       const time = new Date(info.getValue()!).toLocaleTimeString("en-US");
+  //       return `${date} ${time}`;
+  //     },
+  //     footer: "Date",
+  //   }),
+  // ];
 
   return (
     <>
