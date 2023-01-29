@@ -1,4 +1,4 @@
-import { prisma } from "../../server/db/client";
+import { prisma } from "../../prisma/client";
 import { RCLootItem } from "../types";
 
 export default async function createRCLootItemRecord(item: RCLootItem) {

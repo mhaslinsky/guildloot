@@ -46,6 +46,7 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
   const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+  const [cbData, setcbData] = useState<any[]>([]);
 
   const table = useReactTable({
     data: props.data,
@@ -83,15 +84,18 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   }, []);
 
   useEffect(() => {
-    if (!initialRenderComplete) return;
-    let cbData: any[] = [];
+    if (!initialRenderComplete || !table) return;
     table.getAllColumns().forEach((column) => {
       if (column.id === "dateTime") return;
-      cbData.push([...column.getFacetedUniqueValues().keys()]);
+      setcbData((cbData) => [...cbData, [...column.getFacetedUniqueValues().keys()]]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialRenderComplete, table]);
+
+  useEffect(() => {
     const flattened = cbData.flat();
     setAutoCompleteData(flattened);
-  }, [initialRenderComplete, setAutoCompleteData, table]);
+  }, [cbData, setAutoCompleteData]);
 
   return (
     <Box

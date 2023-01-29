@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { prisma } from "../../server/db/client";
+import { prisma } from "../../prisma/client";
 import { blizzAPIItem, blizzAPIMedia, PreviewItem } from "../types";
 
 export default async function createBlizzAPIItem(item: blizzAPIItem & blizzAPIMedia) {

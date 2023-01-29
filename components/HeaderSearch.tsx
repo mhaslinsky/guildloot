@@ -1,7 +1,6 @@
 import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Image, Flex, Text } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore } from "../utils/store/store";
-import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useEffect } from "react";
 import { useDebouncedState } from "@mantine/hooks";
 
@@ -48,7 +47,6 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   const { classes } = useStyles();
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const toggle = useNavBarStore((state) => state.toggleNavBar);
-  const { data } = useGrabLoot();
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
   const autoCompleteData = useAutoCompleteDataStore((state) => state.autoCompleteData);
   const [value, setValue] = useDebouncedState("", 500);
@@ -56,22 +54,6 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   useEffect(() => {
     setGlobalFilter(value);
   }, [setGlobalFilter, value]);
-
-  const AutoCompleteItem = (props: any) => (
-    <div>
-      <Group noWrap>
-        <div>
-          <Text>{props.value}</Text>
-          <Text size='xs' color='dimmed'>
-            {props.item}
-          </Text>
-          <Text size='xs' color='dimmed'>
-            {props.label}
-          </Text>
-        </div>
-      </Group>
-    </div>
-  );
 
   return (
     <Header height={56} className={classes.header} mb={120}>
@@ -86,7 +68,8 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
         </Flex>
         <Group>
           <Autocomplete
-            itemComponent={AutoCompleteItem}
+            transition='scale-y'
+            transitionDuration={180}
             placeholder='Search'
             icon={<IconSearch size={16} stroke={1.5} />}
             data={autoCompleteData}

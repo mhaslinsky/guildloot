@@ -1,9 +1,9 @@
-import { prisma } from "../../server/db/client";
+import { prisma } from "../../prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import createRCLootItemRecord from "../../utils/functions/writeRCLootItemToDB";
 import type { RCLootItem } from "../../utils/types";
 
-export default async function writeRCLootItemToDB(req: NextApiRequest, res: NextApiResponse) {
+export default async function writeRCLootItemToDB(req: any, res: any) {
   if (req.method == "POST") {
     try {
       const itemData: any[] = JSON.parse(req.body.rcLootData);
