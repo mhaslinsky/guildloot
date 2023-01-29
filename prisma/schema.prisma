@@ -67,6 +67,7 @@ model blizzAPIItem {
 }
 
 //Next Auth Models
+//Account Hold OAuth Tokens/Data
 model Account {
   id                String  @id @default(cuid())
   userId            String

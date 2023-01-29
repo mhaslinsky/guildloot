@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { createStyles, Navbar, Group, Image, MediaQuery } from "@mantine/core";
+import { createStyles, Navbar, Group, Image, MediaQuery, Modal } from "@mantine/core";
 import { IconBellRinging, IconLogout } from "@tabler/icons";
 import { useNavBarStore } from "../utils/store/store";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
+import { AuthenticationForm } from "./AuthForm";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -64,6 +65,7 @@ const data = [{ link: "", label: "Notifications", icon: IconBellRinging }];
 export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Billing");
+  const [modalOpened, setModalOpened] = useState(false);
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const { data: session, status } = useSession();
 
@@ -83,28 +85,33 @@ export function NavbarSimple() {
   ));
 
   return (
-    <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
-      <Navbar.Section grow>
-        <MediaQuery largerThan='sm' styles={{ display: "none" }}>
-          <Group className={classes.header} position='apart'>
-            <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
-          </Group>
-        </MediaQuery>
-        {links}
-      </Navbar.Section>
-      <Navbar.Section className={classes.footer}>
-        {!session && (
-          <a href='#' className={classes.link} onClick={() => signIn()}>
-            <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Login</span>
-          </a>
-        )}
-        {session && (
-          <>
-            <UserBadge avatar={session.user!.image!} username={session.user!.name!} />
-          </>
-        )}
-      </Navbar.Section>
-    </Navbar>
+    <>
+      <Modal style={{ padding: 0 }} opened={modalOpened} withCloseButton={false} onClose={() => setModalOpened(false)}>
+        <AuthenticationForm />
+      </Modal>
+      <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
+        <Navbar.Section grow>
+          <MediaQuery largerThan='sm' styles={{ display: "none" }}>
+            <Group className={classes.header} position='apart'>
+              <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
+            </Group>
+          </MediaQuery>
+          {links}
+        </Navbar.Section>
+        <Navbar.Section className={classes.footer}>
+          {!session && (
+            <a href='#' className={classes.link} onClick={() => setModalOpened(true)}>
+              <IconLogout className={classes.linkIcon} stroke={1.5} />
+              <span>Login</span>
+            </a>
+          )}
+          {session && (
+            <>
+              <UserBadge avatar={session.user!.image!} username={session.user!.name!} />
+            </>
+          )}
+        </Navbar.Section>
+      </Navbar>
+    </>
   );
 }
