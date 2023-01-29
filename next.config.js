@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["i.imgur.com", "images.unsplash.com", "*"],
+    domains: ["i.imgur.com", "images.unsplash.com", "cdn.discordapp.com", "*"],
   },
   env: {
     BLIZZ_API_TOKEN: process.env.BLIZZ_API_TOKEN,

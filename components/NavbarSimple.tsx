@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { createStyles, Navbar, Group, Image, MediaQuery } from "@mantine/core";
-import { IconBellRinging, IconSwitchHorizontal, IconLogout } from "@tabler/icons";
+import { IconBellRinging, IconLogout } from "@tabler/icons";
 import { useNavBarStore } from "../utils/store/store";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { UserBadge } from "./UserBadge";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -63,6 +65,7 @@ export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Billing");
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
+  const { data: session, status } = useSession();
 
   const links = data.map((item) => (
     <a
@@ -90,14 +93,17 @@ export function NavbarSimple() {
         {links}
       </Navbar.Section>
       <Navbar.Section className={classes.footer}>
-        <a href='#' className={classes.link} onClick={(event) => event.preventDefault()}>
-          <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
-          <span>Change account</span>
-        </a>
-        <a href='#' className={classes.link} onClick={(event) => event.preventDefault()}>
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Logout</span>
-        </a>
+        {!session && (
+          <a href='#' className={classes.link} onClick={() => signIn()}>
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <span>Login</span>
+          </a>
+        )}
+        {session && (
+          <>
+            <UserBadge avatar={session.user!.image!} username={session.user!.name!} />
+          </>
+        )}
       </Navbar.Section>
     </Navbar>
   );

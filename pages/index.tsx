@@ -99,51 +99,6 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
     [columnHelper]
   );
 
-  // const columns = [
-  //   columnHelper.accessor((row) => `${row.player}`, {
-  //     header: "Player",
-  //     cell: (info) => {
-  //       const name = info.getValue().split("-");
-  //       return name[0];
-  //     },
-  //     footer: "Player",
-  //   }),
-  //   columnHelper.accessor(`itemName`, {
-  //     header: "Item",
-  //     cell: (info) => info.getValue(),
-  //     footer: "Item",
-  //   }),
-  //   columnHelper.accessor((row) => `${row.boss}`, {
-  //     header: "Boss",
-  //     cell: (info) => info.getValue(),
-  //     footer: "Boss",
-  //   }),
-  //   columnHelper.accessor((row) => `${row.instance}`, {
-  //     header: "Instance",
-  //     cell: (info) => {
-  //       const name = info.getValue().split("-");
-  //       const display = `${name[0]} (${name[1]})`;
-  //       return display;
-  //     },
-  //     footer: "Instance",
-  //   }),
-  //   columnHelper.accessor((row) => `${row.response}`, {
-  //     header: "Reason",
-  //     cell: (info) => info.getValue(),
-  //     footer: "Reason",
-  //   }),
-  //   columnHelper.accessor("dateTime", {
-  //     header: "Date",
-  //     cell: (info) => {
-  //       if (!info) return "N/A";
-  //       const date = new Date(info.getValue()!).toLocaleDateString("en-US");
-  //       const time = new Date(info.getValue()!).toLocaleTimeString("en-US");
-  //       return `${date} ${time}`;
-  //     },
-  //     footer: "Date",
-  //   }),
-  // ];
-
   return (
     <>
       <Flex justify='center' align='center'>
