@@ -1,11 +1,11 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../prisma/client";
 import EmailProvider from "next-auth/providers/email";
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   // Configure one or more authentication providers
   providers: [
@@ -53,4 +53,6 @@ export default NextAuth({
       return Promise.resolve("/");
     },
   },
-});
+};
+
+export default NextAuth(authOptions);
