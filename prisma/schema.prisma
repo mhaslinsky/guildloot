@@ -32,6 +32,9 @@ model rcLootItem {
   owner         String
   itemName      String
 
+  Guild   Guild?  @relation(fields: [guildId], references: [id])
+  guildId String?
+
   bLootDBItem blizzAPIItem? @relation(fields: [itemId], references: [id])
 
   createdAt DateTime @default(now())
@@ -66,7 +69,30 @@ model blizzAPIItem {
   updatedAt DateTime @updatedAt
 }
 
+model Guild {
+  id       String       @id @default(cuid())
+  name     String
+  Admin    User         @relation("Admin", fields: [adminId], references: [id])
+  adminId  String
+  officers User[]       @relation("Officer")
+  members  User[]       @relation("Member")
+  loot     rcLootItem[]
+}
+
 //Next Auth Models
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  guildAdmin    Guild[]   @relation("Admin")
+  guildOfficer  Guild[]   @relation("Officer")
+  guildMember   Guild[]   @relation("Member")
+}
+
 //Account Hold OAuth Tokens/Data
 model Account {
   id                String  @id @default(cuid())
@@ -93,16 +119,6 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
 }
 
 model VerificationToken {

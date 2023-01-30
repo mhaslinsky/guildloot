@@ -3,11 +3,24 @@ import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../prisma/client";
+import EmailProvider from "next-auth/providers/email";
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
   // Configure one or more authentication providers
   providers: [
+    EmailProvider({
+      server: {
+        host: process.env.HOST,
+        port: 587,
+        auth: {
+          user: process.env.USER,
+          pass: process.env.PASS,
+        },
+      },
+      from: process.env.FROM,
+      maxAge: 24 * 60 * 60, // How long email links are valid for
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,

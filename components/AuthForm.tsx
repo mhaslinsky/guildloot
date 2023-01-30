@@ -12,7 +12,6 @@ import {
   Anchor,
   Stack,
 } from "@mantine/core";
-import { IconBrandGoogle, IconBrandDiscord } from "@tabler/icons";
 import { signIn } from "next-auth/react";
 import { GoogleButton } from "./Buttons/GoogleButton";
 import { DiscordButton } from "./Buttons/DiscordButton";
@@ -70,7 +69,7 @@ export function AuthenticationForm(props: PaperProps) {
           <TextInput
             required
             label='Email'
-            placeholder='hello@mantine.dev'
+            placeholder='notImplemented@yet.com'
             value={form.values.email}
             onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
             error={form.errors.email && "Invalid email"}
