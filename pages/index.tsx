@@ -9,7 +9,6 @@ import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useSession } from "next-auth/react";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
@@ -17,7 +16,6 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
-  const { data: guildData } = useGrabUserInfo();
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);

@@ -72,6 +72,7 @@ model blizzAPIItem {
 model Guild {
   id       String       @id @default(cuid())
   name     String
+  image    String?
   Admin    User         @relation("Admin", fields: [adminId], references: [id])
   adminId  String
   officers User[]       @relation("Officer")

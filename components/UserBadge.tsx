@@ -2,6 +2,7 @@ import { createStyles, Avatar, Text, Flex, Card } from "@mantine/core";
 import Image from "next/image";
 import { IconLogout } from "@tabler/icons";
 import { signOut } from "next-auth/react";
+import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -55,6 +56,7 @@ interface UserInfoIconsProps {
 
 export function UserBadge({ avatar, guild, username, phone, email }: UserInfoIconsProps) {
   const { classes } = useStyles();
+
   return (
     <Card p={10}>
       <Flex

@@ -1,3 +1,4 @@
+import { prisma } from "../../prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
@@ -7,12 +8,15 @@ export default async function guildEndpoint(req: NextApiRequest, res: NextApiRes
   if (!session) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+  const email = session.user!.email!;
   if (req.method == "GET") {
     try {
-      res.status(200).json({ message: `User ID:` });
-      // await prisma.user.findUnique({ where: { id: userId } }).then((data) => {
-      //   res.status(200).json(data);
-      // });
+      await prisma.user
+        .findUnique({ where: { email: email }, include: { guildAdmin: true, guildMember: true, guildOfficer: true } })
+        .then((data) => {
+          console.log(data);
+          res.status(200).json(data);
+        });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "error reading from DB" });

@@ -1,5 +1,4 @@
 import { prisma } from "../../prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
 import createRCLootItemRecord from "../../utils/functions/writeRCLootItemToDB";
 import type { RCLootItem } from "../../utils/types";
 

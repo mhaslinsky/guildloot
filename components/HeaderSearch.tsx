@@ -3,6 +3,8 @@ import { IconSearch } from "@tabler/icons";
 import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore } from "../utils/store/store";
 import { useEffect } from "react";
 import { useDebouncedState } from "@mantine/hooks";
+import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import GuildSelect from "./GuildSelect";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -67,6 +69,7 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
           </MediaQuery>
         </Flex>
         <Group>
+          <GuildSelect />
           <Autocomplete
             transition='scale-y'
             transitionDuration={180}
