@@ -68,8 +68,8 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
             <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
           </MediaQuery>
         </Flex>
+        <GuildSelect />
         <Group>
-          <GuildSelect />
           <Autocomplete
             transition='scale-y'
             transitionDuration={180}

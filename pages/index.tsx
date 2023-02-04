@@ -9,13 +9,13 @@ import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
-import { useSession } from "next-auth/react";
+import { useCurrentGuildStore } from "../utils/store/store";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   const [sendLoot, setSendLoot] = useState<string | undefined>("");
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+  const currentGuild = useCurrentGuildStore((state) => state.currentGuild);
   const { data, isFetching } = useGrabLoot();
-  const { data: session, status } = useSession();
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
@@ -30,11 +30,19 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
         icon: <ExclamationMark />,
       });
       return;
+    } else if (!currentGuild) {
+      showNotification({
+        title: "Error",
+        message: "Please select a guild",
+        color: "red",
+        icon: <ExclamationMark />,
+      });
+      return;
     }
     axios
-      .post("/api/loot", { rcLootData })
+      .post("/api/loot", { rcLootData, currentGuild })
       .then((res) => {
-        setSendLoot(undefined);
+        setSendLoot("");
         // grabLoot();
       })
       .catch((err) => {
@@ -51,8 +59,6 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   useEffect(() => {
     setInitialRenderComplete(true);
   }, []);
-
-  useEffect(() => {}, [session]);
 
   const columnHelper = createColumnHelper<RCLootItem>();
   const columns = useMemo(

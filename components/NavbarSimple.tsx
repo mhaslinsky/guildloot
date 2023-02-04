@@ -93,7 +93,14 @@ export function NavbarSimple() {
         <Navbar.Section grow>
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
             <Group className={classes.header} position='apart'>
-              <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
+              <Image
+                styles={(theme) => ({
+                  root: { paddingTop: "0rem" },
+                })}
+                withPlaceholder
+                src={null}
+                alt='placeholder logo'
+              />
             </Group>
           </MediaQuery>
           {links}

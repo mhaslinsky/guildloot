@@ -1,9 +1,11 @@
-import { Group, Avatar, Text, Select } from "@mantine/core";
-import { getServerSession } from "next-auth";
-import { GetSessionParams } from "next-auth/react";
+import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
 import { useEffect, useState, forwardRef } from "react";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { useCurrentGuildStore } from "../utils/store/store";
+
+const useStyles = createStyles((theme) => ({
+  input: { fontSize: theme.fontSizes.xl },
+}));
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
   image: string;
@@ -25,48 +27,53 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(({ image, name, adminId
 ));
 
 export default function GuildSelect() {
+  const { classes } = useStyles();
   const { data: userData } = useGrabUserInfo();
   const [availableGuilds, setAvailableGuilds] = useState([]);
-  const [selectedGuild, setSelectedGuild] = useState();
+  const setCurrentGuild = useCurrentGuildStore((state) => state.setCurrentGuild);
 
   useEffect(() => {
     if (userData) {
       const guilds = userData.guildAdmin.concat(userData.guildOfficer).concat(userData.guildMember);
       const guildsWithValues = guilds.map((guild: any) => {
         return {
-          value: guild.name,
+          value: guild.id,
+          label: guild.name,
           image: guild.image,
           name: guild.name,
           adminId: guild.adminId,
           id: guild.id,
         };
       });
-      console.log(guildsWithValues);
       setAvailableGuilds(guildsWithValues);
     }
   }, [userData]);
 
   return (
-    <Select
-      placeholder='Select Guild'
-      itemComponent={SelectItem}
-      nothingFound='No guilds found'
-      value={selectedGuild}
-      data={availableGuilds}
-      styles={(theme) => ({
-        item: {
-          // applies styles to selected item
-          "&[data-selected]": {
-            "&, &:hover": {
-              backgroundColor: theme.colorScheme === "dark" ? theme.colors.teal[9] : theme.colors.teal[1],
-              color: theme.colorScheme === "dark" ? theme.white : theme.colors.teal[9],
+    <>
+      <Select
+        onChange={(value) => {
+          setCurrentGuild(value);
+        }}
+        classNames={{ input: classes.input }}
+        placeholder='Select Guild'
+        nothingFound='No guilds found'
+        data={availableGuilds}
+        itemComponent={SelectItem}
+        styles={(theme) => ({
+          item: {
+            // applies styles to selected item
+            "&[data-selected]": {
+              "&, &:hover": {
+                backgroundColor: theme.colorScheme === "dark" ? theme.colors.teal[9] : theme.colors.teal[1],
+                color: theme.colorScheme === "dark" ? theme.white : theme.colors.teal[9],
+              },
             },
+            // applies styles to hovered item (with mouse or keyboard)
+            "&[data-hovered]": {},
           },
-
-          // applies styles to hovered item (with mouse or keyboard)
-          "&[data-hovered]": {},
-        },
-      })}
-    />
+        })}
+      />
+    </>
   );
 }

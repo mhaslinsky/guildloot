@@ -2,7 +2,7 @@ import { prisma } from "../../prisma/client";
 import { RCLootItem } from "../types";
 
 export default async function createRCLootItemRecord(item: RCLootItem) {
-  const linkID = item.itemId;
+  const linkID = item.itemID;
   try {
     await prisma.rcLootItem.create({
       data: {
@@ -25,6 +25,7 @@ export default async function createRCLootItemRecord(item: RCLootItem) {
         note: item.note,
         owner: item.owner,
         itemName: item.itemName,
+        guild: { connect: { id: item.guild } },
         bLootDBItem: { connect: { id: linkID } },
       },
     });

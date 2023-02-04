@@ -14,7 +14,6 @@ export default async function guildEndpoint(req: NextApiRequest, res: NextApiRes
       await prisma.user
         .findUnique({ where: { email: email }, include: { guildAdmin: true, guildMember: true, guildOfficer: true } })
         .then((data) => {
-          console.log(data);
           res.status(200).json(data);
         });
     } catch (err) {

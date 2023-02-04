@@ -32,13 +32,12 @@ model rcLootItem {
   owner         String
   itemName      String
 
-  Guild   Guild?  @relation(fields: [guildId], references: [id])
+  guild   Guild?  @relation(fields: [guildId], references: [id])
   guildId String?
 
   bLootDBItem blizzAPIItem? @relation(fields: [itemId], references: [id])
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model blizzAPIItem {
@@ -70,14 +69,15 @@ model blizzAPIItem {
 }
 
 model Guild {
-  id       String       @id @default(cuid())
+  id       String  @id @default(cuid())
   name     String
   image    String?
-  Admin    User         @relation("Admin", fields: [adminId], references: [id])
+  Admin    User    @relation("Admin", fields: [adminId], references: [id])
   adminId  String
-  officers User[]       @relation("Officer")
-  members  User[]       @relation("Member")
-  loot     rcLootItem[]
+  officers User[]  @relation("Officer")
+  members  User[]  @relation("Member")
+
+  rcLootItem rcLootItem[]
 }
 
 //Next Auth Models
