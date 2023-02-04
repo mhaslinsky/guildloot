@@ -1,8 +1,8 @@
-import { prisma } from "../../prisma/client";
-import createRCLootItemRecord from "../../utils/functions/writeRCLootItemToDB";
-import type { RCLootItem } from "../../utils/types";
+import { prisma } from "../../../prisma/client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./auth/[...nextauth]";
+import createRCLootItemRecord from "../../../utils/functions/writeRCLootItemToDB";
+import { RCLootItem } from "../../../utils/types";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function lootEndpoint(req: any, res: any) {
   if (req.method == "POST") {
@@ -49,12 +49,15 @@ export default async function lootEndpoint(req: any, res: any) {
     if (!session) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const guildID = req.body.currentGuild;
+    const { gid } = req.query;
     try {
       await prisma.rcLootItem
         .findMany({
           include: {
             bLootDBItem: true,
+          },
+          where: {
+            guild: { id: gid },
           },
         })
         .then((data) => {

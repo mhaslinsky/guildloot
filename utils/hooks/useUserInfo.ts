@@ -1,7 +1,6 @@
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../pages/api/auth/[...nextauth]";
+import { useSession } from "next-auth/react";
 
 const fetchUserInfo = async () => {
   const { data } = await axios({ url: "/api/guild", method: "GET" });
@@ -9,19 +8,8 @@ const fetchUserInfo = async () => {
 };
 
 const useGrabUserInfo = () => {
-  return useQuery(["userInfo"], fetchUserInfo, { staleTime: 1000 * 1800 });
+  const { data: session } = useSession();
+  return useQuery(["userInfo"], fetchUserInfo, { enabled: !!session, staleTime: 1000 * 1800 });
 };
 
 export { useGrabUserInfo, fetchUserInfo };
-
-// export async function getServerSideProps(context: any) {
-//   const queryClient = new QueryClient();
-//   const session = await getServerSession(context.req, context.res, authOptions);
-//   if (!session) {
-//     return { props: {} };
-//   }
-//   await queryClient.prefetchQuery(["userInfo"], fetchUserInfo);
-//   return {
-//     props: {},
-//   };
-// }

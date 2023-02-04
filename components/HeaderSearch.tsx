@@ -3,7 +3,6 @@ import { IconSearch } from "@tabler/icons";
 import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore } from "../utils/store/store";
 import { useEffect } from "react";
 import { useDebouncedState } from "@mantine/hooks";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import GuildSelect from "./GuildSelect";
 
 const useStyles = createStyles((theme) => ({
