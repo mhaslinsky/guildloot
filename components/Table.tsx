@@ -17,7 +17,7 @@ import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
-import { useAutoCompleteDataStore, useGlobalFilterStore } from "../utils/store/store";
+import { useAutoCompleteDataStore, useCurrentGuildStore, useGlobalFilterStore } from "../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -45,8 +45,8 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
   const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
+  const currentGuild = useCurrentGuildStore((state) => state.currentGuild);
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const [cbData, setcbData] = useState<any[]>([]);
 
   const table = useReactTable({
     data: props.data,
@@ -84,18 +84,16 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   }, []);
 
   useEffect(() => {
-    if (!initialRenderComplete || !table) return;
+    if (!initialRenderComplete) return;
+    let cbData: any[] = [];
     table.getAllColumns().forEach((column) => {
       if (column.id === "dateTime") return;
-      setcbData((cbData) => [...cbData, [...column.getFacetedUniqueValues().keys()]]);
+      cbData.push([...column.getFacetedUniqueValues().keys()]);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialRenderComplete, table]);
-
-  useEffect(() => {
     const flattened = cbData.flat();
     setAutoCompleteData(flattened);
-  }, [cbData, setAutoCompleteData]);
+    console.log("global auto complete data refreshed");
+  }, [initialRenderComplete, setAutoCompleteData, table, currentGuild]);
 
   return (
     <Box

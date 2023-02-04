@@ -1,4 +1,5 @@
 import { Flex, Button, Group, Card } from "@mantine/core";
+import { queryClient } from "../utils/queryClient";
 import { useEffect, useMemo, useState } from "react";
 import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
 import { showNotification } from "@mantine/notifications";
@@ -40,9 +41,10 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
       return;
     }
     axios
-      .post("/api/loot", { rcLootData, currentGuild })
+      .post("/api/loot/post", { rcLootData, currentGuild })
       .then((res) => {
         setSendLoot("");
+        queryClient.invalidateQueries(["loot", currentGuild]);
         // grabLoot();
       })
       .catch((err) => {
