@@ -11,12 +11,15 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { ExclamationMark } from "tabler-icons-react";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useCurrentGuildStore } from "../utils/store/store";
+import { useSession } from "next-auth/react";
+import { HeroTitle } from "../components/HeroTitle";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
   const [sendLoot, setSendLoot] = useState<string | undefined>("");
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const currentGuild = useCurrentGuildStore((state) => state.currentGuild);
   const { data, isFetching } = useGrabLoot();
+  const { data: session, status } = useSession();
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
@@ -115,26 +118,8 @@ const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
     <>
       <Flex justify='center' align='center'>
         <Card w='100%'>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              onSubmit(sendLoot);
-            }}
-          >
-            <FloatingDBLabelTextarea
-              debounce={500}
-              minRows={6}
-              maxRows={20}
-              value={sendLoot}
-              onChange={(value) => inputChangeHandler(String(value))}
-              placeholder='Paste your RCLootCouncil JSON data here'
-              label='RCLootCouncil JSON'
-            />
-            <Group position='right' mt='xs'>
-              <Button type='submit'>Submit</Button>
-            </Group>
-            {initialRenderComplete && <Table columns={columns} loading={isFetching} data={data || []} />}
-          </form>
+          {!session && status == "unauthenticated" && <HeroTitle />}
+          {initialRenderComplete && session && <Table columns={columns} loading={isFetching} data={data || []} />}
         </Card>
       </Flex>
     </>

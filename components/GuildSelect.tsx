@@ -65,7 +65,7 @@ export default function GuildSelect() {
             // applies styles to selected item
             "&[data-selected]": {
               "&, &:hover": {
-                backgroundColor: theme.colorScheme === "dark" ? theme.colors.teal[9] : theme.colors.teal[1],
+                backgroundColor: theme.colorScheme === "dark" ? theme.colors.violet[9] : theme.colors.violet[1],
                 color: theme.colorScheme === "dark" ? theme.white : theme.colors.teal[9],
               },
             },

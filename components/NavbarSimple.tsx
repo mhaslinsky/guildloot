@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { createStyles, Navbar, Group, Image, MediaQuery, Modal } from "@mantine/core";
-import { IconBellRinging, IconLogout } from "@tabler/icons";
+import { createStyles, Navbar, Group, Image, MediaQuery, Modal, Card, Box } from "@mantine/core";
+import { IconBellRinging, IconLogout, IconBallpen, IconPlus, IconSubtask } from "@tabler/icons";
 import { useNavBarStore } from "../utils/store/store";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
 import { AuthenticationForm } from "./AuthForm";
+import Link from "next/link";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -28,7 +29,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
       textDecoration: "none",
       fontSize: theme.fontSizes.sm,
       color: theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[7],
-      padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+      padding: `${theme.spacing.lg}px ${theme.spacing.sm}px`,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
 
@@ -60,28 +61,29 @@ const useStyles = createStyles((theme, _params, getRef) => {
   };
 });
 
-const data = [{ link: "", label: "Notifications", icon: IconBellRinging }];
+const data = [
+  { link: "/log", label: "Log Drops", icon: IconBallpen },
+  { link: "/create", label: "Create Guild", icon: IconPlus },
+  { link: "/manage", label: "Manage Existing Guild", icon: IconSubtask },
+];
 
 export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Billing");
   const [modalOpened, setModalOpened] = useState(false);
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const links = data.map((item) => (
-    <a
+    <Link
       className={cx(classes.link, { [classes.linkActive]: item.label === active })}
       href={item.link}
       key={item.label}
-      onClick={(event) => {
-        event.preventDefault();
-        setActive(item.label);
-      }}
+      onClick={() => setActive(item.label)}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
-    </a>
+    </Link>
   ));
 
   return (
@@ -92,15 +94,12 @@ export function NavbarSimple() {
       <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
         <Navbar.Section grow>
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
-            <Group className={classes.header} position='apart'>
-              <Image
-                styles={(theme) => ({
-                  root: { paddingTop: "0rem" },
-                })}
-                withPlaceholder
-                src={null}
-                alt='placeholder logo'
-              />
+            <Group className={classes.header} position='center'>
+              <Link style={{ position: "relative" }} href='/'>
+                <Card>
+                  <Box style={{ width: "80vw" }}></Box>
+                </Card>
+              </Link>
             </Group>
           </MediaQuery>
           {links}

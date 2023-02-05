@@ -1,9 +1,11 @@
-import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Image, Flex, Text } from "@mantine/core";
+import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Flex, Card } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore } from "../utils/store/store";
 import { useEffect } from "react";
 import { useDebouncedState } from "@mantine/hooks";
 import GuildSelect from "./GuildSelect";
+import Image from "next/image";
+import Link from "next/link";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -59,16 +61,21 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   return (
     <Header height={56} className={classes.header} mb={120}>
       <div className={classes.inner}>
-        <Flex w={275} p='none' align='center'>
+        <Flex p='none' align='center'>
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
             <Burger opened={isNavBarOpen} onClick={toggle} size='sm' mr='xl' />
           </MediaQuery>
           <MediaQuery smallerThan='sm' styles={{ display: "none" }}>
-            <Image pt='md' withPlaceholder src={null} alt='placeholder logo' />
+            <Link href='/'>
+              <Card w={275}>
+                <></>
+              </Card>
+            </Link>
           </MediaQuery>
         </Flex>
-        <GuildSelect />
-        <Group>
+        <Flex w='100%' justify='space-between'>
+          <div />
+          <GuildSelect />
           <Autocomplete
             transition='scale-y'
             transitionDuration={180}
@@ -77,7 +84,7 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
             data={autoCompleteData}
             onChange={(value) => setValue(value)}
           />
-        </Group>
+        </Flex>
       </div>
     </Header>
   );
