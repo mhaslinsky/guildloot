@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useCurrentGuildStore } from "../store/store";
+import { useGuildStore } from "../store/store";
 import type { RCLootItem } from "../types";
 
 const fetchLootData = async (guild: string | null) => {
@@ -10,7 +10,7 @@ const fetchLootData = async (guild: string | null) => {
 };
 
 const useGrabLoot = () => {
-  const currentGuild = useCurrentGuildStore((state) => state.currentGuild);
+  const currentGuild = useGuildStore((state) => state.currentGuild);
   return useQuery(["loot", currentGuild], () => fetchLootData(currentGuild), {
     enabled: !!currentGuild,
     staleTime: 1000 * 1800,

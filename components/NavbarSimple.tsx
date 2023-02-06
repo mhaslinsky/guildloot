@@ -88,6 +88,7 @@ export function NavbarSimple() {
 
   return (
     <>
+      {/* {console.log("client: " + JSON.stringify(session))} */}
       <Modal style={{ padding: 0 }} opened={modalOpened} withCloseButton={false} onClose={() => setModalOpened(false)}>
         <AuthenticationForm />
       </Modal>
@@ -102,7 +103,7 @@ export function NavbarSimple() {
               </Link>
             </Group>
           </MediaQuery>
-          {links}
+          {session && links}
         </Navbar.Section>
         <Navbar.Section className={classes.footer}>
           {!session && (

@@ -1,7 +1,6 @@
 import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
-import { useEffect, useState, forwardRef } from "react";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
-import { useCurrentGuildStore } from "../utils/store/store";
+import { forwardRef, useEffect } from "react";
+import { useGuildStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme) => ({
   input: { fontSize: theme.fontSizes.xl },
@@ -28,26 +27,11 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(({ image, name, adminId
 
 export default function GuildSelect() {
   const { classes } = useStyles();
-  const { data: userData } = useGrabUserInfo();
-  const [availableGuilds, setAvailableGuilds] = useState([]);
-  const setCurrentGuild = useCurrentGuildStore((state) => state.setCurrentGuild);
-
-  useEffect(() => {
-    if (userData) {
-      const guilds = userData.guildAdmin.concat(userData.guildOfficer).concat(userData.guildMember);
-      const guildsWithValues = guilds.map((guild: any) => {
-        return {
-          value: guild.id,
-          label: guild.name,
-          image: guild.image,
-          name: guild.name,
-          adminId: guild.adminId,
-          id: guild.id,
-        };
-      });
-      setAvailableGuilds(guildsWithValues);
-    }
-  }, [userData]);
+  const [currentGuild, availableGuilds, setCurrentGuild] = useGuildStore((state) => [
+    state.currentGuild,
+    state.availableGuilds,
+    state.setCurrentGuild,
+  ]);
 
   return (
     <>
@@ -55,6 +39,7 @@ export default function GuildSelect() {
         onChange={(value) => {
           setCurrentGuild(value);
         }}
+        value={currentGuild}
         classNames={{ input: classes.input }}
         placeholder='Select Guild'
         nothingFound='No guilds found'

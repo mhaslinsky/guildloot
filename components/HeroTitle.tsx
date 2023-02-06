@@ -82,8 +82,10 @@ export function HeroTitle() {
             A{" "}
             <Text component='span' variant='gradient' gradient={{ from: "purple", to: "violet" }} inherit>
               simple and powerful
-            </Text>{" "}
-            loot tracker for World of Warcraft
+            </Text>
+            {` loot tracker for`}
+            <br />
+            {`World of Warcraft`}
           </h1>
 
           <Text className={classes.description} color='dimmed'>

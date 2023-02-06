@@ -30,12 +30,16 @@ export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
   setAutoCompleteData: (data: any) => set({ autoCompleteData: data }),
 }));
 
-interface currentGuildState {
+interface guildState {
   currentGuild: string | null;
+  availableGuilds: string[];
   setCurrentGuild: (guild: string | null) => void;
+  setAvailableGuilds: (guilds: string[]) => void;
 }
 
-export const useCurrentGuildStore = create<currentGuildState>((set) => ({
+export const useGuildStore = create<guildState>((set) => ({
   currentGuild: null,
+  availableGuilds: [],
   setCurrentGuild: (guild: string | null) => set({ currentGuild: guild }),
+  setAvailableGuilds: (guilds: string[]) => set({ availableGuilds: guilds }),
 }));

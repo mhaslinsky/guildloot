@@ -281,3 +281,51 @@ export type LootRow = {
   response: string;
   dateTime: Date;
 };
+
+export type Account = {
+  id: string;
+  userId: string;
+  type: string;
+  provider: string;
+  providerAccountId: string;
+  refresh_token?: string;
+  access_token?: string;
+  expires_at?: number;
+  token_type?: string;
+  scope?: string;
+  id_token?: string;
+  session_state?: string;
+  user: User;
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image: string;
+  accounts: Account[];
+  sessions: Session[];
+  guildAdmin: Guild[];
+  guildOfficer: Guild[];
+  guildMember: Guild[];
+};
+
+export type Session = {
+  id: string;
+  sessionToken: string;
+  userId: string;
+  expires: Date;
+  user: User;
+};
+
+export type Guild = {
+  id: string;
+  name: string;
+  image: string;
+  Admin: User;
+  adminId: string;
+  officers: User[];
+  members: User[];
+  rcLootItems: RCLootItem[];
+};

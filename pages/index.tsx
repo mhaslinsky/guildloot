@@ -1,65 +1,39 @@
-import { Flex, Button, Group, Card } from "@mantine/core";
-import { queryClient } from "../utils/queryClient";
+import { Flex, Card, Button } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
-import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
-import { showNotification } from "@mantine/notifications";
-import axios from "axios";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
 import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ExclamationMark } from "tabler-icons-react";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
-import { useCurrentGuildStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
+import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { useGuildStore } from "../utils/store/store";
 
 const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
-  const [sendLoot, setSendLoot] = useState<string | undefined>("");
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const currentGuild = useCurrentGuildStore((state) => state.currentGuild);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
+  const { data: userData } = useGrabUserInfo();
 
-  const inputChangeHandler = (value: string) => {
-    setSendLoot(value);
-  };
+  const [setAvailableGuilds] = useGuildStore((state) => [state.setAvailableGuilds]);
 
-  const onSubmit = async (rcLootData: string | undefined) => {
-    if (!rcLootData) {
-      showNotification({
-        title: "Error",
-        message: "Please enter some loot",
-        color: "red",
-        icon: <ExclamationMark />,
+  useEffect(() => {
+    if (userData) {
+      const guilds = userData.guildAdmin.concat(userData.guildOfficer).concat(userData.guildMember);
+      const guildsWithValues = guilds.map((guild: any) => {
+        return {
+          value: guild.id,
+          label: guild.name,
+          image: guild.image,
+          name: guild.name,
+          adminId: guild.adminId,
+          id: guild.id,
+        };
       });
-      return;
-    } else if (!currentGuild) {
-      showNotification({
-        title: "Error",
-        message: "Please select a guild",
-        color: "red",
-        icon: <ExclamationMark />,
-      });
-      return;
+      setAvailableGuilds(guildsWithValues);
     }
-    axios
-      .post("/api/loot/post", { rcLootData, currentGuild })
-      .then((res) => {
-        setSendLoot("");
-        queryClient.invalidateQueries(["loot", currentGuild]);
-        // grabLoot();
-      })
-      .catch((err) => {
-        console.log(err);
-        showNotification({
-          title: "Error",
-          message: err.response.data.message,
-          color: "red",
-          icon: <ExclamationMark />,
-        });
-      });
-  };
+  }, [setAvailableGuilds, userData]);
 
   useEffect(() => {
     setInitialRenderComplete(true);

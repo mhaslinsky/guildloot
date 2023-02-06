@@ -2,15 +2,39 @@ import { NextPage } from "next";
 import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
 import { showNotification } from "@mantine/notifications";
 import { ExclamationMark } from "tabler-icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { queryClient } from "../utils/queryClient";
 import axios from "axios";
-import { useCurrentGuildStore } from "../utils/store/store";
-import { Button, Card, Flex, Group, Stack } from "@mantine/core";
+import { useGuildStore } from "../utils/store/store";
+import { Button, Card, Group, Stack } from "@mantine/core";
+import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 
 const Log: NextPage = (props) => {
   const [sendLoot, setSendLoot] = useState<string | undefined>("");
-  const currentGuild = useCurrentGuildStore((state) => state.currentGuild);
+  const { data: userData } = useGrabUserInfo();
+  const [currentGuild, setCurrentGuild, setAvailableGuilds] = useGuildStore((state) => [
+    state.currentGuild,
+    state.setCurrentGuild,
+    state.setAvailableGuilds,
+  ]);
+
+  useEffect(() => {
+    if (userData) {
+      const guilds = userData.guildAdmin.concat(userData.guildOfficer);
+      const guildsWithValues = guilds.map((guild: any) => {
+        return {
+          value: guild.id,
+          label: guild.name,
+          image: guild.image,
+          name: guild.name,
+          adminId: guild.adminId,
+          id: guild.id,
+        };
+      });
+      setAvailableGuilds(guildsWithValues);
+      setCurrentGuild(guildsWithValues[0]);
+    }
+  }, [setAvailableGuilds, setCurrentGuild, userData]);
 
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
