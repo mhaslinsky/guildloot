@@ -1,4 +1,4 @@
-import { Flex, Card, Button } from "@mantine/core";
+import { Flex, Card } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
@@ -7,33 +7,11 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
-import { useGuildStore } from "../utils/store/store";
 
-const Home: NextPage<{ lootHistory: RCLootItem[] }> = (props) => {
+const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
-  const { data: userData } = useGrabUserInfo();
-
-  const [setAvailableGuilds] = useGuildStore((state) => [state.setAvailableGuilds]);
-
-  useEffect(() => {
-    if (userData) {
-      const guilds = userData.guildAdmin.concat(userData.guildOfficer).concat(userData.guildMember);
-      const guildsWithValues = guilds.map((guild: any) => {
-        return {
-          value: guild.id,
-          label: guild.name,
-          image: guild.image,
-          name: guild.name,
-          adminId: guild.adminId,
-          id: guild.id,
-        };
-      });
-      setAvailableGuilds(guildsWithValues);
-    }
-  }, [setAvailableGuilds, userData]);
 
   useEffect(() => {
     setInitialRenderComplete(true);
