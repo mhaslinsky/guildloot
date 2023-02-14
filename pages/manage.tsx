@@ -15,13 +15,17 @@ const createIdentifiedArray = (arr: User[] | User, identifier: string) => {
 const ManageUsers: NextPage = () => {
   const { data: currentGuildMembers, isLoading, fetchStatus, status } = useGrabGuildMembers();
 
-  if (status == "loading" && fetchStatus == "idle") return <div>Select a guild above</div>;
+  if (status == "loading" && fetchStatus == "idle")
+    return (
+      <Text fw={700} fz='xl' ta='center'>
+        Select a guild above
+      </Text>
+    );
   if (isLoading) return <div>Loading...</div>;
   else {
     console.table("admins: " + currentGuildMembers?.Admin);
     console.table("officers: " + currentGuildMembers?.officers);
     console.table("members: " + currentGuildMembers?.members);
-
     return (
       <>
         <UsersRolesTable data={currentGuildMembers?.Admin} role='Admin' />

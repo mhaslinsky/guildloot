@@ -53,6 +53,36 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       return Promise.resolve("/");
     },
+    async signIn({ user, account, profile, email, credentials }) {
+      const curDateTime = new Date();
+      if (user.email != null) {
+        try {
+          const curUser = await prisma.user.update({
+            where: { email: user.email },
+            data: { lastSignedIn: curDateTime },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+        return true;
+      }
+      return true;
+    },
+    async session({ session, user, token }) {
+      const curDateTime = new Date();
+      if (user.email != null) {
+        try {
+          const curUser = await prisma.user.update({
+            where: { email: user.email },
+            data: { lastSignedIn: curDateTime },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+        return session;
+      }
+      return session;
+    },
   },
 };
 

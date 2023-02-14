@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { mountStoreDevtool } from "simple-zustand-devtools";
 
 interface navBarState {
   isNavBarOpen: boolean;
@@ -43,3 +44,8 @@ export const useGuildStore = create<guildState>((set) => ({
   setCurrentGuild: (guild: string | null) => set({ currentGuild: guild }),
   setAvailableGuilds: (guilds: string[]) => set({ availableGuilds: guilds }),
 }));
+
+if (process.env.NODE_ENV === "development") {
+  mountStoreDevtool("GuildStore", useGuildStore);
+  mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
+}

@@ -87,6 +87,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  lastSignedIn  DateTime?
   accounts      Account[]
   sessions      Session[]
   guildAdmin    Guild[]   @relation("Admin")

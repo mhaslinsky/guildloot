@@ -304,6 +304,7 @@ export type User = {
   email: string;
   emailVerified: boolean;
   image: string;
+  lastSignedIn?: Date;
   accounts: Account[];
   sessions: Session[];
   guildAdmin: Guild[];

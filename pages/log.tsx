@@ -32,7 +32,7 @@ const Log: NextPage = (props) => {
         };
       });
       setAvailableGuilds(guildsWithValues);
-      setCurrentGuild(guildsWithValues[0]);
+      setCurrentGuild(guildsWithValues[0].value);
     }
   }, [setAvailableGuilds, setCurrentGuild, userData]);
 
