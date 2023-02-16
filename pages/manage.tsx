@@ -23,9 +23,6 @@ const ManageUsers: NextPage = () => {
     );
   if (isLoading) return <div>Loading...</div>;
   else {
-    console.table("admins: " + currentGuildMembers?.Admin);
-    console.table("officers: " + currentGuildMembers?.officers);
-    console.table("members: " + currentGuildMembers?.members);
     return (
       <>
         <UsersRolesTable data={currentGuildMembers?.Admin} role='Admin' />

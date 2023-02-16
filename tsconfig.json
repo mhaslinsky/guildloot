@@ -16,6 +16,13 @@
     "incremental": true,
     "downlevelIteration": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/auth/[...nextauth].ts", "pages/api/lootOLD.TEMP"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/api/auth/[...nextauth].ts",
+    "pages/api/lootOLD.TEMP",
+    "utils/hooks/useUpdateGuildMembers.js"
+  ],
   "exclude": ["node_modules"]
 }

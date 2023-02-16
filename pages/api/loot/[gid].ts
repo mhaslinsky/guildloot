@@ -1,7 +1,7 @@
 import { prisma } from "../../../prisma/client";
 import { getServerSession } from "next-auth";
 import createRCLootItemRecord from "../../../utils/functions/writeRCLootItemToDB";
-import { Guild, RCLootItem, Session } from "../../../utils/types";
+import { Guild, RCLootItem } from "../../../utils/types";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 

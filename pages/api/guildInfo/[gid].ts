@@ -24,6 +24,10 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
       console.log(err);
       res.status(500).json({ message: "error reading from DB" });
     }
+  }
+  if (req.method == "POST") {
+    const { gid } = req.query;
+    res.status(200).json({ message: `Got here succesfully` });
   } else {
     return res.status(405).json({ message: "Method not allowed" });
   }

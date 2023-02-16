@@ -1,7 +1,8 @@
-import { Avatar, Badge, Table, Group, Text, Select, ScrollArea, MediaQuery } from "@mantine/core";
+import { Avatar, Table, Group, Text, Select, MediaQuery } from "@mantine/core";
 import { User } from "../utils/types";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
+import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -12,9 +13,10 @@ interface UsersTableProps {
 
 const rolesData = ["Admin", "Officer", "Member"];
 
-const onSubmit = async () => {};
+const onSubmit = async (role: string | null, user: string) => {};
 
 export function UsersRolesTable({ data, role }: UsersTableProps) {
+  const { mutate } = useUpdateGuildMembers();
   const timeAgo = new TimeAgo("en-US");
   if (!data) return <Text></Text>;
   if (!Array.isArray(data)) data = [data];
@@ -34,7 +36,13 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
         </Group>
       </td>
       <td>
-        <Select data={rolesData} defaultValue={role} />
+        <Select
+          onChange={(value) => {
+            mutate({ role: value, user: user.name });
+          }}
+          data={rolesData}
+          defaultValue={role}
+        />
       </td>
       {
         <MediaQuery smallerThan='sm' styles={{ display: "none" }}>
@@ -49,8 +57,6 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
       }
     </tr>
   ));
-
-  console.log(rows);
 
   return (
     <Table horizontalSpacing='sm'>
