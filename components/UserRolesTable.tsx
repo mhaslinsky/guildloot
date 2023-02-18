@@ -1,10 +1,7 @@
 import { Avatar, Table, Group, Text, Select, MediaQuery } from "@mantine/core";
 import { User } from "../utils/types";
 import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
 import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
-
-TimeAgo.addDefaultLocale(en);
 
 interface UsersTableProps {
   data: User[] | User | undefined;
@@ -12,8 +9,6 @@ interface UsersTableProps {
 }
 
 const rolesData = ["Admin", "Officer", "Member"];
-
-const onSubmit = async (role: string | null, user: string) => {};
 
 export function UsersRolesTable({ data, role }: UsersTableProps) {
   const { mutate } = useUpdateGuildMembers();
@@ -29,9 +24,9 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
             <Text size='sm' weight={500}>
               {user.name}
             </Text>
-            <Text size='xs' color='dimmed'>
+            {/* <Text size='xs' color='dimmed'>
               {user.email}
-            </Text>
+            </Text> */}
           </div>
         </Group>
       </td>

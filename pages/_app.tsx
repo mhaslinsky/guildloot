@@ -13,8 +13,11 @@ import { AppShell } from "@mantine/core";
 import { NavbarSimple } from "../components/NavbarSimple";
 import { HeaderSearch } from "../components/HeaderSearch";
 import { SessionProvider } from "next-auth/react";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
 
 const inter = Inter({ subsets: ["latin"] });
+TimeAgo.addDefaultLocale(en);
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (

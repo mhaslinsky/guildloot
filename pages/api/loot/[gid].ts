@@ -24,6 +24,7 @@ export default async function lootEndpoint(req: any, res: any) {
       const guildID = req.body.currentGuild;
       const itemData = JSON.parse(req.body.rcLootData);
       if (Array.isArray(itemData)) {
+        if (itemData.length === 0) return res.status(400).json({ message: `Enter Valid Loot` });
         itemData.forEach(async (item) => {
           const formattedItem = formatItem(item, guildID);
           await createRCLootItemRecord(formattedItem);
@@ -31,6 +32,7 @@ export default async function lootEndpoint(req: any, res: any) {
       } else {
         const singularItem = JSON.parse(req.body.rcLootData);
         const formattedItem = formatItem(singularItem, guildID);
+
         await createRCLootItemRecord(formattedItem);
       }
       res.status(200).json({ message: ` written to DB successfully` });

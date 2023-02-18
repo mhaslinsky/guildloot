@@ -1,22 +1,19 @@
 import { NextPage } from "next";
 import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
-import { showNotification } from "@mantine/notifications";
-import { ExclamationMark } from "tabler-icons-react";
 import { useEffect, useState } from "react";
-import { queryClient } from "../utils/queryClient";
-import axios from "axios";
 import { useGuildStore } from "../utils/store/store";
 import { Button, Card, Group, Stack } from "@mantine/core";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { useLogLoot } from "../utils/hooks/useLogLoot";
 
-const Log: NextPage = (props) => {
+const Log: NextPage = () => {
   const [sendLoot, setSendLoot] = useState<string | undefined>("");
   const { data: userData } = useGrabUserInfo();
-  const [currentGuild, setCurrentGuild, setAvailableGuilds] = useGuildStore((state) => [
-    state.currentGuild,
+  const [setCurrentGuild, setAvailableGuilds] = useGuildStore((state) => [
     state.setCurrentGuild,
     state.setAvailableGuilds,
   ]);
+  const { mutate, isSuccess } = useLogLoot();
 
   useEffect(() => {
     if (userData) {
@@ -36,52 +33,23 @@ const Log: NextPage = (props) => {
     }
   }, [setAvailableGuilds, setCurrentGuild, userData]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      setSendLoot("");
+    }
+  }, [isSuccess]);
+
   const inputChangeHandler = (value: string) => {
     setSendLoot(value);
   };
 
-  const onSubmit = async (rcLootData: string | undefined) => {
-    if (!rcLootData) {
-      showNotification({
-        title: "Error",
-        message: "Please enter some loot",
-        color: "red",
-        icon: <ExclamationMark />,
-      });
-      return;
-    } else if (!currentGuild) {
-      showNotification({
-        title: "Error",
-        message: "Please select a guild",
-        color: "red",
-        icon: <ExclamationMark />,
-      });
-      return;
-    }
-    axios
-      .post("/api/loot/post", { rcLootData, currentGuild })
-      .then((res) => {
-        setSendLoot("");
-        queryClient.invalidateQueries(["loot", currentGuild]);
-        // grabLoot();
-      })
-      .catch((err) => {
-        console.log(err);
-        showNotification({
-          title: "Error",
-          message: err.response.data.message,
-          color: "red",
-          icon: <ExclamationMark />,
-        });
-      });
-  };
   return (
     <Stack justify='center' align='center' w='100%'>
       <Card w='100%'>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            onSubmit(sendLoot);
+            mutate(sendLoot);
           }}
         >
           <FloatingDBLabelTextarea
