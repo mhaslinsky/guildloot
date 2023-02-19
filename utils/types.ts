@@ -288,13 +288,13 @@ export type Account = {
   type: string;
   provider: string;
   providerAccountId: string;
-  refresh_token?: string;
-  access_token?: string;
-  expires_at?: number;
-  token_type?: string;
-  scope?: string;
-  id_token?: string;
-  session_state?: string;
+  refresh_token: string | null;
+  access_token: string | null;
+  expires_at: number | null;
+  token_type: string | null;
+  scope: string | null;
+  id_token: string | null;
+  session_state: string | null;
   user: User;
 };
 
@@ -302,9 +302,9 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  emailVerified: boolean;
-  image: string;
-  lastSignedIn?: Date;
+  emailVerified: Date | null;
+  image: string | null;
+  lastSignedIn: Date | null;
   accounts: Account[];
   sessions: Session[];
   guildAdmin: Guild[];

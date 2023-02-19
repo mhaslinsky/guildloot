@@ -2,17 +2,18 @@ import { useMutation } from "@tanstack/react-query";
 import { useGuildStore } from "../store/store";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
+import { queryClient } from "../queryClient";
 
 type updateMemberArgs = {
   role: string | null;
-  user: string | null;
+  userID: string | null;
 };
 
-const updateGuildMembers = async (role: string | null, user: string | null, guild: string | null) => {
+const updateGuildMembers = async (role: string | null, userID: string | null, guild: string | null) => {
   if (!role) return Promise.reject({ message: "No role selected" });
-  if (!user) return Promise.reject({ message: "No user selected" });
+  if (!userID) return Promise.reject({ message: "No user selected" });
   if (!guild) return Promise.reject({ message: "No guild selected" });
-  const { data } = await axios.post(`/api/guildInfo/${guild}`, { role, user });
+  const { data } = await axios.post(`/api/guildInfo/${guild}`, { role, userID });
   return data;
 };
 
@@ -20,7 +21,7 @@ export function useUpdateGuildMembers() {
   const currentGuild = useGuildStore((state) => state.currentGuild);
 
   const mutation = useMutation({
-    mutationFn: (variables: updateMemberArgs) => updateGuildMembers(variables.role, variables.user, currentGuild),
+    mutationFn: (variables: updateMemberArgs) => updateGuildMembers(variables.role, variables.userID, currentGuild),
     onError: (err) => {
       if (err instanceof AxiosError) {
         showNotification({
@@ -36,7 +37,7 @@ export function useUpdateGuildMembers() {
         });
       }
     },
-    onMutate: (variables) => {},
+    onMutate: (variables: updateMemberArgs) => {},
     onSuccess: (data) => {
       console.log(data);
       showNotification({
@@ -44,7 +45,7 @@ export function useUpdateGuildMembers() {
         message: "Update Successful",
         color: "green",
       });
-      // queryClient.invalidateQueries(["guildMembers", currentGuild]);
+      queryClient.invalidateQueries(["guildMembers", currentGuild]);
     },
   });
 

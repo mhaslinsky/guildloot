@@ -26,8 +26,12 @@ const ManageUsers: NextPage = () => {
     return (
       <>
         <UsersRolesTable data={currentGuildMembers?.Admin} role='Admin' />
-        <UsersRolesTable data={currentGuildMembers?.officers} role='Officer' />
-        <UsersRolesTable data={currentGuildMembers?.members} role='Member' />
+        {currentGuildMembers?.officers.length! > 0 && (
+          <UsersRolesTable data={currentGuildMembers?.officers} role='Officer' />
+        )}
+        {currentGuildMembers?.members.length! > 0 && (
+          <UsersRolesTable data={currentGuildMembers?.members} role='Member' />
+        )}
       </>
     );
   }

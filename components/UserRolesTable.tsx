@@ -33,7 +33,7 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
       <td>
         <Select
           onChange={(value) => {
-            mutate({ role: value, user: user.name });
+            mutate({ role: value, userID: user.id });
           }}
           data={rolesData}
           defaultValue={role}

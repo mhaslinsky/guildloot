@@ -10,8 +10,6 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
   if (!session) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const email = session.user!.email!;
-  console.log(req.method);
   if (req.method == "GET") {
     const { gid } = req.query;
     try {
@@ -19,9 +17,9 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
         .findUnique({
           where: { id: gid as string },
           include: {
-            Admin: { select: { name: true, lastSignedIn: true } },
-            officers: { select: { name: true, lastSignedIn: true } },
-            members: { select: { name: true, lastSignedIn: true } },
+            Admin: { select: { name: true, lastSignedIn: true, image: true, id: true } },
+            officers: { select: { name: true, lastSignedIn: true, image: true, id: true } },
+            members: { select: { name: true, lastSignedIn: true, image: true, id: true } },
           },
         })
         .then((data) => {
@@ -39,34 +37,83 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
     const token = getCookie("next-auth.session-token", { req, res }) as string;
     const { gid } = req.query;
     const role = req.body.role;
+    const userID = req.body.userID;
     try {
-      const userSession: any | null = await prisma.session.findUnique({
+      const userSession = await prisma.session.findUnique({
         where: { sessionToken: token },
-        include: { user: { include: { guildAdmin: true, guildOfficer: true } } },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
       });
-      const guildAdminShips = userSession.user.guildAdmin || [];
-      const checkGuildAdminShip = guildAdminShips.find((guild: Guild) => guild.id === gid);
-      const guildOfficerShips = userSession.user.guildOfficer || [];
-      const checkGuildOfficerShip = guildOfficerShips.find((guild: Guild) => guild.id === gid);
+      const userToBeChanged = await prisma.user.findUnique({
+        where: { id: userID },
+        include: { guildAdmin: true, guildOfficer: true },
+      });
+      if (!userToBeChanged) return res.status(404).json({ message: "User not found" });
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+      const guildAdminships = userSession.user.guildAdmin || [];
+      const adminofReqGuild = guildAdminships.find((guild: Guild) => guild.id === gid);
+      const guildOfficerships = userSession.user.guildOfficer || [];
+      const officerofReqGuild = guildOfficerships.find((guild: Guild) => guild.id === gid);
       if (role === "Admin" || role === "Officer") {
-        if (!checkGuildAdminShip) {
+        if (!adminofReqGuild) {
           return res.status(401).json({ message: "Only admin's can transfer admin privs or promote officers" });
+        }
+        if (role === "Admin") {
+          try {
+            await prisma.guild.update({
+              where: { id: gid as string },
+              data: {
+                adminId: userID,
+                officers: { disconnect: { id: userID } },
+                members: { disconnect: { id: userID } },
+              },
+            });
+            await prisma.guild.update({
+              where: { id: gid as string },
+              data: { officers: { connect: { id: userSession.userId } } },
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        }
+        if (role === "Officer") {
+          await prisma.guild.update({
+            where: { id: gid as string },
+            data: { officers: { connect: { id: userID } }, members: { disconnect: { id: userID } } },
+          });
         }
         return res.status(200).json({ message: `${role} set` });
       } else if (role === "Member") {
-        if (checkGuildAdminShip || checkGuildOfficerShip) {
+        if (!!adminofReqGuild) {
+          await prisma.guild.update({
+            where: { id: gid as string },
+            data: { members: { connect: { id: userID } }, officers: { disconnect: { id: userID } } },
+          });
           return res.status(200).json({ message: `${role} set` });
         }
-        return res.status(401).json({ message: "Only admin's or officer's can approve membership" });
+        if (!!officerofReqGuild) {
+          const admiOfficerCheck = [...userToBeChanged.guildAdmin, ...userToBeChanged.guildOfficer] || [];
+          const isUserAdminOfficer = admiOfficerCheck.find((guild: Guild) => guild.id === gid);
+          if (isUserAdminOfficer)
+            return res.status(401).json({ message: "Only an administrator can demote an officer or themselves" });
+          await prisma.guild.update({
+            where: { id: gid as string },
+            data: { members: { connect: { id: userID } }, officers: { disconnect: { id: userID } } },
+          });
+          return res.status(200).json({ message: `${role} set` });
+        } else {
+          return res.status(401).json({ message: "Only admin's or officer's can approve membership" });
+        }
       }
     } catch (e) {
       console.log(e);
+      return res.status(500).json({ message: "error updating DB" });
     }
-    const user = req.body.user;
-    console.log(gid, role, user);
   }
   if (!(req.method == "GET" || req.method == "POST")) {
-    console.log("res 3");
     return res.status(405).json({ message: "Method not allowed" });
   }
 }
