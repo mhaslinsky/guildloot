@@ -1,11 +1,23 @@
 import { useState } from "react";
-import { createStyles, Navbar, Group, Image, MediaQuery, Modal, Card, Box } from "@mantine/core";
-import { IconBellRinging, IconLogout, IconBallpen, IconPlus, IconSubtask } from "@tabler/icons";
+import {
+  createStyles,
+  Navbar,
+  Group,
+  MediaQuery,
+  Modal,
+  Card,
+  Box,
+  Button,
+  UnstyledButton,
+  Stack,
+} from "@mantine/core";
+import { IconLogout, IconBallpen, IconPlus, IconSubtask } from "@tabler/icons";
 import { useNavBarStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
 import { AuthenticationForm } from "./AuthForm";
 import Link from "next/link";
+import { GuildCreateForm } from "./GuildCreateForm";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -63,14 +75,14 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 const data = [
   { link: "/log", label: "Log Drops", icon: IconBallpen },
-  { link: "/create", label: "Create Guild", icon: IconPlus },
   { link: "/manage", label: "Manage Existing Guild", icon: IconSubtask },
 ];
 
 export function NavbarSimple() {
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState("Billing");
+  const [active, setActive] = useState("none");
   const [modalOpened, setModalOpened] = useState(false);
+  const [guildModalOpened, setGuildModalOpened] = useState(false);
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const { data: session } = useSession();
 
@@ -91,6 +103,14 @@ export function NavbarSimple() {
       <Modal style={{ padding: 0 }} opened={modalOpened} withCloseButton={false} onClose={() => setModalOpened(false)}>
         <AuthenticationForm />
       </Modal>
+      <Modal
+        style={{ padding: 0 }}
+        opened={guildModalOpened}
+        withCloseButton={false}
+        onClose={() => setGuildModalOpened(false)}
+      >
+        <GuildCreateForm />
+      </Modal>
       <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
         <Navbar.Section grow>
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
@@ -102,7 +122,21 @@ export function NavbarSimple() {
               </Link>
             </Group>
           </MediaQuery>
-          {session && links}
+          <Stack h='100%' justify='space-between'>
+            <Stack>{session && links}</Stack>
+            <UnstyledButton
+              w='100%'
+              className={classes.link}
+              onClick={() => {
+                setGuildModalOpened(true);
+              }}
+            >
+              <Group spacing='sm'>
+                <IconPlus />
+                Create New Guild
+              </Group>
+            </UnstyledButton>
+          </Stack>
         </Navbar.Section>
         <Navbar.Section className={classes.footer}>
           {!session && (

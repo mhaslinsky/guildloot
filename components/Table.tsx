@@ -45,7 +45,7 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
   const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
-  const currentGuild = useGuildStore((state) => state.currentGuild);
+  const currentGuildID = useGuildStore((state) => state.currentGuildID);
 
   const table = useReactTable({
     data: props.data,
@@ -86,7 +86,7 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
     });
     const flattened = cbData.flat();
     setAutoCompleteData(flattened);
-  }, [setAutoCompleteData, table, currentGuild]);
+  }, [setAutoCompleteData, table, currentGuildID]);
 
   return (
     <Box

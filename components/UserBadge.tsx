@@ -1,6 +1,7 @@
 import { createStyles, Avatar, Text, Flex, Card } from "@mantine/core";
 import { IconLogout } from "@tabler/icons";
 import { signOut } from "next-auth/react";
+import { useGuildStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -54,6 +55,7 @@ interface UserInfoIconsProps {
 
 export function UserBadge({ avatar, guild, username, phone, email }: UserInfoIconsProps) {
   const { classes } = useStyles();
+  const currentGuildName = useGuildStore((state) => state.currentGuildName);
 
   return (
     <Card p={10}>

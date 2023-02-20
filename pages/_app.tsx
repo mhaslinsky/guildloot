@@ -9,6 +9,7 @@ import { queryClient } from "../utils/queryClient";
 import Script from "next/script";
 import theme from "../styles/theme";
 import { NotificationsProvider } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 import { AppShell } from "@mantine/core";
 import { NavbarSimple } from "../components/NavbarSimple";
 import { HeaderSearch } from "../components/HeaderSearch";
@@ -24,19 +25,21 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
         <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-          <NotificationsProvider position='top-right'>
-            <Head>
-              <title>Archon Loot Tracker</title>
-              <meta name='viewport' content='width=device-width, initial-scale=1' />
-              <link rel='icon' href='/favicon.ico' />
-            </Head>
-            <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
-            <main className={inter.className}>
-              <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
-                <Component {...pageProps} />
-              </AppShell>
-            </main>
-          </NotificationsProvider>
+          <ModalsProvider>
+            <NotificationsProvider position='top-right'>
+              <Head>
+                <title>Archon Loot Tracker</title>
+                <meta name='viewport' content='width=device-width, initial-scale=1' />
+                <link rel='icon' href='/favicon.ico' />
+              </Head>
+              <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
+              <main className={inter.className}>
+                <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
+                  <Component {...pageProps} />
+                </AppShell>
+              </main>
+            </NotificationsProvider>
+          </ModalsProvider>
         </MantineProvider>
         <ReactQueryDevtools position={"top-right"} />
       </SessionProvider>

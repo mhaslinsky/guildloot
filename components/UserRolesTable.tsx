@@ -2,6 +2,7 @@ import { Avatar, Table, Group, Text, Select, MediaQuery } from "@mantine/core";
 import { User } from "../utils/types";
 import TimeAgo from "javascript-time-ago";
 import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
+import { openConfirmModal } from "@mantine/modals";
 
 interface UsersTableProps {
   data: User[] | User | undefined;
@@ -24,16 +25,36 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
             <Text size='sm' weight={500}>
               {user.name}
             </Text>
-            {/* <Text size='xs' color='dimmed'>
-              {user.email}
-            </Text> */}
           </div>
         </Group>
       </td>
       <td>
         <Select
           onChange={(value) => {
-            mutate({ role: value, userID: user.id });
+            if (value == "Admin") {
+              openConfirmModal({
+                title: "Are you sure?",
+                children: (
+                  <Text size='sm'>
+                    Are you sure you want to promote this user to admin? This action is only reversable by the incoming
+                    admin and you will have to contact support to recover your guild if given to the wrong user.
+                  </Text>
+                ),
+                labels: {
+                  confirm: "Yes, promote",
+                  cancel: "No, cancel",
+                },
+                confirmProps: {
+                  color: "red",
+                },
+                onConfirm: () => {
+                  mutate({ role: value, userID: user.id });
+                },
+                onCancel: () => {},
+              });
+            } else {
+              mutate({ role: value, userID: user.id });
+            }
           }}
           data={rolesData}
           defaultValue={role}

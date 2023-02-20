@@ -11,9 +11,9 @@ const fetchLootData = async (guild: string | null) => {
 };
 
 const useGrabLoot = () => {
-  const currentGuild = useGuildStore((state) => state.currentGuild);
-  return useQuery(["loot", currentGuild], () => fetchLootData(currentGuild), {
-    enabled: !!currentGuild,
+  const currentGuildID = useGuildStore((state) => state.currentGuildID);
+  return useQuery(["loot", currentGuildID], () => fetchLootData(currentGuildID), {
+    enabled: !!currentGuildID,
     staleTime: 1000 * 1800,
   });
 };

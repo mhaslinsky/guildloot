@@ -16,9 +16,9 @@ const logGuildLoot = async (rcLootData: string | undefined, currentGuild: string
 };
 
 export function useLogLoot() {
-  const [currentGuild] = useGuildStore((state) => [state.currentGuild]);
+  const [currentGuildID] = useGuildStore((state) => [state.currentGuildID]);
   const mutation = useMutation({
-    mutationFn: (rcLootData: string | undefined) => logGuildLoot(rcLootData, currentGuild),
+    mutationFn: (rcLootData: string | undefined) => logGuildLoot(rcLootData, currentGuildID),
     onError: (error) => {
       if (error instanceof AxiosError) {
         console.log(error);
@@ -46,7 +46,7 @@ export function useLogLoot() {
         message: "Loot Logged",
         color: "green",
       });
-      queryClient.invalidateQueries(["loot", currentGuild]);
+      queryClient.invalidateQueries(["loot", currentGuildID]);
     },
   });
   return mutation;

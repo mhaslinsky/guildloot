@@ -9,8 +9,9 @@ import { useLogLoot } from "../utils/hooks/useLogLoot";
 const Log: NextPage = () => {
   const [sendLoot, setSendLoot] = useState<string | undefined>("");
   const { data: userData } = useGrabUserInfo();
-  const [setCurrentGuild, setAvailableGuilds] = useGuildStore((state) => [
-    state.setCurrentGuild,
+  const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds] = useGuildStore((state) => [
+    state.setCurrentGuildID,
+    state.setCurrentGuildName,
     state.setAvailableGuilds,
   ]);
   const { mutate, isSuccess } = useLogLoot();
@@ -29,9 +30,10 @@ const Log: NextPage = () => {
         };
       });
       setAvailableGuilds(guildsWithValues);
-      setCurrentGuild(guildsWithValues[0].value);
+      setCurrentGuildID(guildsWithValues[0].value);
+      setCurrentGuildName(guildsWithValues[0].name);
     }
-  }, [setAvailableGuilds, setCurrentGuild, userData]);
+  }, [setAvailableGuilds, setCurrentGuildID, setCurrentGuildName, userData]);
 
   useEffect(() => {
     if (isSuccess) {

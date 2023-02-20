@@ -7,11 +7,34 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
+import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { useGuildStore } from "../utils/store/store";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
+  const { data: availableGuilds } = useGrabUserInfo();
+  const [setAvailableGuilds] = useGuildStore((state) => [state.setAvailableGuilds]);
+
+  useEffect(() => {
+    if (availableGuilds) {
+      const guilds = availableGuilds.guildAdmin
+        .concat(availableGuilds.guildOfficer)
+        .concat(availableGuilds.guildMember);
+      const guildsWithValues = guilds.map((guild: any) => {
+        return {
+          value: guild.id,
+          label: guild.name,
+          image: guild.image,
+          name: guild.name,
+          adminId: guild.adminId,
+          id: guild.id,
+        };
+      });
+      setAvailableGuilds(guildsWithValues);
+    }
+  }, [setAvailableGuilds, availableGuilds]);
 
   useEffect(() => {
     setInitialRenderComplete(true);

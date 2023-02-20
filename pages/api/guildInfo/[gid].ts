@@ -5,7 +5,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 import { Guild } from "@prisma/client";
 
-export default async function guildMembers(req: NextApiRequest, res: NextApiResponse) {
+export default async function guildManagement(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -49,7 +49,7 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
       });
       const userToBeChanged = await prisma.user.findUnique({
         where: { id: userID },
-        include: { guildAdmin: true, guildOfficer: true },
+        include: { guildAdmin: true, guildOfficer: true, guildMember: true },
       });
       if (!userToBeChanged) return res.status(404).json({ message: "User not found" });
       if (!userSession) return res.status(401).json({ message: "Unauthorized" });
@@ -57,11 +57,18 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
       const adminofReqGuild = guildAdminships.find((guild: Guild) => guild.id === gid);
       const guildOfficerships = userSession.user.guildOfficer || [];
       const officerofReqGuild = guildOfficerships.find((guild: Guild) => guild.id === gid);
+      const adminCheck = [...userToBeChanged.guildAdmin] || [];
+      const isUserAdmin = adminCheck.find((guild: Guild) => guild.id === gid);
+      const officerCheck = [...userToBeChanged.guildOfficer] || [];
+      const isUserOfficer = officerCheck.find((guild: Guild) => guild.id === gid);
+      const memberCheck = [...userToBeChanged.guildMember] || [];
+      const isUserMember = memberCheck.find((guild: Guild) => guild.id === gid);
       if (role === "Admin" || role === "Officer") {
         if (!adminofReqGuild) {
           return res.status(401).json({ message: "Only admin's can transfer admin privs or promote officers" });
         }
         if (role === "Admin") {
+          if (isUserAdmin) return res.status(401).json({ message: "User is already administrator" });
           try {
             await prisma.guild.update({
               where: { id: gid as string },
@@ -80,6 +87,9 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
           }
         }
         if (role === "Officer") {
+          if (isUserOfficer) return res.status(401).json({ message: "User is already an officer" });
+          if (isUserAdmin)
+            return res.status(401).json({ message: "Must promote a new admin, before demoting existing one" });
           await prisma.guild.update({
             where: { id: gid as string },
             data: { officers: { connect: { id: userID } }, members: { disconnect: { id: userID } } },
@@ -87,7 +97,10 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
         }
         return res.status(200).json({ message: `${role} set` });
       } else if (role === "Member") {
+        if (isUserMember) return res.status(401).json({ message: "User is already a member" });
         if (!!adminofReqGuild) {
+          if (isUserAdmin)
+            return res.status(401).json({ message: "Must promote a new admin, before demoting existing one" });
           await prisma.guild.update({
             where: { id: gid as string },
             data: { members: { connect: { id: userID } }, officers: { disconnect: { id: userID } } },
@@ -95,9 +108,7 @@ export default async function guildMembers(req: NextApiRequest, res: NextApiResp
           return res.status(200).json({ message: `${role} set` });
         }
         if (!!officerofReqGuild) {
-          const admiOfficerCheck = [...userToBeChanged.guildAdmin, ...userToBeChanged.guildOfficer] || [];
-          const isUserAdminOfficer = admiOfficerCheck.find((guild: Guild) => guild.id === gid);
-          if (isUserAdminOfficer)
+          if (isUserAdmin || isUserOfficer)
             return res.status(401).json({ message: "Only an administrator can demote an officer or themselves" });
           await prisma.guild.update({
             where: { id: gid as string },

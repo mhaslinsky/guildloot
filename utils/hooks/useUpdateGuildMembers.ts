@@ -18,10 +18,10 @@ const updateGuildMembers = async (role: string | null, userID: string | null, gu
 };
 
 export function useUpdateGuildMembers() {
-  const currentGuild = useGuildStore((state) => state.currentGuild);
+  const currentGuildID = useGuildStore((state) => state.currentGuildID);
 
   const mutation = useMutation({
-    mutationFn: (variables: updateMemberArgs) => updateGuildMembers(variables.role, variables.userID, currentGuild),
+    mutationFn: (variables: updateMemberArgs) => updateGuildMembers(variables.role, variables.userID, currentGuildID),
     onError: (err) => {
       if (err instanceof AxiosError) {
         showNotification({
@@ -45,7 +45,7 @@ export function useUpdateGuildMembers() {
         message: "Update Successful",
         color: "green",
       });
-      queryClient.invalidateQueries(["guildMembers", currentGuild]);
+      queryClient.invalidateQueries(["guildMembers", currentGuildID]);
     },
   });
 

@@ -11,9 +11,9 @@ const fetchGuildMembers = async (guild: string | null) => {
 };
 
 const useGrabGuildMembers = () => {
-  const currentGuild = useGuildStore((state) => state.currentGuild);
-  return useQuery(["guildMembers", currentGuild], () => fetchGuildMembers(currentGuild), {
-    enabled: !!currentGuild,
+  const currentGuildID = useGuildStore((state) => state.currentGuildID);
+  return useQuery(["guildMembers", currentGuildID], () => fetchGuildMembers(currentGuildID), {
+    enabled: !!currentGuildID,
     staleTime: 1000 * 1800,
   });
 };

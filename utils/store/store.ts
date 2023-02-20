@@ -32,16 +32,20 @@ export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
 }));
 
 interface guildState {
-  currentGuild: string | null;
+  currentGuildID: string | null;
+  currentGuildName: string | null;
   availableGuilds: string[];
-  setCurrentGuild: (guild: string | null) => void;
+  setCurrentGuildID: (guild: string | null) => void;
+  setCurrentGuildName: (guildName: string | null) => void;
   setAvailableGuilds: (guilds: string[]) => void;
 }
 
 export const useGuildStore = create<guildState>((set) => ({
-  currentGuild: null,
+  currentGuildID: null,
+  currentGuildName: null,
   availableGuilds: [],
-  setCurrentGuild: (guild: string | null) => set({ currentGuild: guild }),
+  setCurrentGuildID: (guild: string | null) => set({ currentGuildID: guild }),
+  setCurrentGuildName: (guildName: string | null) => set({ currentGuildName: guildName }),
   setAvailableGuilds: (guilds: string[]) => set({ availableGuilds: guilds }),
 }));
 

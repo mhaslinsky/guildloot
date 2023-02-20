@@ -53,27 +53,6 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
   const autoCompleteData = useAutoCompleteDataStore((state) => state.autoCompleteData);
   const [value, setValue] = useDebouncedState("", 500);
-  const { data: availableGuilds } = useGrabUserInfo();
-  const [setAvailableGuilds] = useGuildStore((state) => [state.setAvailableGuilds]);
-
-  useEffect(() => {
-    if (availableGuilds) {
-      const guilds = availableGuilds.guildAdmin
-        .concat(availableGuilds.guildOfficer)
-        .concat(availableGuilds.guildMember);
-      const guildsWithValues = guilds.map((guild: any) => {
-        return {
-          value: guild.id,
-          label: guild.name,
-          image: guild.image,
-          name: guild.name,
-          adminId: guild.adminId,
-          id: guild.id,
-        };
-      });
-      setAvailableGuilds(guildsWithValues);
-    }
-  }, [setAvailableGuilds, availableGuilds]);
 
   useEffect(() => {
     setGlobalFilter(value);
