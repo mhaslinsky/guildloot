@@ -27,24 +27,27 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(({ image, name, adminId
 
 export default function GuildSelect() {
   const { classes } = useStyles();
-  const [currentGuildID, availableGuilds, setCurrentGuildID] = useGuildStore((state) => [
+  const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName] = useGuildStore((state) => [
     state.currentGuildID,
     state.availableGuilds,
     state.setCurrentGuildID,
+    state.setCurrentGuildName,
   ]);
 
   return (
     <>
       <Select
         onChange={(value) => {
-          console.log(value);
           setCurrentGuildID(value);
+          const selectedGuild = availableGuilds.find((guild: any) => guild.id === value);
+          localStorage.setItem("currentGuild", JSON.stringify(selectedGuild));
+          setCurrentGuildName(selectedGuild!.name);
         }}
         value={currentGuildID}
         classNames={{ input: classes.input }}
         placeholder='Select Guild'
         nothingFound='No guilds found'
-        data={availableGuilds}
+        data={availableGuilds as any}
         itemComponent={SelectItem}
         styles={(theme) => ({
           item: {

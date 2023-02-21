@@ -1,23 +1,14 @@
-import { useState } from "react";
-import {
-  createStyles,
-  Navbar,
-  Group,
-  MediaQuery,
-  Modal,
-  Card,
-  Box,
-  Button,
-  UnstyledButton,
-  Stack,
-} from "@mantine/core";
+import { useEffect, useState } from "react";
+import { createStyles, Navbar, Group, MediaQuery, Modal, Card, Box, UnstyledButton, Stack } from "@mantine/core";
 import { IconLogout, IconBallpen, IconPlus, IconSubtask } from "@tabler/icons";
-import { useNavBarStore } from "../utils/store/store";
+import { useNavBarStore, randomStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
 import { AuthenticationForm } from "./AuthForm";
 import Link from "next/link";
 import { GuildCreateForm } from "./GuildCreateForm";
+import { useRouter } from "next/router";
+import { useCreateGuild } from "../utils/hooks/useCreateGuild";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -82,9 +73,19 @@ export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("none");
   const [modalOpened, setModalOpened] = useState(false);
-  const [guildModalOpened, setGuildModalOpened] = useState(false);
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const { data: session } = useSession();
+  const router = useRouter();
+  const [createGuildModalOpen, setCreateGuildModalOpened] = randomStore((state) => [
+    state.createGuildModalOpen,
+    state.setCreateGuildModalOpen,
+  ]);
+
+  useEffect(() => {
+    if (router.pathname === "/") {
+      setActive("none");
+    }
+  }, [router]);
 
   const links = data.map((item) => (
     <Link
@@ -100,14 +101,19 @@ export function NavbarSimple() {
 
   return (
     <>
-      <Modal style={{ padding: 0 }} opened={modalOpened} withCloseButton={false} onClose={() => setModalOpened(false)}>
+      <Modal
+        style={{ padding: 0, position: "relative" }}
+        opened={modalOpened}
+        withCloseButton={false}
+        onClose={() => setModalOpened(false)}
+      >
         <AuthenticationForm />
       </Modal>
       <Modal
         style={{ padding: 0 }}
-        opened={guildModalOpened}
+        opened={createGuildModalOpen}
         withCloseButton={false}
-        onClose={() => setGuildModalOpened(false)}
+        onClose={() => setCreateGuildModalOpened(false)}
       >
         <GuildCreateForm />
       </Modal>
@@ -128,7 +134,7 @@ export function NavbarSimple() {
               w='100%'
               className={classes.link}
               onClick={() => {
-                setGuildModalOpened(true);
+                setCreateGuildModalOpened(true);
               }}
             >
               <Group spacing='sm'>

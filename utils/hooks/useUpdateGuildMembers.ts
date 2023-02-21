@@ -39,7 +39,6 @@ export function useUpdateGuildMembers() {
     },
     onMutate: (variables: updateMemberArgs) => {},
     onSuccess: (data) => {
-      console.log(data);
       showNotification({
         title: "Success",
         message: "Update Successful",

@@ -50,7 +50,7 @@ export default async function lootEndpoint(req: any, res: any) {
       return res.status(401).json({ message: "Not logged in" });
     }
     const token = getCookie("next-auth.session-token", { req, res }) as string;
-    const { gid } = req.query;
+    const { lgid } = req.query;
     try {
       const userSession: any | null = await prisma.session.findUnique({
         where: { sessionToken: token },
@@ -58,7 +58,7 @@ export default async function lootEndpoint(req: any, res: any) {
       });
       const guildMemberShips =
         userSession.user.guildAdmin.concat(userSession.user.guildOfficer, userSession.user.guildMember) || [];
-      const checkGuildMemberShip = guildMemberShips.find((guild: Guild) => guild.id === gid);
+      const checkGuildMemberShip = guildMemberShips.find((guild: Guild) => guild.id === lgid);
       if (!checkGuildMemberShip) {
         return res.status(401).json({ message: "You are not a member of that guild" });
       }
@@ -72,7 +72,7 @@ export default async function lootEndpoint(req: any, res: any) {
             bLootDBItem: true,
           },
           where: {
-            guild: { id: gid },
+            guild: { id: lgid },
           },
         })
         .then((data) => {

@@ -10,6 +10,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
   if (!session) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+  //endpoint for getting guild members/info
   if (req.method == "GET") {
     const { gid } = req.query;
     try {
@@ -30,6 +31,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
       return res.status(500).json({ message: "error reading from DB" });
     }
   }
+  //endpoint for updating guild members/info
   if (req.method == "POST") {
     if (!session) {
       return res.status(401).json({ message: "Unauthorized" });

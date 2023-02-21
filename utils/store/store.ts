@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { mountStoreDevtool } from "simple-zustand-devtools";
+import { Guild } from "@prisma/client";
 
 interface navBarState {
   isNavBarOpen: boolean;
@@ -34,10 +35,10 @@ export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
 interface guildState {
   currentGuildID: string | null;
   currentGuildName: string | null;
-  availableGuilds: string[];
+  availableGuilds: Guild[];
   setCurrentGuildID: (guild: string | null) => void;
   setCurrentGuildName: (guildName: string | null) => void;
-  setAvailableGuilds: (guilds: string[]) => void;
+  setAvailableGuilds: (guilds: Guild[]) => void;
 }
 
 export const useGuildStore = create<guildState>((set) => ({
@@ -46,10 +47,22 @@ export const useGuildStore = create<guildState>((set) => ({
   availableGuilds: [],
   setCurrentGuildID: (guild: string | null) => set({ currentGuildID: guild }),
   setCurrentGuildName: (guildName: string | null) => set({ currentGuildName: guildName }),
-  setAvailableGuilds: (guilds: string[]) => set({ availableGuilds: guilds }),
+  setAvailableGuilds: (guilds: Guild[]) => set({ availableGuilds: guilds }),
 }));
 
 if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("GuildStore", useGuildStore);
   mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
 }
+
+interface randomStoreState {
+  createGuildModalOpen: boolean;
+  setCreateGuildModalOpen: (open: boolean) => void;
+  toggleCreateGuildModal: () => void;
+}
+
+export const randomStore = create<randomStoreState>((set) => ({
+  createGuildModalOpen: false,
+  setCreateGuildModalOpen: (open: boolean) => set({ createGuildModalOpen: open }),
+  toggleCreateGuildModal: () => set((state: any) => ({ createGuildModalOpen: !state.createGuildModalOpen })),
+}));

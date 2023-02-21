@@ -15,7 +15,11 @@ const Home: NextPage = () => {
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
   const { data: availableGuilds } = useGrabUserInfo();
-  const [setAvailableGuilds] = useGuildStore((state) => [state.setAvailableGuilds]);
+  const [setAvailableGuilds, setCurrentGuildName, setCurrentGuildID] = useGuildStore((state) => [
+    state.setAvailableGuilds,
+    state.setCurrentGuildName,
+    state.setCurrentGuildID,
+  ]);
 
   useEffect(() => {
     if (availableGuilds) {
@@ -38,6 +42,13 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     setInitialRenderComplete(true);
+    const localstore = localStorage.getItem("currentGuild");
+    if (localstore) {
+      const lastUseData = JSON.parse(localstore);
+      setCurrentGuildID(lastUseData.id);
+      setCurrentGuildName(lastUseData.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const columnHelper = createColumnHelper<RCLootItem>();

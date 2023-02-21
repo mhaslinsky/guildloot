@@ -1,7 +1,8 @@
-import { TextInput, Tooltip, Center, Text, Button, Stack, Select } from "@mantine/core";
+import { TextInput, Tooltip, Center, Text, Button, Stack, Select, LoadingOverlay } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
+import { useCreateGuild } from "../utils/hooks/useCreateGuild";
 
 const serverList = [
   "Skyfury",
@@ -112,22 +113,31 @@ const serverList = [
 ];
 
 const schema = z.object({
-  name: z.string().min(2).max(24),
-  server: z.string().min(1, { message: "Please select a server" }),
+  name: z
+    .string()
+    .min(2, { message: "Must be over 2 characters" })
+    .max(24, { message: "Must be under 24 characters" }),
+  server: z.string().min(1, { message: "Select a Realm" }),
 });
 
 export function GuildCreateForm() {
+  const createGuild = useCreateGuild();
   const form = useForm({
     validate: zodResolver(schema),
     initialValues: {
       name: "",
-      server: null,
+      server: "",
       avatar: "",
     },
   });
 
   const rightSectionName = (
-    <Tooltip label='You are limited to 3 guilds per account' position='top-end' withArrow transition='pop-bottom-right'>
+    <Tooltip
+      label='You are limited to 3 guilds per account'
+      position='top-end'
+      withArrow
+      transition='pop-bottom-right'
+    >
       <Text color='dimmed' sx={{ cursor: "help" }}>
         <Center>
           <IconInfoCircle size={18} stroke={1.5} />
@@ -148,18 +158,25 @@ export function GuildCreateForm() {
 
   return (
     <form
-      onSubmit={form.onSubmit((data) => {
-        console.log(data);
+      onSubmit={form.onSubmit(({ name, server, avatar }) => {
+        createGuild.mutate({ guildName: name, server, avatar });
       })}
     >
       <Stack>
+        <LoadingOverlay visible={createGuild.isLoading} />
         <TextInput
           rightSection={rightSectionName}
           label='Guild Name'
           placeholder='Method'
           {...form.getInputProps("name")}
         />
-        <Select searchable data={serverList} label='Server' placeholder='Skyfury' {...form.getInputProps("server")} />
+        <Select
+          searchable
+          data={serverList}
+          label='Server'
+          placeholder='Skyfury'
+          {...form.getInputProps("server")}
+        />
         <TextInput
           rightSection={rightSectionAva}
           label='Guild Avatar'
