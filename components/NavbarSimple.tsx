@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createStyles, Navbar, Group, MediaQuery, Modal, Card, Box, UnstyledButton, Stack } from "@mantine/core";
-import { IconLogout, IconBallpen, IconPlus, IconSubtask } from "@tabler/icons";
+import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
 import { useNavBarStore, randomStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
@@ -8,7 +8,6 @@ import { AuthenticationForm } from "./AuthForm";
 import Link from "next/link";
 import { GuildCreateForm } from "./GuildCreateForm";
 import { useRouter } from "next/router";
-import { useCreateGuild } from "../utils/hooks/useCreateGuild";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -66,7 +65,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 const data = [
   { link: "/log", label: "Log Drops", icon: IconBallpen },
-  { link: "/manage", label: "Manage Existing Guild", icon: IconSubtask },
+  { link: "/manage", label: "Guild Management", icon: IconSubtask },
+  { link: "/directory", label: "Browse Guilds", icon: IconListSearch },
 ];
 
 export function NavbarSimple() {

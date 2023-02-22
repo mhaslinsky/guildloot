@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
-import { queryClient } from "../queryClient";
 import { randomStore, useGuildStore } from "../store/store";
 import { useRouter } from "next/router";
 

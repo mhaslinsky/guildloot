@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 
 const fetchUserInfo = async () => {
   //returns all guild membership data for the user
-  const { data } = await axios({ url: "/api/guild", method: "GET" });
+  const { data } = await axios({ url: "/api/guildMemberships", method: "GET" });
   return data;
 };
 

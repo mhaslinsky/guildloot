@@ -2,7 +2,7 @@ import { Flex, Card } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
-import Table from "../components/Table";
+import LootTable from "../components/Tables/LootTable";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useSession } from "next-auth/react";
@@ -105,7 +105,9 @@ const Home: NextPage = () => {
       <Flex justify='center' align='center'>
         <Card w='100%'>
           {!session && status == "unauthenticated" && <HeroTitle />}
-          {initialRenderComplete && session && <Table columns={columns} loading={isFetching} data={data || []} />}
+          {initialRenderComplete && session && (
+            <LootTable columns={columns} loading={isFetching} data={data || []} />
+          )}
         </Card>
       </Flex>
     </>

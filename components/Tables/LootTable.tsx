@@ -1,4 +1,5 @@
-import { RCLootItem } from "../utils/types";
+// import { RCLootItem } from "../utils/types";
+import { Guild, rcLootItem } from "@prisma/client";
 import { Box, Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
 import {
   flexRender,
@@ -15,9 +16,9 @@ import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
 import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
-import { useStyles } from "../styles/theme";
+import { useStyles } from "../../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
-import { useAutoCompleteDataStore, useGuildStore, useGlobalFilterStore } from "../utils/store/store";
+import { useAutoCompleteDataStore, useGuildStore, useGlobalFilterStore } from "../../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -37,7 +38,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = (props) => {
+const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
@@ -156,4 +157,4 @@ const Table: React.FC<{ columns: any; loading: boolean; data: RCLootItem[] }> = 
   );
 };
 
-export default Table;
+export default LootTable;

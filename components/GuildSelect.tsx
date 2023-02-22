@@ -1,5 +1,5 @@
 import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
-import { forwardRef, useEffect } from "react";
+import { forwardRef } from "react";
 import { useGuildStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme) => ({
@@ -14,16 +14,18 @@ interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
 }
 
 // eslint-disable-next-line react/display-name
-const SelectItem = forwardRef<HTMLDivElement, ItemProps>(({ image, name, adminId, id, ...others }: ItemProps, ref) => (
-  <div key={id} ref={ref} {...others}>
-    <Group noWrap>
-      <Avatar src={image} />
-      <div>
-        <Text size='sm'>{name}</Text>
-      </div>
-    </Group>
-  </div>
-));
+const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+  ({ image, name, adminId, id, ...others }: ItemProps, ref) => (
+    <div key={id} ref={ref} {...others}>
+      <Group noWrap>
+        <Avatar src={image} />
+        <div>
+          <Text size='sm'>{name}</Text>
+        </div>
+      </Group>
+    </div>
+  )
+);
 
 export default function GuildSelect() {
   const { classes } = useStyles();
