@@ -1,6 +1,6 @@
 // import { RCLootItem } from "../utils/types";
 import { Guild } from "@prisma/client";
-import { Box, Flex, Group, LoadingOverlay, Table as Mtable } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -17,6 +17,7 @@ import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import { useAutoCompleteDataStore, useGlobalFilterStore } from "../../utils/store/store";
+import { useMediaQuery } from "@mantine/hooks";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -43,6 +44,7 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
   const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
   const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
   const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   const table = useReactTable({
     data: props.data,
@@ -94,7 +96,9 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
                     <>
                       {header.id == "Request Membership" ? (
                         <Flex justify='end' pr={11} className={classes.tHeader} gap='md'>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {isMobile
+                            ? "Membership"
+                            : flexRender(header.column.columnDef.header, header.getContext())}
                           {
                             { asc: <SortAscending size={16} />, desc: <SortDescending size={18} /> }[
                               header.column.getIsSorted() as string

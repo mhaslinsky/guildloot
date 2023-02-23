@@ -21,6 +21,7 @@ const Directory: NextPage = (props) => {
       columnHelper.accessor((row) => `${row.name}`, {
         header: "Guild Name",
         cell: (info) => info.getValue(),
+        enableResizing: false,
         footer: "Guild Name",
       }),
       columnHelper.accessor((row) => `${row.server}`, {
@@ -31,14 +32,17 @@ const Directory: NextPage = (props) => {
       }),
       columnHelper.display({
         header: "Request Membership",
-        cell: () => {
+        enableResizing: false,
+        cell: (info) => {
           return (
-            <Flex justify='end'>
-              <MembershipButton />
-            </Flex>
+            <>
+              {console.log(info.row.original)}
+              <Flex justify='end'>
+                <MembershipButton rowData={info.row.original} />
+              </Flex>
+            </>
           );
         },
-        enableResizing: false,
         footer: "Request Membership",
       }),
     ],

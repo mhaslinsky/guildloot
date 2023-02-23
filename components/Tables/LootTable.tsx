@@ -73,9 +73,9 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
 
   useEffect(() => {
     if (isMobile) {
-      table.setColumnVisibility({ instance: false, boss: false, dateTime: false });
+      table.setColumnVisibility({ Instance: false, Boss: false, dateTime: false });
     } else {
-      table.setColumnVisibility({ instance: true, boss: true, dateTime: true });
+      table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true });
     }
   }, [isMobile, table]);
 
