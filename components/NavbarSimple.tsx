@@ -102,7 +102,7 @@ export function NavbarSimple() {
   return (
     <>
       <Modal
-        style={{ padding: 0, position: "relative" }}
+        style={{ padding: 0 }}
         opened={modalOpened}
         withCloseButton={false}
         onClose={() => setModalOpened(false)}
@@ -128,21 +128,23 @@ export function NavbarSimple() {
               </Link>
             </Group>
           </MediaQuery>
-          <Stack h='100%' justify='space-between'>
-            <Stack>{session && links}</Stack>
-            <UnstyledButton
-              w='100%'
-              className={classes.link}
-              onClick={() => {
-                setCreateGuildModalOpened(true);
-              }}
-            >
-              <Group spacing='sm'>
-                <IconPlus />
-                Create New Guild
-              </Group>
-            </UnstyledButton>
-          </Stack>
+          {session && (
+            <Stack h='100%' justify='space-between'>
+              <Stack>{links}</Stack>
+              <UnstyledButton
+                w='100%'
+                className={classes.link}
+                onClick={() => {
+                  setCreateGuildModalOpened(true);
+                }}
+              >
+                <Group spacing='sm'>
+                  <IconPlus />
+                  Create New Guild
+                </Group>
+              </UnstyledButton>
+            </Stack>
+          )}
         </Navbar.Section>
         <Navbar.Section className={classes.footer}>
           {!session && (

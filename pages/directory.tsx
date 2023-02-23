@@ -36,7 +36,6 @@ const Directory: NextPage = (props) => {
         cell: (info) => {
           return (
             <>
-              {console.log(info.row.original)}
               <Flex justify='end'>
                 <MembershipButton rowData={info.row.original} />
               </Flex>

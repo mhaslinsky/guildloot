@@ -10,7 +10,6 @@ const fetchGuilds = async () => {
 };
 
 const useGrabGuilds = () => {
-  const currentGuildID = useGuildStore((state) => state.currentGuildID);
   return useQuery(["guilds"], fetchGuilds, {
     staleTime: 1000 * 1800,
   });
