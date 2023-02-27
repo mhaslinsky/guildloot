@@ -21,6 +21,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
             Admin: { select: { name: true, lastSignedIn: true, image: true, id: true } },
             officers: { select: { name: true, lastSignedIn: true, image: true, id: true } },
             members: { select: { name: true, lastSignedIn: true, image: true, id: true } },
+            pending: { select: { name: true, lastSignedIn: true, image: true, id: true } },
           },
         })
         .then((data) => {

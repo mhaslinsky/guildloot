@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { Text } from "@mantine/core";
+import { Title, Text } from "@mantine/core";
 import { UsersRolesTable } from "../components/UserRolesTable";
 import { useGrabGuildMembers } from "../utils/hooks/useGrabGuildMembers";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
@@ -16,13 +16,14 @@ const ManageUsers: NextPage = () => {
       const guilds = availableGuilds.guildAdmin
         .concat(availableGuilds.guildOfficer)
         .concat(availableGuilds.guildMember);
-      const guildsWithValues = guilds.map((guild: any) => {
+      const guildsWithValues = guilds.map((guild) => {
         return {
           value: guild.id,
           label: guild.name,
           image: guild.image,
           name: guild.name,
           adminId: guild.adminId,
+          server: guild.server,
           id: guild.id,
         };
       });
@@ -46,6 +47,14 @@ const ManageUsers: NextPage = () => {
         )}
         {currentGuildMembers?.members.length! > 0 && (
           <UsersRolesTable data={currentGuildMembers?.members} role='Member' />
+        )}
+        {currentGuildMembers?.pending.length! > 0 && (
+          <>
+            <Title pt='lg' order={3}>
+              Pending Requests
+            </Title>
+            <UsersRolesTable data={currentGuildMembers?.pending} role='Pending' />
+          </>
         )}
       </>
     );

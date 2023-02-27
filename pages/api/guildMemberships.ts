@@ -16,7 +16,7 @@ export default async function getGuildMemberships(req: NextApiRequest, res: Next
       await prisma.user
         .findUnique({
           where: { email: email },
-          include: { guildAdmin: true, guildMember: true, guildOfficer: true },
+          include: { guildAdmin: true, guildMember: true, guildOfficer: true, guildPending: true },
         })
         .then((data) => {
           res.status(200).json(data);
@@ -30,12 +30,34 @@ export default async function getGuildMemberships(req: NextApiRequest, res: Next
     try {
       const userSession = await prisma.session.findUnique({
         where: { sessionToken: token },
-        include: { user: true },
+        include: {
+          user: {
+            include: {
+              guildAdmin: true,
+              guildOfficer: true,
+              accounts: true,
+              guildMember: true,
+              guildPending: true,
+            },
+          },
+        },
       });
-      if (!userSession) return res.status(401).json({ message: "User not found" });
+      if (!userSession) return res.status(401).json({ message: "Not logged in" });
       const { guildID } = req.body;
-      console.log(guildID);
-      return res.status(200).json({ message: "success", guildID, userID: userSession.user.id });
+      if (!guildID) return res.status(400).json({ message: "No guildID provided" });
+      const userGuildMemberships = userSession.user.guildAdmin.concat(
+        userSession.user.guildOfficer,
+        userSession.user.guildMember
+      );
+      const checkIfMember = userGuildMemberships.find((guild) => guild.id === guildID);
+      if (checkIfMember) return res.status(400).json({ message: "Already a member of this guild" });
+      const checkIfPending = userSession.user.guildPending.find((guild) => guild.id === guildID);
+      if (checkIfPending) return res.status(400).json({ message: "Already have a request pending" });
+      await prisma.guild.update({
+        where: { id: guildID },
+        data: { pending: { connect: { id: userSession.user.id } } },
+      });
+      return res.status(200).json({ message: "Request sent" });
     } catch (err) {
       console.warn(err);
     }

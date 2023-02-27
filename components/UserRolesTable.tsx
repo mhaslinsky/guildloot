@@ -1,15 +1,21 @@
 import { Avatar, Table, Group, Text, Select, MediaQuery } from "@mantine/core";
-import { User } from "../utils/types";
 import TimeAgo from "javascript-time-ago";
 import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
 
+interface UserObj {
+  id: string;
+  name: string;
+  image: string | null;
+  lastSignedIn: Date | null;
+}
+
 interface UsersTableProps {
-  data: User[] | User | undefined;
+  data: UserObj[] | UserObj | undefined;
   role: string;
 }
 
-const rolesData = ["Admin", "Officer", "Member"];
+const rolesData = ["Admin", "Officer", "Member", "Remove"];
 
 export function UsersRolesTable({ data, role }: UsersTableProps) {
   const { mutate } = useUpdateGuildMembers();
@@ -36,8 +42,9 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
                 title: "Are you sure?",
                 children: (
                   <Text size='sm'>
-                    Are you sure you want to promote this user to admin? This action is only reversable by the incoming
-                    admin and you will have to contact support to recover your guild if given to the wrong user.
+                    Are you sure you want to promote this user to admin? This action is only reversable by the
+                    incoming admin and you will have to contact support to recover your guild if given to the wrong
+                    user.
                   </Text>
                 ),
                 labels: {
