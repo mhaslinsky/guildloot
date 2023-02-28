@@ -2,6 +2,7 @@ import { Avatar, Table, Group, Text, Select, MediaQuery } from "@mantine/core";
 import TimeAgo from "javascript-time-ago";
 import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
+import { useMediaQuery } from "@mantine/hooks";
 
 interface UserObj {
   id: string;
@@ -18,7 +19,8 @@ interface UsersTableProps {
 const rolesData = ["Admin", "Officer", "Member", "Remove"];
 
 export function UsersRolesTable({ data, role }: UsersTableProps) {
-  const { mutate } = useUpdateGuildMembers();
+  const { mutate: updateGuildMember } = useUpdateGuildMembers();
+  const isMobile = useMediaQuery("(max-width: 890px)");
   const timeAgo = new TimeAgo("en-US");
   if (!data) return <Text></Text>;
   if (!Array.isArray(data)) data = [data];
@@ -55,12 +57,28 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
                   color: "red",
                 },
                 onConfirm: () => {
-                  mutate({ role: value, userID: user.id });
+                  updateGuildMember({ role: value, userID: user.id });
+                },
+                onCancel: () => {},
+              });
+            } else if (value == "Remove") {
+              openConfirmModal({
+                title: "Are you sure?",
+                children: <Text size='sm'>Are you sure you want to remove this user?</Text>,
+                labels: {
+                  confirm: "Yes, get em out of here",
+                  cancel: "No, cancel",
+                },
+                confirmProps: {
+                  color: "red",
+                },
+                onConfirm: () => {
+                  updateGuildMember({ role: value, userID: user.id });
                 },
                 onCancel: () => {},
               });
             } else {
-              mutate({ role: value, userID: user.id });
+              updateGuildMember({ role: value, userID: user.id });
             }
           }}
           data={rolesData}
@@ -82,16 +100,12 @@ export function UsersRolesTable({ data, role }: UsersTableProps) {
   ));
 
   return (
-    <Table horizontalSpacing='sm'>
+    <Table verticalSpacing='sm' horizontalSpacing='sm'>
       <thead>
         <tr>
           <th></th>
           <th></th>
-          {
-            <MediaQuery smallerThan='sm' styles={{ display: "none" }}>
-              <th>Last active</th>
-            </MediaQuery>
-          }
+          {role == "Admin" ? isMobile ? <th></th> : <th>Last active</th> : <th></th>}
         </tr>
       </thead>
       <tbody>{rows}</tbody>

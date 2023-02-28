@@ -34,9 +34,6 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
   }
   //endpoint for updating guild members/info
   if (req.method == "POST") {
-    if (!session) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
     const token = getCookie("next-auth.session-token", { req, res }) as string;
     const { gid } = req.query;
     const role = req.body.role;
@@ -79,6 +76,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
                 adminId: userID,
                 officers: { disconnect: { id: userID } },
                 members: { disconnect: { id: userID } },
+                pending: { disconnect: { id: userID } },
               },
             });
             await prisma.guild.update({
@@ -95,7 +93,11 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
             return res.status(401).json({ message: "Must promote a new admin, before demoting existing one" });
           await prisma.guild.update({
             where: { id: gid as string },
-            data: { officers: { connect: { id: userID } }, members: { disconnect: { id: userID } } },
+            data: {
+              officers: { connect: { id: userID } },
+              members: { disconnect: { id: userID } },
+              pending: { disconnect: { id: userID } },
+            },
           });
         }
         return res.status(200).json({ message: `${role} set` });
@@ -106,7 +108,11 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
             return res.status(401).json({ message: "Must promote a new admin, before demoting existing one" });
           await prisma.guild.update({
             where: { id: gid as string },
-            data: { members: { connect: { id: userID } }, officers: { disconnect: { id: userID } } },
+            data: {
+              members: { connect: { id: userID } },
+              officers: { disconnect: { id: userID } },
+              pending: { disconnect: { id: userID } },
+            },
           });
           return res.status(200).json({ message: `${role} set` });
         }
@@ -115,12 +121,48 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
             return res.status(401).json({ message: "Only an administrator can demote an officer or themselves" });
           await prisma.guild.update({
             where: { id: gid as string },
-            data: { members: { connect: { id: userID } }, officers: { disconnect: { id: userID } } },
+            data: {
+              members: { connect: { id: userID } },
+              officers: { disconnect: { id: userID } },
+              pending: { disconnect: { id: userID } },
+            },
           });
           return res.status(200).json({ message: `${role} set` });
         } else {
           return res.status(401).json({ message: "Only admin's or officer's can approve membership" });
         }
+      } else if (role === "Remove") {
+        if (!(adminofReqGuild || officerofReqGuild))
+          return res.status(401).json({ message: "Only admins or officers can remove users/reject applications" });
+        if (officerofReqGuild && isUserOfficer)
+          return res.status(401).json({ message: "Officers cannot remove fellow officers" });
+        if (isUserAdmin) return res.status(401).json({ message: "Cannot remove an admin" });
+        await prisma.guild.update({
+          where: { id: gid as string },
+          data: {
+            officers: { disconnect: { id: userID } },
+            members: { disconnect: { id: userID } },
+            pending: { disconnect: { id: userID } },
+          },
+        });
+        return res.status(200).json({ message: "User removed" });
+      } else if (role === "Quit") {
+        if (isUserAdmin)
+          return res
+            .status(401)
+            .json({ message: "Cannot quit a guild as an admin, promote another member first" });
+        if (!(isUserMember || isUserOfficer))
+          return res.status(401).json({ message: "User is not a member of this guild" });
+        await prisma.guild.update({
+          where: { id: gid as string },
+          data: {
+            members: { disconnect: { id: userID } },
+            officers: { disconnect: { id: userID } },
+          },
+        });
+        return res.status(200).json({ message: "User removed" });
+      } else {
+        return res.status(401).json({ message: "Invalid role" });
       }
     } catch (e) {
       console.log(e);
