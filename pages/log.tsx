@@ -26,6 +26,7 @@ const Log: NextPage = () => {
           image: guild.image,
           name: guild.name,
           adminId: guild.adminId,
+          server: guild.server,
           id: guild.id,
         };
       });
