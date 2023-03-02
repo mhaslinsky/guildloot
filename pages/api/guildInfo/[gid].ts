@@ -34,7 +34,9 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
   }
   //endpoint for updating guild members/info
   if (req.method == "POST") {
-    const token = getCookie("next-auth.session-token", { req, res }) as string;
+    const token =
+      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+      (getCookie("next-auth.session-token", { req, res }) as string);
     const { gid } = req.query;
     const role = req.body.role;
     const userID = req.body.userID;

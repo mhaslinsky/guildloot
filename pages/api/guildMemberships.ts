@@ -26,7 +26,9 @@ export default async function getGuildMemberships(req: NextApiRequest, res: Next
       return res.status(500).json({ message: "error reading from DB" });
     }
   } else if (req.method == "POST") {
-    const token = getCookie("next-auth.session-token", { req, res }) as string;
+    const token =
+      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+      (getCookie("next-auth.session-token", { req, res }) as string);
     try {
       const userSession = await prisma.session.findUnique({
         where: { sessionToken: token },

@@ -5,7 +5,6 @@ export default async function createGuildEndpoint(req: any, res: any) {
   const token =
     (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
     (getCookie("next-auth.session-token", { req, res }) as string);
-  console.log(token);
   if (req.method == "POST") {
     const { guildName, server, avatar } = req.body;
     try {
