@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
       const curDateTime = new Date();
       if (user.email != null) {
         try {
-          const curUser = await prisma.user.update({
+          await prisma.user.update({
             where: { email: user.email },
             data: { lastSignedIn: curDateTime },
           });
@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
       const curDateTime = new Date();
       if (user.email != null) {
         try {
-          const curUser = await prisma.user.update({
+          await prisma.user.update({
             where: { email: user.email },
             data: { lastSignedIn: curDateTime },
           });

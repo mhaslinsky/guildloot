@@ -121,7 +121,7 @@ const schema = z.object({
 });
 
 export function GuildCreateForm() {
-  const createGuild = useCreateGuild();
+  const { mutate: createGuild, isLoading } = useCreateGuild();
   const form = useForm({
     validate: zodResolver(schema),
     initialValues: {
@@ -159,11 +159,12 @@ export function GuildCreateForm() {
   return (
     <form
       onSubmit={form.onSubmit(({ name, server, avatar }) => {
-        createGuild.mutate({ guildName: name, server, avatar });
+        console.log(name, server, avatar);
+        createGuild({ guildName: name, server, avatar });
       })}
     >
       <Stack>
-        <LoadingOverlay visible={createGuild.isLoading} />
+        <LoadingOverlay visible={isLoading} />
         <TextInput
           rightSection={rightSectionName}
           label='Guild Name'
