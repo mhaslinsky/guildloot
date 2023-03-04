@@ -30,9 +30,9 @@ const Log: NextPage = () => {
           id: guild.id,
         };
       });
-      setAvailableGuilds(guildsWithValues);
-      setCurrentGuildID(guildsWithValues[0].value);
-      setCurrentGuildName(guildsWithValues[0].name);
+      setAvailableGuilds(guildsWithValues || []);
+      setCurrentGuildID(guildsWithValues[0]?.value || null);
+      setCurrentGuildName(guildsWithValues[0]?.name || null);
     }
   }, [setAvailableGuilds, setCurrentGuildID, setCurrentGuildName, userData]);
 

@@ -3,6 +3,7 @@ import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
 import { guildModalStore, useGuildStore } from "../store/store";
 import { useRouter } from "next/router";
+import { queryClient } from "../queryClient";
 
 type createGuildArgs = {
   guildName: string | null;
@@ -53,7 +54,8 @@ export function useCreateGuild() {
         message: "Guild created",
         color: "green",
       });
-      //   queryClient.invalidateQueries("guilds");
+      queryClient.invalidateQueries(["guildMemberships"]);
+      queryClient.invalidateQueries(["guilds"]);
     },
   });
 

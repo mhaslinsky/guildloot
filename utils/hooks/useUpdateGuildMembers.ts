@@ -20,7 +20,10 @@ const updateGuildMembers = async (role: string | null, userID: string | null, gu
 };
 
 export function useUpdateGuildMembers() {
-  const currentGuildID = useGuildStore((state) => state.currentGuildID);
+  const [setCurrentGuildID, currentGuildID] = useGuildStore((state) => [
+    state.setCurrentGuildID,
+    state.currentGuildID,
+  ]);
 
   const mutation = useMutation({
     mutationFn: (variables: updateMemberArgs) =>
@@ -48,6 +51,7 @@ export function useUpdateGuildMembers() {
         message: "Update Successful",
         color: "green",
       });
+      queryClient.invalidateQueries(["guildMemberships"]);
       queryClient.invalidateQueries(["guildMembers", currentGuildID]);
     },
   });

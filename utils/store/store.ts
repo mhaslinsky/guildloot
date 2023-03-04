@@ -36,18 +36,22 @@ interface guildState {
   currentGuildID: string | null;
   currentGuildName: string | null;
   availableGuilds: Guild[];
+  pageSpecificAvailableGuilds: Guild[];
   setCurrentGuildID: (guild: string | null) => void;
   setCurrentGuildName: (guildName: string | null) => void;
   setAvailableGuilds: (guilds: Guild[]) => void;
+  setPageSpecificAvailableGuilds: (guilds: Guild[]) => void;
 }
 
 export const useGuildStore = create<guildState>((set) => ({
   currentGuildID: null,
   currentGuildName: null,
   availableGuilds: [],
+  pageSpecificAvailableGuilds: [],
   setCurrentGuildID: (guild: string | null) => set({ currentGuildID: guild }),
   setCurrentGuildName: (guildName: string | null) => set({ currentGuildName: guildName }),
   setAvailableGuilds: (guilds: Guild[]) => set({ availableGuilds: guilds }),
+  setPageSpecificAvailableGuilds: (guilds: Guild[]) => set({ pageSpecificAvailableGuilds: guilds }),
 }));
 
 if (process.env.NODE_ENV === "development") {

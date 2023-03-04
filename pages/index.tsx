@@ -15,7 +15,8 @@ const Home: NextPage = () => {
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
   const { data: availableGuilds } = useGrabUserInfo();
-  const [setAvailableGuilds, setCurrentGuildName, setCurrentGuildID] = useGuildStore((state) => [
+  const [currentGuildID, setAvailableGuilds, setCurrentGuildName, setCurrentGuildID] = useGuildStore((state) => [
+    state.setCurrentGuildID,
     state.setAvailableGuilds,
     state.setCurrentGuildName,
     state.setCurrentGuildID,

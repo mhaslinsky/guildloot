@@ -8,17 +8,21 @@ import { useEffect } from "react";
 import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
 import { useDeleteGuild } from "../utils/hooks/useDeleteGuild";
+import { useRouter } from "next/router";
 
 const ManageUsers: NextPage = () => {
   const { data: currentGuildMembers, isLoading, fetchStatus, status } = useGrabGuildMembers();
   const { mutate: updateGuildMember } = useUpdateGuildMembers();
   const { mutate: deleteGuild } = useDeleteGuild();
   const { data: availableGuilds } = useGrabUserInfo();
-  const [setAvailableGuilds, currentGuildID] = useGuildStore((state) => [
+  const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds, currentGuildID] = useGuildStore((state) => [
+    state.setCurrentGuildID,
+    state.setCurrentGuildName,
     state.setAvailableGuilds,
     state.currentGuildID,
   ]);
   const { data: userData } = useGrabUserInfo();
+  const router = useRouter();
 
   useEffect(() => {
     if (availableGuilds) {
@@ -124,6 +128,9 @@ const ManageUsers: NextPage = () => {
                   },
                   onConfirm: () => {
                     updateGuildMember({ role: "Quit", userID: userData!.id });
+                    setCurrentGuildID(null);
+                    setCurrentGuildName(null);
+                    router.push(`/`);
                   },
                   onCancel: () => {},
                 });

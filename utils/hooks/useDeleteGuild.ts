@@ -42,6 +42,9 @@ export function useDeleteGuild() {
     onMutate: (args: deleteGuildArgs) => {},
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries(["guildMemberships"]);
+      setCurrentGuildID(null);
+      setCurrentGuildName(null);
+      queryClient.invalidateQueries(["guilds"]);
       router.push(`/`);
       showNotification({
         title: "Success",

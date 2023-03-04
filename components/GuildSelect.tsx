@@ -1,5 +1,6 @@
 import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
 import { forwardRef } from "react";
+import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useGuildStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme) => ({
@@ -29,6 +30,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 
 export default function GuildSelect() {
   const { classes } = useStyles();
+  const { data } = useGrabUserInfo();
   const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName] = useGuildStore((state) => [
     state.currentGuildID,
     state.availableGuilds,
@@ -49,7 +51,7 @@ export default function GuildSelect() {
         classNames={{ input: classes.input }}
         placeholder='Select Guild'
         nothingFound='No guilds found'
-        data={availableGuilds as any}
+        data={(availableGuilds as any) || []}
         itemComponent={SelectItem}
         styles={(theme) => ({
           item: {
