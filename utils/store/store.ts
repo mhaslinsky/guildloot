@@ -55,13 +55,13 @@ if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
 }
 
-interface randomStoreState {
+interface guildModalStoreState {
   createGuildModalOpen: boolean;
   setCreateGuildModalOpen: (open: boolean) => void;
   toggleCreateGuildModal: () => void;
 }
 
-export const randomStore = create<randomStoreState>((set) => ({
+export const guildModalStore = create<guildModalStoreState>((set) => ({
   createGuildModalOpen: false,
   setCreateGuildModalOpen: (open: boolean) => set({ createGuildModalOpen: open }),
   toggleCreateGuildModal: () => set((state: any) => ({ createGuildModalOpen: !state.createGuildModalOpen })),

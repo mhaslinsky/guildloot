@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { Title, Text, Stack, Divider, Button, Flex } from "@mantine/core";
+import { Title, Text, Stack, Divider, Button, Flex, Loader } from "@mantine/core";
 import { UsersRolesTable } from "../components/UserRolesTable";
 import { useGrabGuildMembers } from "../utils/hooks/useGrabGuildMembers";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
@@ -7,10 +7,12 @@ import { useGuildStore } from "../utils/store/store";
 import { useEffect } from "react";
 import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
+import { useDeleteGuild } from "../utils/hooks/useDeleteGuild";
 
 const ManageUsers: NextPage = () => {
   const { data: currentGuildMembers, isLoading, fetchStatus, status } = useGrabGuildMembers();
   const { mutate: updateGuildMember } = useUpdateGuildMembers();
+  const { mutate: deleteGuild } = useDeleteGuild();
   const { data: availableGuilds } = useGrabUserInfo();
   const [setAvailableGuilds, currentGuildID] = useGuildStore((state) => [
     state.setAvailableGuilds,
@@ -38,15 +40,18 @@ const ManageUsers: NextPage = () => {
     }
   }, [setAvailableGuilds, availableGuilds]);
 
-  useEffect(() => {}, [currentGuildID]);
-
   if (status == "loading" && fetchStatus == "idle")
     return (
       <Text fw={700} fz='xl' ta='center'>
         Select a guild above
       </Text>
     );
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <Flex justify='center' align='center' w='100%' h='100%'>
+        <Loader />
+      </Flex>
+    );
   else {
     return (
       <Stack justify='space-between' h='100%'>
@@ -90,7 +95,9 @@ const ManageUsers: NextPage = () => {
                   confirmProps: {
                     color: "red",
                   },
-                  onConfirm: () => {},
+                  onConfirm: () => {
+                    deleteGuild({ gid: currentGuildID });
+                  },
                   onCancel: () => {},
                 });
               }}

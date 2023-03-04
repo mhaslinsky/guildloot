@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createStyles, Navbar, Group, MediaQuery, Modal, Card, Box, UnstyledButton, Stack } from "@mantine/core";
 import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
-import { useNavBarStore, randomStore } from "../utils/store/store";
+import { useNavBarStore, guildModalStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
 import { AuthenticationForm } from "./AuthForm";
@@ -76,7 +76,7 @@ export function NavbarSimple() {
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const { data: session } = useSession();
   const router = useRouter();
-  const [createGuildModalOpen, setCreateGuildModalOpened] = randomStore((state) => [
+  const [createGuildModalOpen, setCreateGuildModalOpened] = guildModalStore((state) => [
     state.createGuildModalOpen,
     state.setCreateGuildModalOpen,
   ]);
@@ -129,7 +129,7 @@ export function NavbarSimple() {
             </Group>
           </MediaQuery>
           {session && (
-            <Stack h='100%' justify='space-between'>
+            <Stack h={{ base: "90%", sm: "100%" }} justify='space-between'>
               <Stack>{links}</Stack>
               <UnstyledButton
                 w='100%'

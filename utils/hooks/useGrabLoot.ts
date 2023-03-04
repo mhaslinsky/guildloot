@@ -12,7 +12,7 @@ const fetchLootData = async (guild: string | null) => {
 };
 
 const useGrabLoot = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const currentGuildID = useGuildStore((state) => state.currentGuildID);
   return useQuery(["loot", currentGuildID], () => fetchLootData(currentGuildID), {
     enabled: !!currentGuildID && !!session,

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
-import { randomStore, useGuildStore } from "../store/store";
+import { guildModalStore, useGuildStore } from "../store/store";
 import { useRouter } from "next/router";
 
 type createGuildArgs = {
@@ -22,7 +22,7 @@ export function useCreateGuild() {
     state.setCurrentGuildID,
     state.setCurrentGuildName,
   ]);
-  const [setCreateGuildModalOpened] = randomStore((state) => [state.setCreateGuildModalOpen]);
+  const [setCreateGuildModalOpened] = guildModalStore((state) => [state.setCreateGuildModalOpen]);
   const router = useRouter();
 
   const mutation = useMutation({

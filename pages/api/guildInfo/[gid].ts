@@ -7,6 +7,9 @@ import { Guild } from "@prisma/client";
 
 export default async function guildManagement(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
+  const token =
+    (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+    (getCookie("next-auth.session-token", { req, res }) as string);
   if (!session) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -34,9 +37,6 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
   }
   //endpoint for updating guild members/info
   if (req.method == "POST") {
-    const token =
-      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
-      (getCookie("next-auth.session-token", { req, res }) as string);
     const { gid } = req.query;
     const role = req.body.role;
     const userID = req.body.userID;
@@ -171,7 +171,32 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
       return res.status(500).json({ message: "error updating DB" });
     }
   }
-  if (!(req.method == "GET" || req.method == "POST")) {
+  //endpoit for deleting a guild
+  if (req.method == "DELETE") {
+    try {
+      const userSession = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
+      });
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+      const { gid } = req.body;
+      const guild = await prisma.guild.findUnique({ where: { id: gid as string } });
+      if (!guild) return res.status(404).json({ message: "Guild not found" });
+      const guildAdminships = userSession.user.guildAdmin || [];
+      const adminofReqGuild = guildAdminships.find((guild: Guild) => guild.id === gid);
+      if (!adminofReqGuild) return res.status(401).json({ message: "Only Admins can delete guilds" });
+      await prisma.guild.delete({ where: { id: gid as string } });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ message: "error updating DB" });
+    }
+    return res.status(200).json({ message: "Guild deleted" });
+  }
+  if (!(req.method == "GET" || req.method == "POST" || req.method == "DELETE")) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 }
