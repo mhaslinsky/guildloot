@@ -1,4 +1,4 @@
-import { Flex, Card } from "@mantine/core";
+import { Flex, Card, ActionIcon, Button, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
@@ -9,14 +9,14 @@ import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useGuildStore } from "../utils/store/store";
+import { IconSettings } from "@tabler/icons";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
   const { data: availableGuilds } = useGrabUserInfo();
-  const [currentGuildID, setAvailableGuilds, setCurrentGuildName, setCurrentGuildID] = useGuildStore((state) => [
-    state.setCurrentGuildID,
+  const [setAvailableGuilds, setCurrentGuildName, setCurrentGuildID] = useGuildStore((state) => [
     state.setAvailableGuilds,
     state.setCurrentGuildName,
     state.setCurrentGuildID,
@@ -25,17 +25,14 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (availableGuilds) {
       const guilds = availableGuilds.guildAdmin
-        .concat(availableGuilds.guildOfficer)
-        .concat(availableGuilds.guildMember);
-      const guildsWithValues = guilds.map((guild: any) => {
+        .map((guild) => ({ ...guild, role: "admin" }))
+        .concat(availableGuilds.guildOfficer.map((guild) => ({ ...guild, role: "officer" })))
+        .concat(availableGuilds.guildMember.map((guild) => ({ ...guild, role: "member" })));
+      const guildsWithValues = guilds.map((guild) => {
         return {
+          ...guild,
           value: guild.id,
           label: guild.name,
-          image: guild.image,
-          name: guild.name,
-          adminId: guild.adminId,
-          server: guild.server,
-          id: guild.id,
         };
       });
       setAvailableGuilds(guildsWithValues);
@@ -98,6 +95,17 @@ const Home: NextPage = () => {
         },
         footer: "Date",
       }),
+      columnHelper.display({
+        header: "Actions",
+        cell: (info) => (
+          <Flex justify='center'>
+            <ActionIcon variant='default'>
+              <IconSettings size='1rem' />
+            </ActionIcon>
+          </Flex>
+        ),
+        footer: "Actions",
+      }),
     ],
     [columnHelper]
   );
@@ -106,7 +114,9 @@ const Home: NextPage = () => {
     <>
       <Flex justify='center' align='center'>
         <Card w='100%'>
+          {status == "loading" && <Text>Checking for cached login...</Text>}
           {!session && status == "unauthenticated" && <HeroTitle />}
+
           {initialRenderComplete && session && (
             <LootTable columns={columns} loading={isFetching} data={data || []} />
           )}

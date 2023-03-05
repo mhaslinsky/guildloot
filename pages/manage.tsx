@@ -27,17 +27,14 @@ const ManageUsers: NextPage = () => {
   useEffect(() => {
     if (availableGuilds) {
       const guilds = availableGuilds.guildAdmin
-        .concat(availableGuilds.guildOfficer)
-        .concat(availableGuilds.guildMember);
+        .map((guild) => ({ ...guild, role: "admin" }))
+        .concat(availableGuilds.guildOfficer.map((guild) => ({ ...guild, role: "officer" })))
+        .concat(availableGuilds.guildMember.map((guild) => ({ ...guild, role: "member" })));
       const guildsWithValues = guilds.map((guild) => {
         return {
+          ...guild,
           value: guild.id,
           label: guild.name,
-          image: guild.image,
-          name: guild.name,
-          adminId: guild.adminId,
-          server: guild.server,
-          id: guild.id,
         };
       });
       setAvailableGuilds(guildsWithValues);

@@ -18,16 +18,14 @@ const Log: NextPage = () => {
 
   useEffect(() => {
     if (userData) {
-      const guilds = userData.guildAdmin.concat(userData.guildOfficer);
-      const guildsWithValues = guilds.map((guild: any) => {
+      const guilds = userData.guildAdmin
+        .map((guild) => ({ ...guild, role: "admin" }))
+        .concat(userData.guildOfficer.map((guild) => ({ ...guild, role: "officer" })));
+      const guildsWithValues = guilds.map((guild) => {
         return {
+          ...guild,
           value: guild.id,
           label: guild.name,
-          image: guild.image,
-          name: guild.name,
-          adminId: guild.adminId,
-          server: guild.server,
-          id: guild.id,
         };
       });
       setAvailableGuilds(guildsWithValues || []);

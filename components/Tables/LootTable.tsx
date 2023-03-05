@@ -82,7 +82,7 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   useEffect(() => {
     let cbData: any[] = [];
     table.getAllColumns().forEach((column) => {
-      if (column.id === "dateTime") return;
+      if (column.id === "dateTime" || "Actions") return;
       cbData.push([...column.getFacetedUniqueValues().keys()]);
     });
     const flattened = cbData.flat();

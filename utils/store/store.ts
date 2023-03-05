@@ -2,6 +2,17 @@ import { create } from "zustand";
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import { Guild } from "@prisma/client";
 
+interface GuildVT {
+  value: string;
+  label: string;
+  role: string;
+  id: string;
+  name: string;
+  server: string;
+  image: string | null;
+  adminId: string;
+}
+
 interface navBarState {
   isNavBarOpen: boolean;
   toggleNavBar: () => void;
@@ -35,24 +46,29 @@ export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
 interface guildState {
   currentGuildID: string | null;
   currentGuildName: string | null;
-  availableGuilds: Guild[];
-  pageSpecificAvailableGuilds: Guild[];
+  availableGuilds: GuildVT[];
+  roleinCurrentGuild: any;
   setCurrentGuildID: (guild: string | null) => void;
   setCurrentGuildName: (guildName: string | null) => void;
-  setAvailableGuilds: (guilds: Guild[]) => void;
-  setPageSpecificAvailableGuilds: (guilds: Guild[]) => void;
+  setAvailableGuilds: (guilds: GuildVT[]) => void;
+  setRoleInCurrentGuild: () => void;
 }
 
-export const useGuildStore = create<guildState>((set) => ({
+export const useGuildStore = create<guildState>((set, get) => ({
   currentGuildID: null,
   currentGuildName: null,
-  availableGuilds: [],
-  pageSpecificAvailableGuilds: [],
   setCurrentGuildID: (guild: string | null) => set({ currentGuildID: guild }),
   setCurrentGuildName: (guildName: string | null) => set({ currentGuildName: guildName }),
-  setAvailableGuilds: (guilds: Guild[]) => set({ availableGuilds: guilds }),
-  setPageSpecificAvailableGuilds: (guilds: Guild[]) => set({ pageSpecificAvailableGuilds: guilds }),
+  setAvailableGuilds: (guilds: GuildVT[]) => set({ availableGuilds: guilds }),
+  availableGuilds: [],
+  roleinCurrentGuild: null,
+  setRoleInCurrentGuild: () => {
+    const role = get().availableGuilds.find((guild) => guild.id === get().currentGuildID)?.role;
+    set({ roleinCurrentGuild: role });
+  },
 }));
+
+useGuildStore.subscribe((state) => {});
 
 if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("GuildStore", useGuildStore);

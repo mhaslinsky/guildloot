@@ -1,5 +1,5 @@
 import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useGuildStore } from "../utils/store/store";
 
@@ -30,13 +30,19 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 
 export default function GuildSelect() {
   const { classes } = useStyles();
-  const { data } = useGrabUserInfo();
-  const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName] = useGuildStore((state) => [
-    state.currentGuildID,
-    state.availableGuilds,
-    state.setCurrentGuildID,
-    state.setCurrentGuildName,
-  ]);
+  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+  const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName, setRoleInCurrentGuild] =
+    useGuildStore((state) => [
+      state.currentGuildID,
+      state.availableGuilds,
+      state.setCurrentGuildID,
+      state.setCurrentGuildName,
+      state.setRoleInCurrentGuild,
+    ]);
+
+  useEffect(() => {
+    setRoleInCurrentGuild();
+  }, [currentGuildID, setRoleInCurrentGuild]);
 
   return (
     <>

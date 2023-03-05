@@ -28,20 +28,6 @@ const useGrabUserInfo = () => {
       //   .map((guild) => ({ ...guild, role: "admin" }))
       //   .concat(data.guildOfficer.map((guild) => ({ ...guild, role: "officer" })))
       //   .concat(data.guildMember.map((guild) => ({ ...guild, role: "member" })));
-      // const guildsWithValues = guilds.map((guild: any) => {
-      //   return {
-      //     role: guild.role,
-      //     value: guild.id,
-      //     label: guild.name,
-      //     image: guild.image,
-      //     name: guild.name,
-      //     adminId: guild.adminId,
-      //     server: guild.server,
-      //     id: guild.id,
-      //   };
-      // });
-      // console.log(guildsWithValues);
-      // setAvailableGuilds(guildsWithValues);
     },
   });
 };
