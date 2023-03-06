@@ -1,5 +1,5 @@
 // import { RCLootItem } from "../utils/types";
-import { Guild, rcLootItem } from "@prisma/client";
+import { rcLootItem } from "@prisma/client";
 import { Box, Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
 import {
   flexRender,

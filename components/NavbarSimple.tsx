@@ -89,6 +89,8 @@ export function NavbarSimple() {
         { link: "/manage", label: "Guild Management", icon: IconSubtask },
         { link: "/directory", label: "Browse Guilds", icon: IconListSearch },
       ]);
+    } else {
+      setAvaLinks([{ link: "/directory", label: "Browse Guilds", icon: IconListSearch }]);
     }
   }, [roleInCurrentGuild]);
 

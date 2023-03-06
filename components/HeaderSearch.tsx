@@ -1,11 +1,10 @@
-import { createStyles, Header, Autocomplete, Group, Burger, MediaQuery, Flex, Card } from "@mantine/core";
+import { createStyles, Header, Autocomplete, Burger, MediaQuery, Flex, Card } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
-import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore, useGuildStore } from "../utils/store/store";
+import { useGlobalFilterStore, useNavBarStore, useAutoCompleteDataStore } from "../utils/store/store";
 import { useEffect } from "react";
 import { useDebouncedState } from "@mantine/hooks";
 import GuildSelect from "./GuildSelect";
 import Link from "next/link";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 
 const useStyles = createStyles((theme) => ({
   header: {
