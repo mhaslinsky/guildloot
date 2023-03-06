@@ -47,7 +47,7 @@ interface guildState {
   currentGuildID: string | null;
   currentGuildName: string | null;
   availableGuilds: GuildVT[];
-  roleinCurrentGuild: string | null;
+  roleinCurrentGuild: "admin" | "officer" | "member" | string | null;
   setCurrentGuildID: (guild: string | null) => void;
   setCurrentGuildName: (guildName: string | null) => void;
   setAvailableGuilds: (guilds: GuildVT[]) => void;

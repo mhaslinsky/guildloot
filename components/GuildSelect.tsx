@@ -31,18 +31,12 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 export default function GuildSelect() {
   const { classes } = useStyles();
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName, setRoleInCurrentGuild] =
-    useGuildStore((state) => [
-      state.currentGuildID,
-      state.availableGuilds,
-      state.setCurrentGuildID,
-      state.setCurrentGuildName,
-      state.setRoleInCurrentGuild,
-    ]);
-
-  useEffect(() => {
-    setRoleInCurrentGuild();
-  }, [currentGuildID, setRoleInCurrentGuild]);
+  const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName] = useGuildStore((state) => [
+    state.currentGuildID,
+    state.availableGuilds,
+    state.setCurrentGuildID,
+    state.setCurrentGuildName,
+  ]);
 
   return (
     <>

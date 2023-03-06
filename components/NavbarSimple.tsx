@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createStyles, Navbar, Group, MediaQuery, Modal, Card, Box, UnstyledButton, Stack } from "@mantine/core";
 import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
-import { useNavBarStore, guildModalStore } from "../utils/store/store";
+import { useNavBarStore, guildModalStore, useGuildStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
 import { UserBadge } from "./UserBadge";
 import { AuthenticationForm } from "./AuthForm";
@@ -63,13 +63,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
   };
 });
 
-const data = [
-  { link: "/log", label: "Log Drops", icon: IconBallpen },
-  { link: "/manage", label: "Guild Management", icon: IconSubtask },
-  { link: "/directory", label: "Browse Guilds", icon: IconListSearch },
-];
-
 export function NavbarSimple() {
+  const [avalinks, setAvaLinks] = useState<any[]>([]);
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("none");
   const [modalOpened, setModalOpened] = useState(false);
@@ -80,6 +75,22 @@ export function NavbarSimple() {
     state.createGuildModalOpen,
     state.setCreateGuildModalOpen,
   ]);
+  const [roleInCurrentGuild] = useGuildStore((state) => [state.roleinCurrentGuild]);
+
+  useEffect(() => {
+    if (roleInCurrentGuild == "admin" || roleInCurrentGuild == "officer") {
+      setAvaLinks([
+        { link: "/manage", label: "Guild Management", icon: IconSubtask },
+        { link: "/directory", label: "Browse Guilds", icon: IconListSearch },
+        { link: "/log", label: "Log Drops", icon: IconBallpen },
+      ]);
+    } else if (roleInCurrentGuild == "member") {
+      setAvaLinks([
+        { link: "/manage", label: "Guild Management", icon: IconSubtask },
+        { link: "/directory", label: "Browse Guilds", icon: IconListSearch },
+      ]);
+    }
+  }, [roleInCurrentGuild]);
 
   useEffect(() => {
     if (router.pathname === "/") {
@@ -87,7 +98,7 @@ export function NavbarSimple() {
     }
   }, [router]);
 
-  const links = data.map((item) => (
+  const links = avalinks.map((item) => (
     <Link
       className={cx(classes.link, { [classes.linkActive]: item.label === active })}
       href={item.link}
