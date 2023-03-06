@@ -47,28 +47,26 @@ interface guildState {
   currentGuildID: string | null;
   currentGuildName: string | null;
   availableGuilds: GuildVT[];
-  roleinCurrentGuild: any;
+  roleinCurrentGuild: string | null;
   setCurrentGuildID: (guild: string | null) => void;
   setCurrentGuildName: (guildName: string | null) => void;
   setAvailableGuilds: (guilds: GuildVT[]) => void;
-  setRoleInCurrentGuild: () => void;
 }
 
 export const useGuildStore = create<guildState>((set, get) => ({
   currentGuildID: null,
   currentGuildName: null,
+  roleinCurrentGuild: null,
   setCurrentGuildID: (guild: string | null) => set({ currentGuildID: guild }),
   setCurrentGuildName: (guildName: string | null) => set({ currentGuildName: guildName }),
   setAvailableGuilds: (guilds: GuildVT[]) => set({ availableGuilds: guilds }),
   availableGuilds: [],
-  roleinCurrentGuild: null,
-  setRoleInCurrentGuild: () => {
-    const role = get().availableGuilds.find((guild) => guild.id === get().currentGuildID)?.role;
-    set({ roleinCurrentGuild: role });
-  },
 }));
 
-useGuildStore.subscribe((state) => {});
+useGuildStore.subscribe((state) => {
+  state.roleinCurrentGuild =
+    state.availableGuilds.find((guild) => guild.id === state.currentGuildID)?.role || null;
+});
 
 if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("GuildStore", useGuildStore);

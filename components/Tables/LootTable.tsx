@@ -43,8 +43,10 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const isMobile = useMediaQuery("(max-width: 600px)");
-  const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
-  const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
+  const [globalFilter, setGlobalFilter] = useGlobalFilterStore((state) => [
+    state.globalFilter,
+    state.setGlobalFilter,
+  ]);
   const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
   const currentGuildID = useGuildStore((state) => state.currentGuildID);
 
