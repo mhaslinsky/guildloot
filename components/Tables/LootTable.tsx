@@ -1,6 +1,6 @@
 // import { RCLootItem } from "../utils/types";
 import { rcLootItem } from "@prisma/client";
-import { Box, Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, Table as Mtable, Popover, Input, UnstyledButton } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -11,11 +11,14 @@ import {
   getFacetedUniqueValues,
   getFacetedRowModel,
   getFilteredRowModel,
+  ColumnFiltersState,
+  Column,
+  Table,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
-import { SortAscending, SortDescending } from "tabler-icons-react";
-import React, { useEffect, useState } from "react";
+import { SortAscending, SortDescending, Filter as FilterIcon } from "tabler-icons-react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
 import { useAutoCompleteDataStore, useGuildStore, useGlobalFilterStore } from "../../utils/store/store";
@@ -40,6 +43,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
 const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -60,9 +64,11 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
     state: {
       sorting,
       columnVisibility,
+      columnFilters,
       globalFilter,
     },
     globalFilterFn: fuzzyFilter,
+    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -103,15 +109,28 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th onClick={header.column.getToggleSortingHandler()} key={header.id}>
+                <th colSpan={header.colSpan} key={header.id}>
                   {header.isPlaceholder ? null : (
-                    <Flex className={classes.tHeader} gap='md'>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {
-                        { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
-                          header.column.getIsSorted() as string
-                        ]
-                      }
+                    <Flex align='center' gap='sm'>
+                      <>
+                        {header.column.id === "Actions" ? (
+                          <div onClick={header.column.getToggleSortingHandler()}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </div>
+                        ) : (
+                          <div className={classes.tHeader} onClick={header.column.getToggleSortingHandler()}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </div>
+                        )}
+                        {header.column.id !== "dateTime" && header.column.id !== "Actions" && (
+                          <FilterPopover table={table} column={header.column} />
+                        )}
+                        {
+                          { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
+                            header.column.getIsSorted() as string
+                          ]
+                        }
+                      </>
                     </Flex>
                   )}
                 </th>
@@ -160,3 +179,50 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
 };
 
 export default LootTable;
+
+function FilterPopover({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
+  const { classes } = useStyles();
+
+  return (
+    <Popover>
+      <Popover.Target>
+        <UnstyledButton>
+          <FilterIcon className={classes.tHeader} size={16} />
+        </UnstyledButton>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <Filter column={column} table={table} />
+      </Popover.Dropdown>
+    </Popover>
+  );
+}
+
+function Filter({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
+  const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id);
+  const columnFilterValue = column.getFilterValue();
+
+  const sortedUniqueValues = useMemo(
+    () => (typeof firstValue === "number" ? [] : Array.from(column.getFacetedUniqueValues().keys()).sort()),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [column.getFacetedUniqueValues()]
+  );
+
+  return (
+    <>
+      <datalist id={column.id + "list"}>
+        {sortedUniqueValues.slice(0, 5000).map((value: any) => (
+          <option value={value} key={value} />
+        ))}
+      </datalist>
+      <Input
+        value={(columnFilterValue ?? "") as string}
+        onChange={(e) => {
+          column.setFilterValue(e.target.value);
+        }}
+        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
+        type='text'
+        list={column.id + "list"}
+      ></Input>
+    </>
+  );
+}
