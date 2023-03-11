@@ -199,7 +199,7 @@ function Filter({ column, table }: { column: Column<any, unknown>; table: Table<
         onChange={(e) => {
           column.setFilterValue(e.target.value);
         }}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
+        placeholder={`Search.. (${column.getFacetedUniqueValues().size})`}
         type='text'
         list={column.id + "list"}
       ></Input>

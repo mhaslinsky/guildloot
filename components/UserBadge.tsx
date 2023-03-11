@@ -49,11 +49,10 @@ interface UserInfoIconsProps {
   avatar: string;
   username: string;
   guild?: string;
-  phone?: string;
   email?: string;
 }
 
-export function UserBadge({ avatar, guild, username, phone, email }: UserInfoIconsProps) {
+export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps) {
   const { classes } = useStyles();
   const currentGuildName = useGuildStore((state) => state.currentGuildName);
 
