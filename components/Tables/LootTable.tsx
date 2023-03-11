@@ -1,4 +1,3 @@
-// import { RCLootItem } from "../utils/types";
 import { rcLootItem } from "@prisma/client";
 import { Box, Flex, LoadingOverlay, Table as Mtable, Popover, Input, UnstyledButton } from "@mantine/core";
 import {
@@ -21,7 +20,6 @@ import { SortAscending, SortDescending, Filter as FilterIcon } from "tabler-icon
 import React, { useEffect, useMemo, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
-import { useAutoCompleteDataStore, useGuildStore, useGlobalFilterStore } from "../../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -47,12 +45,6 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const isMobile = useMediaQuery("(max-width: 600px)");
-  const [globalFilter, setGlobalFilter] = useGlobalFilterStore((state) => [
-    state.globalFilter,
-    state.setGlobalFilter,
-  ]);
-  const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
-  const currentGuildID = useGuildStore((state) => state.currentGuildID);
 
   const table = useReactTable({
     data: props.data,
@@ -65,11 +57,9 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       sorting,
       columnVisibility,
       columnFilters,
-      globalFilter,
     },
     globalFilterFn: fuzzyFilter,
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -86,16 +76,6 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true });
     }
   }, [isMobile, table]);
-
-  useEffect(() => {
-    let cbData: any[] = [];
-    table.getAllColumns().forEach((column) => {
-      if (column.id === "dateTime" || "Actions") return;
-      cbData.push([...column.getFacetedUniqueValues().keys()]);
-    });
-    const flattened = cbData.flat();
-    setAutoCompleteData(flattened);
-  }, [setAutoCompleteData, table, currentGuildID]);
 
   return (
     <Box

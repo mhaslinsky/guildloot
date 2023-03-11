@@ -30,7 +30,6 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 
 export default function GuildSelect() {
   const { classes } = useStyles();
-  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const [currentGuildID, availableGuilds, setCurrentGuildID, setCurrentGuildName] = useGuildStore((state) => [
     state.currentGuildID,
     state.availableGuilds,
@@ -49,7 +48,7 @@ export default function GuildSelect() {
         }}
         value={currentGuildID}
         classNames={{ input: classes.input }}
-        placeholder='Select Guild'
+        placeholder='Select a Guild'
         nothingFound='No guilds found'
         data={(availableGuilds as any) || []}
         itemComponent={SelectItem}

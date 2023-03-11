@@ -10,40 +10,39 @@ export default async function getGuildMemberships(req: NextApiRequest, res: Next
     return res.status(401).json({ message: "Unauthorized" });
   }
   const email = session.user!.email!;
-  //return all guildmemberships for a user
-  if (req.method == "GET") {
-    try {
-      await prisma.user
-        .findUnique({
-          where: { email: email },
-          include: { guildAdmin: true, guildMember: true, guildOfficer: true, guildPending: true },
-        })
-        .then((data) => {
-          res.status(200).json(data);
-        });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ message: "error reading from DB" });
-    }
-  } else if (req.method == "POST") {
-    const token =
-      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
-      (getCookie("next-auth.session-token", { req, res }) as string);
-    try {
-      const userSession = await prisma.session.findUnique({
-        where: { sessionToken: token },
-        include: {
-          user: {
-            include: {
-              guildAdmin: true,
-              guildOfficer: true,
-              accounts: true,
-              guildMember: true,
-              guildPending: true,
-            },
+  const token =
+    (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+    (getCookie("next-auth.session-token", { req, res }) as string);
+  let userSession;
+  try {
+    userSession = await prisma.session.findUnique({
+      where: { sessionToken: token },
+      include: {
+        user: {
+          include: {
+            guildAdmin: true,
+            guildOfficer: true,
+            accounts: true,
+            guildMember: true,
+            guildPending: true,
           },
         },
-      });
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "error reading from DB" });
+  }
+  //return all guildmemberships for a user
+  if (req.method == "GET") {
+    if (userSession) {
+      res.status(200).json(userSession.user);
+    } else {
+      return res.status(500).json({ message: "error reading from DB" });
+    }
+    //request to join a guild
+  } else if (req.method == "POST") {
+    try {
       if (!userSession) return res.status(401).json({ message: "Not logged in" });
       const { guildID } = req.body;
       if (!guildID) return res.status(400).json({ message: "No guildID provided" });

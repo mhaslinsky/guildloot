@@ -1,4 +1,4 @@
-import { Guild, User } from "@prisma/client";
+import { Account, Guild, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -10,8 +10,10 @@ const fetchUserInfo = async () => {
   return data as
     | (User & {
         guildAdmin: Guild[];
-        guildMember: Guild[];
         guildOfficer: Guild[];
+        accounts: Account[];
+        guildMember: Guild[];
+        guildPending: Guild[];
       })
     | null;
 };

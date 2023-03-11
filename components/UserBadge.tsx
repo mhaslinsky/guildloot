@@ -75,7 +75,14 @@ export function UserBadge({ avatar, guild, username, phone, email }: UserInfoIco
           <Text size='lg' weight={500} className={classes.name}>
             {username}
           </Text>
-          <a href='#' className={classes.link} onClick={() => signOut()}>
+          <a
+            href='#'
+            className={classes.link}
+            onClick={() => {
+              localStorage.removeItem("currentGuild");
+              signOut();
+            }}
+          >
             <IconLogout className={classes.linkIcon} stroke={1.5} />
             <span>Logout</span>
           </a>

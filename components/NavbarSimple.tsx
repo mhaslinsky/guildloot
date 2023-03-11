@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { createStyles, Navbar, Group, MediaQuery, Modal, Card, Box, UnstyledButton, Stack } from "@mantine/core";
+import {
+  createStyles,
+  Navbar,
+  Group,
+  MediaQuery,
+  Modal,
+  Card,
+  Flex,
+  UnstyledButton,
+  Stack,
+  Title,
+} from "@mantine/core";
 import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
 import { useNavBarStore, guildModalStore, useGuildStore } from "../utils/store/store";
 import { useSession } from "next-auth/react";
@@ -133,12 +144,19 @@ export function NavbarSimple() {
       <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
         <Navbar.Section grow>
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
-            <Group className={classes.header} position='center'>
-              <Link style={{ position: "relative" }} href='/'>
-                <Card>
-                  <Box style={{ width: "80vw" }}></Box>
-                </Card>
-              </Link>
+            <Group w='100%' className={classes.header} position='center'>
+              {/* <Link style={{ position: "relative" }} href='/'> */}
+              <Card w='100%'>
+                <Flex justify='center'>
+                  <Title
+                    sx={{ fontFamily: "transducer, sans-serif", whiteSpace: "nowrap", textDecoration: "none" }}
+                    order={3}
+                  >
+                    Archon Loot Tracker
+                  </Title>
+                </Flex>
+              </Card>
+              {/* </Link> */}
             </Group>
           </MediaQuery>
           {session && (

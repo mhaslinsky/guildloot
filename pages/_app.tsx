@@ -2,7 +2,7 @@ import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { Inter } from "@next/font/google";
-import { MantineProvider, Text } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "../utils/queryClient";
@@ -16,6 +16,8 @@ import { HeaderSearch } from "../components/HeaderSearch";
 import { SessionProvider } from "next-auth/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
+import { CustomFonts } from "../styles/fonts";
+import { RouterTransition } from "../components/RouterTransition";
 
 const inter = Inter({ subsets: ["latin"] });
 TimeAgo.addDefaultLocale(en);
@@ -27,13 +29,16 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
         <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
           <ModalsProvider>
             <NotificationsProvider position='top-right'>
+              <CustomFonts />
               <Head>
                 <title>Archon Loot Tracker</title>
                 <meta name='viewport' content='width=device-width, initial-scale=1' />
+                <link rel='stylesheet' href='https://use.typekit.net/ofg4tjx.css' />
                 <link rel='icon' href='/favicon.ico' />
               </Head>
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
               <main className={inter.className}>
+                <RouterTransition />
                 <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
                   <Component {...pageProps} />
                 </AppShell>
@@ -41,7 +46,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
             </NotificationsProvider>
           </ModalsProvider>
         </MantineProvider>
-        <ReactQueryDevtools position={"top-right"} />
+        <ReactQueryDevtools position={"bottom-right"} />
       </SessionProvider>
     </QueryClientProvider>
   );

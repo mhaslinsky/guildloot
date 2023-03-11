@@ -1,4 +1,4 @@
-import { MantineTheme, createStyles } from "@mantine/core";
+import { MantineTheme, createStyles, Global } from "@mantine/core";
 
 //@ts-ignore
 const theme: MantineTheme = {

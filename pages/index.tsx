@@ -1,4 +1,4 @@
-import { Flex, Card, ActionIcon, Button, Text } from "@mantine/core";
+import { Flex, Card, ActionIcon, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
@@ -7,47 +7,15 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
-import { useGuildStore } from "../utils/store/store";
 import { IconSettings } from "@tabler/icons";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
-  const { data: availableGuilds } = useGrabUserInfo();
-  const [setAvailableGuilds, setCurrentGuildName, setCurrentGuildID] = useGuildStore((state) => [
-    state.setAvailableGuilds,
-    state.setCurrentGuildName,
-    state.setCurrentGuildID,
-  ]);
-
-  useEffect(() => {
-    if (availableGuilds) {
-      const guilds = availableGuilds.guildAdmin
-        .map((guild) => ({ ...guild, role: "admin" }))
-        .concat(availableGuilds.guildOfficer.map((guild) => ({ ...guild, role: "officer" })))
-        .concat(availableGuilds.guildMember.map((guild) => ({ ...guild, role: "member" })));
-      const guildsWithValues = guilds.map((guild) => {
-        return {
-          ...guild,
-          value: guild.id,
-          label: guild.name,
-        };
-      });
-      setAvailableGuilds(guildsWithValues);
-    }
-  }, [setAvailableGuilds, availableGuilds]);
 
   useEffect(() => {
     setInitialRenderComplete(true);
-    const localstore = localStorage.getItem("currentGuild");
-    if (localstore) {
-      const lastUseData = JSON.parse(localstore);
-      setCurrentGuildID(lastUseData.id);
-      setCurrentGuildName(lastUseData.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const columnHelper = createColumnHelper<RCLootItem>();

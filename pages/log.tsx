@@ -7,14 +7,14 @@ import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useLogLoot } from "../utils/hooks/useLogLoot";
 
 const Log: NextPage = () => {
-  const [sendLoot, setSendLoot] = useState<string | undefined>("");
+  const [lootData, setLootData] = useState<string | undefined>("");
   const { data: userData } = useGrabUserInfo();
   const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds] = useGuildStore((state) => [
     state.setCurrentGuildID,
     state.setCurrentGuildName,
     state.setAvailableGuilds,
   ]);
-  const { mutate, isSuccess } = useLogLoot();
+  const { mutate: logloot, isSuccess } = useLogLoot();
 
   useEffect(() => {
     if (userData) {
@@ -36,12 +36,12 @@ const Log: NextPage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      setSendLoot("");
+      setLootData("");
     }
   }, [isSuccess]);
 
   const inputChangeHandler = (value: string) => {
-    setSendLoot(value);
+    setLootData(value);
   };
 
   return (
@@ -50,14 +50,14 @@ const Log: NextPage = () => {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            mutate(sendLoot);
+            logloot(lootData);
           }}
         >
           <FloatingDBLabelTextarea
             debounce={500}
             minRows={6}
             maxRows={20}
-            value={sendLoot}
+            value={lootData}
             onChange={(value) => inputChangeHandler(String(value))}
             placeholder='Paste your RCLootCouncil JSON data here'
             label='RCLootCouncil JSON'

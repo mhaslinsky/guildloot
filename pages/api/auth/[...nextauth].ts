@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
+import BattleNetProvider from "next-auth/providers/battlenet";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../prisma/client";
 import EmailProvider from "next-auth/providers/email";
@@ -10,6 +11,16 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   // Configure one or more authentication providers
   providers: [
+    BattleNetProvider({
+      clientId: process.env.BLIZZ_CLIENT_ID!,
+      clientSecret: process.env.BLIZZ_CLIENT_SECRET!,
+      issuer: "https://us.battle.net/oauth",
+      authorization: {
+        params: {
+          scope: "openid wow.profile",
+        },
+      },
+    }),
     EmailProvider({
       server: {
         host: process.env.HOST,
@@ -48,38 +59,36 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "database",
   },
+  events: {
+    signOut: async (session) => {},
+  },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async redirect({ url, baseUrl }) {
       return Promise.resolve("/");
     },
     async signIn({ user, account, profile, email, credentials }) {
+      console.log("signIn", user, account, profile, email, credentials);
       const curDateTime = new Date();
-      if (user.email != null) {
-        try {
-          await prisma.user.update({
-            where: { email: user.email },
-            data: { lastSignedIn: curDateTime },
-          });
-        } catch (e) {
-          console.log(e);
-        }
-        return true;
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastSignedIn: curDateTime },
+        });
+      } catch (e) {
+        console.log(e);
       }
       return true;
     },
     async session({ session, user, token }) {
       const curDateTime = new Date();
-      if (user.email != null) {
-        try {
-          await prisma.user.update({
-            where: { email: user.email },
-            data: { lastSignedIn: curDateTime },
-          });
-        } catch (e) {
-          console.log(e);
-        }
-        return session;
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastSignedIn: curDateTime },
+        });
+      } catch (e) {
+        console.log(e);
       }
       return session;
     },

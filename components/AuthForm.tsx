@@ -37,7 +37,7 @@ export function AuthenticationForm(props: PaperProps) {
       <Text size='lg' weight={500}>
         Welcome to ALT, {type} with
       </Text>
-      <Group grow mb='md' mt='md'>
+      <Stack mb='md' mt='md'>
         <GoogleButton
           onClick={() => {
             signIn("google");
@@ -54,7 +54,15 @@ export function AuthenticationForm(props: PaperProps) {
         >
           Discord
         </DiscordButton>
-      </Group>
+        <DiscordButton
+          radius='xl'
+          onClick={() => {
+            signIn("battlenet");
+          }}
+        >
+          Battle.net
+        </DiscordButton>
+      </Stack>
       <Divider label='Or continue with email' labelPosition='center' my='lg' />
       <form onSubmit={form.onSubmit(() => {})}>
         <Stack>
