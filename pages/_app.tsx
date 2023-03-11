@@ -16,7 +16,6 @@ import { HeaderSearch } from "../components/HeaderSearch";
 import { SessionProvider } from "next-auth/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import { CustomFonts } from "../styles/fonts";
 import { RouterTransition } from "../components/RouterTransition";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -29,7 +28,6 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
         <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
           <ModalsProvider>
             <NotificationsProvider position='top-right'>
-              <CustomFonts />
               <Head>
                 <title>Archon Loot Tracker</title>
                 <meta name='viewport' content='width=device-width, initial-scale=1' />
@@ -38,7 +36,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
               </Head>
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
               <main className={inter.className}>
-                <RouterTransition />
+                {/* <RouterTransition /> */}
                 <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
                   <Component {...pageProps} />
                 </AppShell>
