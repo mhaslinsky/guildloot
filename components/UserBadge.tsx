@@ -68,7 +68,7 @@ export function UserBadge({ avatar, guild, username, phone, email }: UserInfoIco
         align='center'
       >
         <div>
-          <Text size='xs' sx={{ textTransform: "uppercase" }} weight={700} color='dimmed'>
+          <Text size='xs' sx={{ textTransform: "uppercase" }} weight={650} color='dimmed'>
             {currentGuildName ? `<${currentGuildName}>` : null}
           </Text>
 
