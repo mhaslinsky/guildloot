@@ -63,8 +63,8 @@ export function AuthenticationForm(props: PaperProps) {
           Battle.net
         </DiscordButton>
       </Stack>
-      <Divider label='Or continue with email' labelPosition='center' my='lg' />
-      <form onSubmit={form.onSubmit(() => {})}>
+      {/* <Divider label='Or continue with email' labelPosition='center' my='lg' /> */}
+      {/* <form onSubmit={form.onSubmit(() => {})}>
         <Stack>
           {type === "register" && (
             <TextInput
@@ -97,7 +97,7 @@ export function AuthenticationForm(props: PaperProps) {
           </Anchor>
           <Button type='submit'>{upperFirst(type)}</Button>
         </Group>
-      </form>
+      </form> */}
     </Paper>
   );
 }
