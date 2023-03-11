@@ -37,9 +37,9 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
               <main className={inter.className}>
                 <RouterTransition />
-                <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
-                  <Component {...pageProps} />
-                </AppShell>
+                {/* <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}> */}
+                <Component {...pageProps} />
+                {/* </AppShell> */}
               </main>
             </NotificationsProvider>
           </ModalsProvider>

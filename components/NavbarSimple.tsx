@@ -145,7 +145,6 @@ export function NavbarSimple() {
         <Navbar.Section grow>
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
             <Group w='100%' className={classes.header} position='center'>
-              {/* <Link style={{ position: "relative" }} href='/'> */}
               <Card w='100%'>
                 <Flex justify='center'>
                   <Title
@@ -156,7 +155,6 @@ export function NavbarSimple() {
                   </Title>
                 </Flex>
               </Card>
-              {/* </Link> */}
             </Group>
           </MediaQuery>
           {session && (
