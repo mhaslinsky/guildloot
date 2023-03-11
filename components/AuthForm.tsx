@@ -54,14 +54,14 @@ export function AuthenticationForm(props: PaperProps) {
         >
           Discord
         </DiscordButton>
-        {/* <DiscordButton
+        <DiscordButton
           radius='xl'
           onClick={() => {
             signIn("battlenet");
           }}
         >
           Battle.net
-        </DiscordButton> */}
+        </DiscordButton>
       </Stack>
       {/* <Divider label='Or continue with email' labelPosition='center' my='lg' /> */}
       {/* <form onSubmit={form.onSubmit(() => {})}>

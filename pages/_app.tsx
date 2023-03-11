@@ -25,15 +25,15 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
+        <Head>
+          <title>Archon Loot Tracker</title>
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <link rel='stylesheet' href='https://use.typekit.net/ofg4tjx.css' />
+          <link rel='icon' href='/favicon.ico' />
+        </Head>
         <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
           <ModalsProvider>
             <NotificationsProvider position='top-right'>
-              <Head>
-                <title>Archon Loot Tracker</title>
-                <meta name='viewport' content='width=device-width, initial-scale=1' />
-                <link rel='stylesheet' href='https://use.typekit.net/ofg4tjx.css' />
-                <link rel='icon' href='/favicon.ico' />
-              </Head>
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
               <main className={inter.className}>
                 <RouterTransition />
