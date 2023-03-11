@@ -11,16 +11,16 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   // Configure one or more authentication providers
   providers: [
-    BattleNetProvider({
-      clientId: process.env.BLIZZ_CLIENT_ID!,
-      clientSecret: process.env.BLIZZ_CLIENT_SECRET!,
-      issuer: "https://us.battle.net/oauth",
-      authorization: {
-        params: {
-          scope: "openid wow.profile",
-        },
-      },
-    }),
+    // BattleNetProvider({
+    //   clientId: process.env.BLIZZ_CLIENT_ID!,
+    //   clientSecret: process.env.BLIZZ_CLIENT_SECRET!,
+    //   issuer: "https://us.battle.net/oauth",
+    //   authorization: {
+    //     params: {
+    //       scope: "openid wow.profile",
+    //     },
+    //   },
+    // }),
     EmailProvider({
       server: {
         host: process.env.HOST,
@@ -59,10 +59,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "database",
   },
-  events: {
-    signOut: async (session) => {},
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  events: {},
   callbacks: {
     async redirect({ url, baseUrl }) {
       return Promise.resolve("/");
