@@ -1,7 +1,6 @@
 import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { Inter } from "@next/font/google";
 import { MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -18,7 +17,6 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { RouterTransition } from "../components/RouterTransition";
 
-const inter = Inter({ subsets: ["latin"] });
 TimeAgo.addDefaultLocale(en);
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -28,14 +26,13 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
         <Head>
           <title>Archon Loot Tracker</title>
           <meta name='viewport' content='width=device-width, initial-scale=1' />
-          {/* <link rel='stylesheet' href='https://use.typekit.net/ofg4tjx.css' /> */}
           <link rel='icon' href='/favicon.ico' />
         </Head>
         <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
           <ModalsProvider>
             <NotificationsProvider position='top-right'>
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
-              <main className={inter.className}>
+              <main>
                 <RouterTransition />
                 <AppShell header={<HeaderSearch />} navbar={<NavbarSimple />}>
                   <Component {...pageProps} />

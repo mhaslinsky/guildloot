@@ -9,7 +9,9 @@ export default class _Document extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link rel='stylesheet' href='https://use.typekit.net/ofg4tjx.css' />
+        </Head>
         <body>
           <Main />
           <NextScript />
