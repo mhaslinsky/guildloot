@@ -33,20 +33,29 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
             <NotificationsProvider position='top-right'>
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
               <RouterTransition />
-              <AppShell
-                styles={(theme) => ({
-                  root: {
-                    height: "100%",
-                    border: "1px solid red",
-                    maxHeight: "100svh",
-                    maxWidth: "calc(var(--vw, 1vw) * 100)",
-                  },
-                })}
-                header={<HeaderSearch />}
-                navbar={<NavbarSimple />}
+              <div
+                style={{
+                  height: "100%",
+                  border: "1px solid red",
+                  maxHeight: "100svh",
+                  maxWidth: "calc(var(--vw, 1vw) * 100)",
+                }}
               >
-                <Component {...pageProps} />
-              </AppShell>
+                <AppShell
+                  // styles={(theme) => ({
+                  //   root: {
+                  //     height: "100%",
+                  //     border: "1px solid red",
+                  //     maxHeight: "100svh",
+                  //     maxWidth: "calc(var(--vw, 1vw) * 100)",
+                  //   },
+                  // })}
+                  header={<HeaderSearch />}
+                  navbar={<NavbarSimple />}
+                >
+                  <Component {...pageProps} />
+                </AppShell>
+              </div>
             </NotificationsProvider>
           </ModalsProvider>
         </MantineProvider>
