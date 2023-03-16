@@ -1,7 +1,7 @@
 import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
 import { forwardRef, useEffect, useState } from "react";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
-import { useGuildStore } from "../utils/store/store";
+import { useGuildStore, useNavBarStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme) => ({
   input: { fontSize: theme.fontSizes.xl },
@@ -36,6 +36,7 @@ export default function GuildSelect() {
     state.setCurrentGuildID,
     state.setCurrentGuildName,
   ]);
+  const [setNavBar] = useNavBarStore((state) => [state.setNavBar]);
 
   return (
     <>
@@ -46,6 +47,7 @@ export default function GuildSelect() {
           localStorage.setItem("currentGuild", JSON.stringify(selectedGuild));
           setCurrentGuildName(selectedGuild!.name);
         }}
+        onClick={() => setNavBar(false)}
         value={currentGuildID}
         classNames={{ input: classes.input }}
         placeholder='Select a Guild'

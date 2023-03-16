@@ -15,11 +15,13 @@ interface GuildVT {
 
 interface navBarState {
   isNavBarOpen: boolean;
+  setNavBar: (open: boolean) => void;
   toggleNavBar: () => void;
 }
 
 export const useNavBarStore = create<navBarState>((set) => ({
   isNavBarOpen: true,
+  setNavBar: (open: boolean) => set({ isNavBarOpen: open }),
   toggleNavBar: () => set((state: any) => ({ isNavBarOpen: !state.isNavBarOpen })),
 }));
 

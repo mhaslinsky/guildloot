@@ -10,6 +10,8 @@ import {
   UnstyledButton,
   Stack,
   Title,
+  ScrollArea,
+  Text,
 } from "@mantine/core";
 import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
 import { useNavBarStore, guildModalStore, useGuildStore } from "../utils/store/store";
@@ -79,7 +81,7 @@ export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("none");
   const [modalOpened, setModalOpened] = useState(false);
-  const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
+  const [isNavBarOpen, toggleNavBar] = useNavBarStore((state) => [state.isNavBarOpen, state.toggleNavBar]);
   const { data: session } = useSession();
   const router = useRouter();
   const [createGuildModalOpen, setCreateGuildModalOpened] = guildModalStore((state) => [
@@ -116,7 +118,10 @@ export function NavbarSimple() {
       className={cx(classes.link, { [classes.linkActive]: item.label === active })}
       href={item.link}
       key={item.label}
-      onClick={() => setActive(item.label)}
+      onClick={() => {
+        setActive(item.label);
+        toggleNavBar();
+      }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
@@ -142,23 +147,36 @@ export function NavbarSimple() {
         <GuildCreateForm />
       </Modal>
       <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
-        <Navbar.Section grow>
+        <Flex
+          sx={{
+            flexDirection: "column",
+            flex: "1",
+          }}
+        >
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
-            <Group w='100%' className={classes.header} position='center'>
-              <Card w='100%'>
-                <Flex justify='center'>
-                  <Title
-                    sx={{ fontFamily: "transducer, sans-serif", whiteSpace: "nowrap", textDecoration: "none" }}
-                    order={3}
-                  >
-                    Archon Loot Tracker
-                  </Title>
-                </Flex>
-              </Card>
+            <Group className={classes.header} position='center'>
+              <Link
+                onClick={() => {
+                  toggleNavBar();
+                }}
+                style={{ textDecoration: "none", width: "100%" }}
+                href='/'
+              >
+                <Card w='100%'>
+                  <Flex justify='center'>
+                    <Title
+                      sx={{ fontFamily: "transducer, sans-serif", whiteSpace: "nowrap", textDecoration: "none" }}
+                      order={3}
+                    >
+                      Archon Loot Tracker
+                    </Title>
+                  </Flex>
+                </Card>
+              </Link>
             </Group>
           </MediaQuery>
           {session && (
-            <Stack h={{ base: "90%", sm: "100%" }} justify='space-between'>
+            <Stack h='100%' justify='space-between'>
               <Stack>{links}</Stack>
               <UnstyledButton
                 w='100%'
@@ -174,7 +192,7 @@ export function NavbarSimple() {
               </UnstyledButton>
             </Stack>
           )}
-        </Navbar.Section>
+        </Flex>
         <Navbar.Section className={classes.footer}>
           {!session && (
             <a href='#' className={classes.link} onClick={() => setModalOpened(true)}>
