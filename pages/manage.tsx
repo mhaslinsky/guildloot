@@ -57,7 +57,7 @@ const ManageUsers: NextPage = () => {
     );
   else {
     return (
-      <Stack justify='space-between' h='100%'>
+      <Stack style={{ border: "1px solid yellow" }} justify='space-between' h='100%'>
         <Stack>
           <Title pt='md' pb='-1rem' order={3}>
             Current Members

@@ -35,6 +35,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
               <RouterTransition />
               <div
                 style={{
+                  display: "flex",
                   height: "100%",
                   border: "1px solid red",
                   maxHeight: "100svh",
