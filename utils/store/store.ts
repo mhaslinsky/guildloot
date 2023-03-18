@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { mountStoreDevtool } from "simple-zustand-devtools";
-import { Guild } from "@prisma/client";
+import type { ColorScheme, DefaultMantineColor } from "@mantine/core";
 
 interface GuildVT {
   value: string;
@@ -70,11 +70,6 @@ useGuildStore.subscribe((state) => {
     state.availableGuilds.find((guild) => guild.id === state.currentGuildID)?.role || null;
 });
 
-if (process.env.NODE_ENV === "development") {
-  mountStoreDevtool("GuildStore", useGuildStore);
-  mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
-}
-
 interface guildModalStoreState {
   createGuildModalOpen: boolean;
   setCreateGuildModalOpen: (open: boolean) => void;
@@ -86,3 +81,22 @@ export const guildModalStore = create<guildModalStoreState>((set) => ({
   setCreateGuildModalOpen: (open: boolean) => set({ createGuildModalOpen: open }),
   toggleCreateGuildModal: () => set((state: any) => ({ createGuildModalOpen: !state.createGuildModalOpen })),
 }));
+
+interface themeStoreState {
+  colorScheme: ColorScheme;
+  setColorScheme: (scheme: ColorScheme) => void;
+  primaryColor: DefaultMantineColor;
+  setPrimaryColor: (color: DefaultMantineColor) => void;
+}
+
+export const useThemeStore = create<themeStoreState>((set) => ({
+  colorScheme: "dark",
+  setColorScheme: (scheme: ColorScheme) => set({ colorScheme: scheme }),
+  primaryColor: "blue",
+  setPrimaryColor: (color: DefaultMantineColor) => set({ primaryColor: color }),
+}));
+
+if (process.env.NODE_ENV === "development") {
+  mountStoreDevtool("GuildStore", useGuildStore);
+  mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
+}

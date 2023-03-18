@@ -81,7 +81,11 @@ export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("none");
   const [modalOpened, setModalOpened] = useState(false);
-  const [isNavBarOpen, toggleNavBar] = useNavBarStore((state) => [state.isNavBarOpen, state.toggleNavBar]);
+  const [isNavBarOpen, toggleNavBar, setNavBar] = useNavBarStore((state) => [
+    state.isNavBarOpen,
+    state.toggleNavBar,
+    state.setNavBar,
+  ]);
   const { data: session } = useSession();
   const router = useRouter();
   const [createGuildModalOpen, setCreateGuildModalOpened] = guildModalStore((state) => [
@@ -120,7 +124,6 @@ export function NavbarSimple() {
       key={item.label}
       onClick={() => {
         setActive(item.label);
-        toggleNavBar();
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
@@ -164,13 +167,7 @@ export function NavbarSimple() {
         >
           <MediaQuery largerThan='sm' styles={{ display: "none" }}>
             <Group className={classes.header} position='center'>
-              <Link
-                onClick={() => {
-                  toggleNavBar();
-                }}
-                style={{ textDecoration: "none", width: "100%" }}
-                href='/'
-              >
+              <Link onClick={() => {}} style={{ textDecoration: "none", width: "100%" }} href='/'>
                 <Card w='100%'>
                   <Flex justify='center'>
                     <Title

@@ -11,8 +11,6 @@ import {
   getFacetedRowModel,
   getFilteredRowModel,
   ColumnFiltersState,
-  Column,
-  Table,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
@@ -20,6 +18,7 @@ import { SortAscending, SortDescending, Filter as FilterIcon } from "tabler-icon
 import React, { useEffect, useMemo, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
+import FilterPopover from "../Filter/FilterPopover";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -159,50 +158,3 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
 };
 
 export default LootTable;
-
-function FilterPopover({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
-  const { classes } = useStyles();
-
-  return (
-    <Popover>
-      <Popover.Target>
-        <UnstyledButton>
-          <FilterIcon className={classes.tHeader} size={16} />
-        </UnstyledButton>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <Filter column={column} table={table} />
-      </Popover.Dropdown>
-    </Popover>
-  );
-}
-
-function Filter({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
-  const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id);
-  const columnFilterValue = column.getFilterValue();
-
-  const sortedUniqueValues = useMemo(
-    () => (typeof firstValue === "number" ? [] : Array.from(column.getFacetedUniqueValues().keys()).sort()),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [column.getFacetedUniqueValues()]
-  );
-
-  return (
-    <>
-      <datalist id={column.id + "list"}>
-        {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist>
-      <Input
-        value={(columnFilterValue ?? "") as string}
-        onChange={(e) => {
-          column.setFilterValue(e.target.value);
-        }}
-        placeholder={`Search.. (${column.getFacetedUniqueValues().size})`}
-        type='text'
-        list={column.id + "list"}
-      ></Input>
-    </>
-  );
-}

@@ -16,10 +16,13 @@ import { SessionProvider } from "next-auth/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { RouterTransition } from "../components/RouterTransition";
+import { useThemeStore } from "../utils/store/store";
 
 TimeAgo.addDefaultLocale(en);
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+  const [colorScheme, primaryColor] = useThemeStore((state) => [state.colorScheme, state.primaryColor]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
@@ -28,7 +31,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <link rel='icon' href='/favicon.ico' />
         </Head>
-        <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
+        <MantineProvider withGlobalStyles withNormalizeCSS theme={{ ...theme, colorScheme, primaryColor }}>
           <ModalsProvider>
             <NotificationsProvider position='top-right'>
               <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
