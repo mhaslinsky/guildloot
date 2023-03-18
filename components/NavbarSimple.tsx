@@ -146,7 +146,16 @@ export function NavbarSimple() {
       >
         <GuildCreateForm />
       </Modal>
-      <Navbar hidden={!isNavBarOpen} width={{ sm: 300 }} p='md'>
+      <Navbar
+        styles={(theme) => ({
+          root: {
+            height: "calc(100svh - var(--mantine-header-height, 0px) - var(--mantine-footer-height, 0px))",
+          },
+        })}
+        hidden={!isNavBarOpen}
+        width={{ sm: 300 }}
+        p='md'
+      >
         <Flex
           sx={{
             flexDirection: "column",
