@@ -94,11 +94,24 @@ export const useThemeStore = create<themeStoreState>((set) => ({
   colorScheme: "dark",
   setColorScheme: (scheme: ColorScheme) => set({ colorScheme: scheme }),
   toggleColorScheme: () => set((state: any) => ({ colorScheme: state.colorScheme === "dark" ? "light" : "dark" })),
-  primaryColor: "violet",
+  primaryColor: "green",
   setPrimaryColor: (color: DefaultMantineColor) => set({ primaryColor: color }),
+}));
+
+interface numTablesState {
+  numTables: number;
+  incrementNumTables: () => void;
+  decrementNumTables: () => void;
+}
+
+export const useNumTablesStore = create<numTablesState>((set) => ({
+  numTables: 1,
+  incrementNumTables: () => set((state: any) => ({ numTables: state.numTables + 1 })),
+  decrementNumTables: () => set((state: any) => ({ numTables: state.numTables - 1 })),
 }));
 
 if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("GuildStore", useGuildStore);
   mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
+  mountStoreDevtool("NumTables", useNumTablesStore);
 }

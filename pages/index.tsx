@@ -1,4 +1,4 @@
-import { Flex, Card, ActionIcon, Text, Group, Box, Divider, Button, Stack, Tooltip } from "@mantine/core";
+import { Flex, Card, ActionIcon, Text, Group, Divider, Stack } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
@@ -8,14 +8,14 @@ import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
 import { IconSettings } from "@tabler/icons";
-import { useMediaQuery } from "@mantine/hooks";
+import { useNumTablesStore } from "../utils/store/store";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
-  const [numTables, setNumTables] = useState(1);
-  const isMobile = useMediaQuery("(max-width: 600px)");
+
+  const [numTables] = useNumTablesStore((state) => [state.numTables]);
 
   useEffect(() => {
     setInitialRenderComplete(true);
@@ -72,7 +72,7 @@ const Home: NextPage = () => {
           <Flex justify='center'>
             <ActionIcon
               onClick={() => {
-                console.log(info);
+                console.log(info.cell.row.original);
               }}
               variant='default'
             >
@@ -94,31 +94,6 @@ const Home: NextPage = () => {
         {initialRenderComplete && session && (
           <>
             <Stack w='100%'>
-              {!isMobile && (
-                <Group>
-                  <Button
-                    variant={numTables == 1 ? "light" : "filled"}
-                    size='xs'
-                    onClick={() => {
-                      if (numTables > 1) setNumTables((numTables) => numTables - 1);
-                    }}
-                  >
-                    -
-                  </Button>
-                  <Text>{numTables}</Text>
-                  <Tooltip openDelay={1000} label={"No more than 3 tables at once"}>
-                    <Button
-                      variant={numTables == 3 ? "light" : "filled"}
-                      size='xs'
-                      onClick={() => {
-                        if (numTables < 3) setNumTables((numTables) => numTables + 1);
-                      }}
-                    >
-                      +
-                    </Button>
-                  </Tooltip>
-                </Group>
-              )}
               <Card>
                 <Group align='flex-start' grow>
                   {Array.from({ length: numTables }).map((elem, index) => {
