@@ -85,6 +85,7 @@ export const guildModalStore = create<guildModalStoreState>((set) => ({
 interface themeStoreState {
   colorScheme: ColorScheme;
   setColorScheme: (scheme: ColorScheme) => void;
+  toggleColorScheme: () => void;
   primaryColor: DefaultMantineColor;
   setPrimaryColor: (color: DefaultMantineColor) => void;
 }
@@ -92,7 +93,8 @@ interface themeStoreState {
 export const useThemeStore = create<themeStoreState>((set) => ({
   colorScheme: "dark",
   setColorScheme: (scheme: ColorScheme) => set({ colorScheme: scheme }),
-  primaryColor: "blue",
+  toggleColorScheme: () => set((state: any) => ({ colorScheme: state.colorScheme === "dark" ? "light" : "dark" })),
+  primaryColor: "violet",
   setPrimaryColor: (color: DefaultMantineColor) => set({ primaryColor: color }),
 }));
 

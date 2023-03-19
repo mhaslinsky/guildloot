@@ -1,6 +1,6 @@
 import { Autocomplete, createStyles, Input } from "@mantine/core";
 import { Column, Table } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export default function Filter({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
   const localStyles = createStyles((theme) => ({
@@ -12,6 +12,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
     dropdown: {
       fontWeight: "bold",
       letterSpacing: 0.8,
+      backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[0],
       borderColor: theme.fn.variant({ variant: "light", color: theme.primaryColor }).background,
     },
     item: {
@@ -21,8 +22,10 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
     },
   }));
   const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id);
-  const { classes, theme } = localStyles();
-
+  const { classes } = localStyles();
+  const [value, setValue] = useState("");
+  const [valueVar, setValueVar] = useState(column.getFilterValue());
+  const debounce = 250;
   const columnFilterValue = column.getFilterValue();
   const sortedUniqueValues = useMemo(
     () => (typeof firstValue === "number" ? [] : Array.from(column.getFacetedUniqueValues().keys()).sort()),
@@ -30,14 +33,31 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
     [column.getFacetedUniqueValues()]
   );
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      column.setFilterValue(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [column, value]);
+
+  useEffect(() => {
+    setValue(columnFilterValue as string);
+    if (columnFilterValue !== valueVar) {
+      setValueVar(columnFilterValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Autocomplete
       classNames={{ dropdown: classes.dropdown, input: classes.input, item: classes.item }}
       limit={10}
       type='text'
-      value={(columnFilterValue ?? "") as string}
+      value={valueVar as string}
       onChange={(e) => {
-        column.setFilterValue(e);
+        setValueVar(e);
+        setValue(e);
       }}
       placeholder={`Search ${column.id}.. (${column.getFacetedUniqueValues().size})`}
       data={sortedUniqueValues}

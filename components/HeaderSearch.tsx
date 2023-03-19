@@ -1,10 +1,22 @@
-import { createStyles, Header, Burger, MediaQuery, Flex, Title, Card, NavLink } from "@mantine/core";
-import { useGuildStore, useNavBarStore } from "../utils/store/store";
+import {
+  createStyles,
+  Header,
+  Burger,
+  MediaQuery,
+  Flex,
+  Title,
+  Card,
+  NavLink,
+  Button,
+  Group,
+} from "@mantine/core";
+import { useGuildStore, useNavBarStore, useThemeStore } from "../utils/store/store";
 import GuildSelect from "./GuildSelect";
 import Link from "next/link";
 import theme from "../styles/theme";
 import { useEffect, useState } from "react";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { ColorSchemeSwitcher } from "./Buttons/ColorSchemeSwitcher";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -38,6 +50,7 @@ export function HeaderSearch() {
     state.setCurrentGuildName,
     state.setCurrentGuildID,
   ]);
+  const [toggleColorScheme] = useThemeStore((state) => [state.toggleColorScheme]);
 
   useEffect(() => {
     if (availableGuilds) {
@@ -92,7 +105,10 @@ export function HeaderSearch() {
         </Flex>
         <Flex w='100%' justify='space-between'>
           <div />
-          <GuildSelect />
+          <Group>
+            <ColorSchemeSwitcher />
+            <GuildSelect />
+          </Group>
         </Flex>
       </div>
     </Header>

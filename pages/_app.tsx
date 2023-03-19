@@ -1,7 +1,7 @@
 import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, ColorSchemeProvider, ColorScheme } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "../utils/queryClient";
@@ -21,7 +21,11 @@ import { useThemeStore } from "../utils/store/store";
 TimeAgo.addDefaultLocale(en);
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  const [colorScheme, primaryColor] = useThemeStore((state) => [state.colorScheme, state.primaryColor]);
+  const [colorScheme, primaryColor, toggleColorScheme] = useThemeStore((state) => [
+    state.colorScheme,
+    state.primaryColor,
+    state.toggleColorScheme,
+  ]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -31,25 +35,27 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <link rel='icon' href='/favicon.ico' />
         </Head>
-        <MantineProvider withGlobalStyles withNormalizeCSS theme={{ ...theme, colorScheme, primaryColor }}>
-          <ModalsProvider>
-            <NotificationsProvider position='top-right'>
-              <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
-              <RouterTransition />
-              <AppShell
-                styles={(theme) => ({
-                  main: {
-                    minHeight: "100svh",
-                  },
-                })}
-                header={<HeaderSearch />}
-                navbar={<NavbarSimple />}
-              >
-                <Component {...pageProps} />
-              </AppShell>
-            </NotificationsProvider>
-          </ModalsProvider>
-        </MantineProvider>
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+          <MantineProvider withGlobalStyles withNormalizeCSS theme={{ ...theme, colorScheme, primaryColor }}>
+            <ModalsProvider>
+              <NotificationsProvider position='top-right'>
+                <Script src='https://wow.zamimg.com/js/tooltips.js'></Script>
+                <RouterTransition />
+                <AppShell
+                  styles={(theme) => ({
+                    main: {
+                      minHeight: "100svh",
+                    },
+                  })}
+                  header={<HeaderSearch />}
+                  navbar={<NavbarSimple />}
+                >
+                  <Component {...pageProps} />
+                </AppShell>
+              </NotificationsProvider>
+            </ModalsProvider>
+          </MantineProvider>
+        </ColorSchemeProvider>
         <ReactQueryDevtools position={"bottom-right"} />
       </SessionProvider>
     </QueryClientProvider>

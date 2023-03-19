@@ -1,4 +1,4 @@
-import { Flex, Card, ActionIcon, Text } from "@mantine/core";
+import { Flex, Card, ActionIcon, Text, Group, Box, Divider, Button, Stack, Tooltip } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
@@ -8,11 +8,14 @@ import { useGrabLoot } from "../utils/hooks/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
 import { IconSettings } from "@tabler/icons";
+import { useMediaQuery } from "@mantine/hooks";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
   const { data, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
+  const [numTables, setNumTables] = useState(1);
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   useEffect(() => {
     setInitialRenderComplete(true);
@@ -67,7 +70,12 @@ const Home: NextPage = () => {
         header: "Actions",
         cell: (info) => (
           <Flex justify='center'>
-            <ActionIcon variant='default'>
+            <ActionIcon
+              onClick={() => {
+                console.log(info);
+              }}
+              variant='default'
+            >
               <IconSettings size='1rem' />
             </ActionIcon>
           </Flex>
@@ -81,14 +89,51 @@ const Home: NextPage = () => {
   return (
     <>
       <Flex justify='center' align='center'>
-        <Card w='100%'>
-          {status == "loading" && <Text>Checking for cached login...</Text>}
-          {!session && status == "unauthenticated" && <HeroTitle />}
-
-          {initialRenderComplete && session && (
-            <LootTable columns={columns} loading={isFetching} data={data || []} />
-          )}
-        </Card>
+        {status == "loading" && <Text>Checking for cached login...</Text>}
+        {!session && status == "unauthenticated" && <HeroTitle />}
+        {initialRenderComplete && session && (
+          <>
+            <Stack w='100%'>
+              {!isMobile && (
+                <Group>
+                  <Button
+                    variant={numTables == 1 ? "light" : "filled"}
+                    size='xs'
+                    onClick={() => {
+                      if (numTables > 1) setNumTables((numTables) => numTables - 1);
+                    }}
+                  >
+                    -
+                  </Button>
+                  <Text>{numTables}</Text>
+                  <Tooltip openDelay={1000} label={"No more than 3 tables at once"}>
+                    <Button
+                      variant={numTables == 3 ? "light" : "filled"}
+                      size='xs'
+                      onClick={() => {
+                        if (numTables < 3) setNumTables((numTables) => numTables + 1);
+                      }}
+                    >
+                      +
+                    </Button>
+                  </Tooltip>
+                </Group>
+              )}
+              <Card>
+                <Group align='flex-start' grow>
+                  {Array.from({ length: numTables }).map((elem, index) => {
+                    return (
+                      <Group key={index} align='flex-start'>
+                        <LootTable columns={columns} loading={isFetching} data={data || []} />
+                        <Divider size='lg' orientation='vertical' />
+                      </Group>
+                    );
+                  })}
+                </Group>
+              </Card>
+            </Stack>
+          </>
+        )}
       </Flex>
     </>
   );

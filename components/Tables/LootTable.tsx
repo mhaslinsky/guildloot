@@ -1,5 +1,5 @@
 import { rcLootItem } from "@prisma/client";
-import { Box, Flex, LoadingOverlay, Table as Mtable, Popover, Input, UnstyledButton } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, Table as Mtable, Text } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -19,6 +19,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import { useMediaQuery } from "@mantine/hooks";
 import FilterPopover from "../Filter/FilterPopover";
+import { useResizeObserver } from "@mantine/hooks";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -43,7 +44,7 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
-  const isMobile = useMediaQuery("(max-width: 600px)");
+  const [ref, rect] = useResizeObserver();
 
   const table = useReactTable({
     data: props.data,
@@ -69,21 +70,26 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   });
 
   useEffect(() => {
-    if (isMobile) {
-      table.setColumnVisibility({ Instance: false, Boss: false, dateTime: false });
-    } else {
-      table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true });
+    if (rect.width < 721) {
+      table.setColumnVisibility({ Actions: false });
     }
-  }, [isMobile, table]);
+    if (rect.width < 600) {
+      table.setColumnVisibility({ Instance: false, Boss: false, dateTime: false, Actions: false });
+    } else {
+      table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true, Actions: true });
+    }
+  }, [rect, table]);
 
   return (
     <Box
       sx={(theme) => ({
+        flexGrow: 1,
         position: "relative",
       })}
     >
       <LoadingOverlay visible={props.loading} />
-      <Mtable>
+      {/* <Text>{JSON.stringify(rect)}</Text> */}
+      <Mtable ref={ref}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>

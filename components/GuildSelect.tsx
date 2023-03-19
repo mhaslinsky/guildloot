@@ -1,6 +1,5 @@
 import { Group, Avatar, Text, Select, createStyles } from "@mantine/core";
-import { forwardRef, useEffect, useState } from "react";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { forwardRef } from "react";
 import { useGuildStore, useNavBarStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme) => ({
