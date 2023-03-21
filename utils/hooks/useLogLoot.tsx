@@ -4,6 +4,7 @@ import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
 import { ExclamationMark } from "tabler-icons-react";
 import { queryClient } from "../queryClient";
+import { rcLootItem } from "@prisma/client";
 
 const logGuildLoot = async (rcLootData: string | undefined, currentGuild: string | null) => {
   if (!rcLootData) return Promise.reject({ message: "Please enter some loot" });
@@ -40,12 +41,19 @@ export function useLogLoot() {
       }
     },
     onSuccess: (data) => {
-      console.log(data);
-      showNotification({
-        title: "Success",
-        message: "Loot Logged",
-        color: "green",
-      });
+      if (data.code === 207) {
+        showNotification({
+          title: "Upload Successful-ish",
+          message: data.message || "Loot logged successfully",
+          color: "yellow",
+        });
+      } else {
+        showNotification({
+          title: "Success",
+          message: data.message || "Loot logged successfully",
+          color: "green",
+        });
+      }
       queryClient.invalidateQueries(["loot", currentGuildID]);
     },
   });

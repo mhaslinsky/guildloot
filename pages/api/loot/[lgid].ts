@@ -25,23 +25,42 @@ export default async function lootEndpoint(req: any, res: any) {
       const itemData = JSON.parse(req.body.rcLootData);
       if (Array.isArray(itemData)) {
         if (itemData.length === 0) return res.status(400).json({ message: `Enter Valid Loot` });
-        itemData.forEach(async (item) => {
+        const badItems: any[] = [];
+        for (const item of itemData) {
           const formattedItem = formatItem(item, guildID);
-          await createRCLootItemRecord(formattedItem);
-        });
+          try {
+            await createRCLootItemRecord(formattedItem, req);
+          } catch (err) {
+            badItems.push(item);
+          }
+        }
+        console.log(badItems);
+        if (badItems.length > 0) {
+          if (badItems.length === itemData.length)
+            return res
+              .status(500)
+              .json({ message: `Error writing to loot history for all ${itemData.length} items` });
+          return res.status(207).json({
+            message: `Succeeded writing ${itemData.length - badItems.length} of ${itemData.length} items`,
+            badItems,
+            code: 207,
+          });
+        } else {
+          return res.status(200).json({ message: `Written to Loot History Successfully` });
+        }
       } else {
         const singularItem = JSON.parse(req.body.rcLootData);
         const formattedItem = formatItem(singularItem, guildID);
-
-        await createRCLootItemRecord(formattedItem);
+        await createRCLootItemRecord(formattedItem, req);
+        return res.status(200).json({ message: `Written to Loot History Successfully` });
       }
-      res.status(200).json({ message: ` written to DB successfully` });
-    } catch (err: unknown) {
+    } catch (err) {
+      console.log(err);
       if (err instanceof SyntaxError) {
-        res.status(400).json({ message: "Invalid JSON" });
+        return res.status(400).json({ message: "Invalid JSON" });
       } else {
-        console.log(err);
-        res.status(500).json({ message: "Error Writing to DB" });
+        console.log(req.badRecord);
+        return res.status(500).json({ message: "Error Writing to DB" });
       }
     }
   } else if (req.method == "GET") {

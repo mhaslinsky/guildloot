@@ -1,7 +1,14 @@
+import next, { NextApiRequest } from "next";
 import { prisma } from "../../prisma/client";
-import { RCLootItem } from "../types";
+import { rcLootItem } from "@prisma/client";
+import { RCLootItem } from "../../utils/types";
 
-export default async function createRCLootItemRecord(item: RCLootItem) {
+interface ApiResponse<T> {
+  data?: T;
+  error?: any;
+}
+
+export default async function createRCLootItemRecord(item: RCLootItem, req: any) {
   const linkID = item.itemID;
   try {
     await prisma.rcLootItem.create({
@@ -30,7 +37,7 @@ export default async function createRCLootItemRecord(item: RCLootItem) {
       },
     });
   } catch (error) {
-    console.log("rclootID: " + item.id + error);
-    throw error;
+    req.badRecord = item.id;
+    throw "rclootID: " + item.id + " error: " + error;
   }
 }
