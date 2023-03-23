@@ -114,6 +114,7 @@ const Log: NextPage = () => {
               forwardedRef={textAreaRef}
               debounce={500}
               minRows={rows - rowAdjustment}
+              maxRows={rows - rowAdjustment}
               value={lootData}
               onChange={(value) => inputChangeHandler(String(value))}
               placeholder='Paste your RCLootCouncil JSON data here'
