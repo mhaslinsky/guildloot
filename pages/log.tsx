@@ -1,14 +1,17 @@
 import { NextPage } from "next";
 import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGuildStore } from "../utils/store/store";
-import { Button, Card, Divider, Group, Modal, Stack, Text, Title } from "@mantine/core";
+import { Button, Card, Group, Modal, Stack, Text, Textarea, Title } from "@mantine/core";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useLogLoot } from "../utils/hooks/useLogLoot";
 import theme from "../styles/theme";
 import { rcLootItem } from "@prisma/client";
+import { useElementSize, useViewportSize } from "@mantine/hooks";
 
 const Log: NextPage = () => {
+  const textAreaRef = useRef(null);
+  const [rowAdjustment, setRowAdjustment] = useState(0);
   const [lootData, setLootData] = useState<string | undefined>("");
   const { data: userData } = useGrabUserInfo();
   const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds] = useGuildStore((state) => [
@@ -19,6 +22,10 @@ const Log: NextPage = () => {
   const { data, mutate: logloot, isSuccess } = useLogLoot();
   const [opened, setOpened] = useState(false);
   const [modalContent, setModalContent] = useState([]);
+  const { height, width } = useViewportSize();
+  const { ref: cardRef, width: cardWidth, height: cardHeight } = useElementSize();
+
+  const [rows, setRows] = useState(10);
 
   useEffect(() => {
     if (userData) {
@@ -40,7 +47,7 @@ const Log: NextPage = () => {
 
   useEffect(() => {
     console.log(data);
-    if (data) {
+    if (data?.badItems) {
       if (data.badItems.length === 0) return;
       const formattedItems = data.badItems.map(({ id, itemName, player }: rcLootItem) => ({
         id,
@@ -69,6 +76,21 @@ const Log: NextPage = () => {
     setLootData(value);
   };
 
+  useEffect(() => {
+    if (cardHeight > 795) setRowAdjustment(0);
+    if (cardHeight < 795) setRowAdjustment(1);
+    if (cardHeight < 530) setRowAdjustment(2);
+    if (cardHeight < 266) setRowAdjustment(3);
+    console.log(rowAdjustment);
+    console.log(cardHeight, cardWidth);
+    const lineHeight = parseInt(getComputedStyle(cardRef.current!).lineHeight);
+    console.log(cardHeight + " / " + lineHeight);
+    const rows = Math.floor(cardHeight / lineHeight);
+    console.log("rows: " + rows);
+    setRows(rows);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardRef, cardHeight, cardWidth]);
+
   return (
     <>
       <Modal centered withCloseButton={false} opened={opened} onClose={() => setOpened(false)}>
@@ -80,8 +102,8 @@ const Log: NextPage = () => {
           {modalContent}
         </>
       </Modal>
-      <Stack justify='center' align='center' w='100%'>
-        <Card w='100%'>
+      <Stack justify='center' align='center' w='100%' h='100%'>
+        <Card p={theme.spacing.sm} ref={cardRef} h='100%' w='100%'>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
@@ -89,9 +111,9 @@ const Log: NextPage = () => {
             }}
           >
             <FloatingDBLabelTextarea
+              forwardedRef={textAreaRef}
               debounce={500}
-              minRows={6}
-              maxRows={20}
+              minRows={rows - rowAdjustment}
               value={lootData}
               onChange={(value) => inputChangeHandler(String(value))}
               placeholder='Paste your RCLootCouncil JSON data here'

@@ -1,12 +1,5 @@
-import next, { NextApiRequest } from "next";
 import { prisma } from "../../prisma/client";
-import { rcLootItem } from "@prisma/client";
 import { RCLootItem } from "../../utils/types";
-
-interface ApiResponse<T> {
-  data?: T;
-  error?: any;
-}
 
 export default async function createRCLootItemRecord(item: RCLootItem, req: any) {
   const linkID = item.itemID;

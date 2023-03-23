@@ -44,8 +44,10 @@ function FloatingDBLabelTextarea({
   value: initialValue,
   onChange,
   debounce = 500,
+  forwardedRef,
   ...props
-}: { onChange: (change: string) => void; debounce?: number } & TextareaProps & Omit<TextareaProps, "onChange">) {
+}: { onChange: (change: string) => void; debounce?: number; forwardedRef: any } & TextareaProps &
+  Omit<TextareaProps, "onChange">) {
   const [focused, setFocused] = useState(false);
   // function inputValueChangeHandler(event: React.ChangeEvent<HTMLTextAreaElement>) {
   //   props.inputValueChange(event.currentTarget.value);
@@ -70,6 +72,7 @@ function FloatingDBLabelTextarea({
   return (
     <Textarea
       {...props}
+      ref={forwardedRef || undefined}
       autosize
       minRows={props.minRows || undefined}
       maxRows={props.maxRows || undefined}

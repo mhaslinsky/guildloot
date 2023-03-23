@@ -2,6 +2,7 @@ import { prisma } from "../../../prisma/client";
 import { getServerSession } from "next-auth";
 import createRCLootItemRecord from "../../../utils/functions/writeRCLootItemToDB";
 import { RCLootItem } from "../../../utils/types";
+import { rcLootItem } from "@prisma/client";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 
@@ -22,24 +23,29 @@ export default async function lootEndpoint(req: any, res: any) {
   if (req.method == "POST") {
     try {
       const guildID = req.body.currentGuild;
-      const itemData = JSON.parse(req.body.rcLootData);
+      const itemData: rcLootItem[] = JSON.parse(req.body.rcLootData);
+
       if (Array.isArray(itemData)) {
         if (itemData.length === 0) return res.status(400).json({ message: `Enter Valid Loot` });
-        const badItems: any[] = [];
-        for (const item of itemData) {
+
+        const promises = itemData.map(async (item, index) => {
           const formattedItem = formatItem(item, guildID);
           try {
             await createRCLootItemRecord(formattedItem, req);
+            console.log(`finished writing ${item.itemName} number ${index + 1} to db`);
           } catch (err) {
-            badItems.push(item);
+            console.error(`failed to write ${item.itemName} number ${index + 1} to db:`, err);
+            return item;
           }
-        }
-        console.log(badItems);
+        });
+
+        const badItems = (await Promise.all(promises)).filter(Boolean);
+
         if (badItems.length > 0) {
           if (badItems.length === itemData.length)
-            return res
-              .status(500)
-              .json({ message: `Error writing to loot history for all ${itemData.length} items` });
+            return res.status(500).json({
+              message: `Error writing to loot history for all ${itemData.length} items`,
+            });
           return res.status(207).json({
             message: `Succeeded writing ${itemData.length - badItems.length} of ${itemData.length} items`,
             badItems,
@@ -51,15 +57,15 @@ export default async function lootEndpoint(req: any, res: any) {
       } else {
         const singularItem = JSON.parse(req.body.rcLootData);
         const formattedItem = formatItem(singularItem, guildID);
+
         await createRCLootItemRecord(formattedItem, req);
+
         return res.status(200).json({ message: `Written to Loot History Successfully` });
       }
     } catch (err) {
-      console.log(err);
       if (err instanceof SyntaxError) {
         return res.status(400).json({ message: "Invalid JSON" });
       } else {
-        console.log(req.badRecord);
         return res.status(500).json({ message: "Error Writing to DB" });
       }
     }
