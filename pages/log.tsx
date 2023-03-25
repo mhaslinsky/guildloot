@@ -81,12 +81,12 @@ const Log: NextPage = () => {
     if (cardHeight < 795) setRowAdjustment(1);
     if (cardHeight < 530) setRowAdjustment(2);
     if (cardHeight < 266) setRowAdjustment(3);
-    console.log(rowAdjustment);
-    console.log(cardHeight, cardWidth);
+    // console.log(rowAdjustment);
+    // console.log(cardHeight, cardWidth);
     const lineHeight = parseInt(getComputedStyle(cardRef.current!).lineHeight);
-    console.log(cardHeight + " / " + lineHeight);
+    // console.log(cardHeight + " / " + lineHeight);
     const rows = Math.floor(cardHeight / lineHeight);
-    console.log("rows: " + rows);
+    // console.log("rows: " + rows);
     setRows(rows);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardRef, cardHeight, cardWidth]);
