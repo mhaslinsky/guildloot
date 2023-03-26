@@ -54,7 +54,7 @@ const Log: NextPage = () => {
         itemName,
         player,
       }));
-      const MC = formattedItems.map((item: { id: any; itemName: any; player: any }) => {
+      const modalCont = formattedItems.map((item: { id: any; itemName: any; player: any }) => {
         return (
           <Card key={item.id} mb={theme.spacing.xs}>
             <Text>id: {item.id}</Text>
@@ -63,8 +63,7 @@ const Log: NextPage = () => {
           </Card>
         );
       });
-      console.log(MC);
-      setModalContent(MC);
+      setModalContent(modalCont);
       setOpened(true);
     }
     if (isSuccess) {

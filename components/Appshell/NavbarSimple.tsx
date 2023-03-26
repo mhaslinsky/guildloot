@@ -14,12 +14,12 @@ import {
   Text,
 } from "@mantine/core";
 import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
-import { useNavBarStore, guildModalStore, useGuildStore } from "../utils/store/store";
+import { useNavBarStore, guildModalStore, useGuildStore } from "../../utils/store/store";
 import { useSession } from "next-auth/react";
-import { UserBadge } from "./UserBadge";
-import { AuthenticationForm } from "./AuthForm";
+import { UserBadge } from "../UserBadge";
+import { AuthenticationForm } from "../AuthForm";
 import Link from "next/link";
-import { GuildCreateForm } from "./GuildCreateForm";
+import { GuildCreateForm } from "../GuildCreateForm";
 import { useRouter } from "next/router";
 
 const useStyles = createStyles((theme, _params, getRef) => {

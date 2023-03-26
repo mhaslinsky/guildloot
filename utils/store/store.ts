@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import type { ColorScheme, DefaultMantineColor } from "@mantine/core";
+import { ColumnFiltersState, ColumnFilter } from "@tanstack/react-table";
 
 interface GuildVT {
   value: string;
@@ -25,25 +26,15 @@ export const useNavBarStore = create<navBarState>((set) => ({
   toggleNavBar: () => set((state: any) => ({ isNavBarOpen: !state.isNavBarOpen })),
 }));
 
-interface globalFilterState {
-  globalFilter: string;
-  setGlobalFilter: (filter: string) => void;
-}
+// interface autoCompleteState {
+//   autoCompleteData: any;
+//   setAutoCompleteData: (data: any) => void;
+// }
 
-export const useGlobalFilterStore = create<globalFilterState>((set) => ({
-  globalFilter: "",
-  setGlobalFilter: (filter: string) => set({ globalFilter: filter }),
-}));
-
-interface autoCompleteState {
-  autoCompleteData: any;
-  setAutoCompleteData: (data: any) => void;
-}
-
-export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
-  autoCompleteData: [],
-  setAutoCompleteData: (data: any) => set({ autoCompleteData: data }),
-}));
+// export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
+//   autoCompleteData: [],
+//   setAutoCompleteData: (data: any) => set({ autoCompleteData: data }),
+// }));
 
 interface guildState {
   currentGuildID: string | null;
@@ -110,8 +101,18 @@ export const useNumTablesStore = create<numTablesState>((set) => ({
   decrementNumTables: () => set((state: any) => ({ numTables: state.numTables - 1 })),
 }));
 
+interface columnFiltersState {
+  columnFilters: ColumnFilter[];
+  setColumnFilters: (filters: ColumnFilter[]) => void;
+}
+
+export const useColumnFiltersStore = create<columnFiltersState>((set) => ({
+  columnFilters: [],
+  setColumnFilters: (filters: ColumnFilter[]) => set({ columnFilters: filters }),
+}));
+
 if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("GuildStore", useGuildStore);
-  mountStoreDevtool("AutoComplete", useAutoCompleteDataStore);
+  mountStoreDevtool("ColumnFilters", useColumnFiltersStore);
   mountStoreDevtool("NumTables", useNumTablesStore);
 }

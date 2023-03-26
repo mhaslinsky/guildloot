@@ -5,6 +5,33 @@ import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 import { Guild } from "@prisma/client";
 
+export type guildMemberInfo = Guild & {
+  Admin: {
+    id: string;
+    name: string;
+    image: string | null;
+    lastSignedIn: Date | null;
+  };
+  officers: {
+    id: string;
+    name: string;
+    image: string | null;
+    lastSignedIn: Date | null;
+  }[];
+  members: {
+    id: string;
+    name: string;
+    image: string | null;
+    lastSignedIn: Date | null;
+  }[];
+  pending: {
+    id: string;
+    name: string;
+    image: string | null;
+    lastSignedIn: Date | null;
+  }[];
+};
+
 export default async function guildManagement(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
   const token =

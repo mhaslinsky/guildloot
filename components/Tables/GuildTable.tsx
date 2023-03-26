@@ -16,7 +16,7 @@ import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
-import { useAutoCompleteDataStore, useGlobalFilterStore } from "../../utils/store/store";
+// import { useAutoCompleteDataStore } from "../../utils/store/store";
 import { useMediaQuery } from "@mantine/hooks";
 
 declare module "@tanstack/table-core" {
@@ -41,9 +41,7 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
-  const globalFilter = useGlobalFilterStore((state) => state.globalFilter);
-  const setGlobalFilter = useGlobalFilterStore((state) => state.setGlobalFilter);
-  const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
+  // const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
   const isMobile = useMediaQuery("(max-width: 600px)");
 
   const table = useReactTable({
@@ -56,10 +54,7 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
     state: {
       sorting,
       columnVisibility,
-      globalFilter,
     },
-    globalFilterFn: fuzzyFilter,
-    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -69,15 +64,15 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
     onColumnVisibilityChange: setColumnVisibility,
   });
 
-  useEffect(() => {
-    let cbData: any[] = [];
-    table.getAllColumns().forEach((column) => {
-      if (column.id === "Request Membership") return;
-      cbData.push([...column.getFacetedUniqueValues().keys()]);
-    });
-    const flattened = cbData.flat();
-    setAutoCompleteData(flattened);
-  }, [setAutoCompleteData, table]);
+  // useEffect(() => {
+  //   let cbData: any[] = [];
+  //   table.getAllColumns().forEach((column) => {
+  //     if (column.id === "Request Membership") return;
+  //     cbData.push([...column.getFacetedUniqueValues().keys()]);
+  //   });
+  //   const flattened = cbData.flat();
+  //   setAutoCompleteData(flattened);
+  // }, [setAutoCompleteData, table]);
 
   return (
     <Box

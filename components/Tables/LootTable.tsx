@@ -11,15 +11,19 @@ import {
   getFacetedRowModel,
   getFilteredRowModel,
   ColumnFiltersState,
+  getPaginationRowModel,
+  PaginationState,
+  ColumnFilter,
+  OnChangeFn,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
 import { SortAscending, SortDescending, Filter as FilterIcon } from "tabler-icons-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
-import { useMediaQuery } from "@mantine/hooks";
 import FilterPopover from "../Filter/FilterPopover";
 import { useResizeObserver } from "@mantine/hooks";
+import { useColumnFiltersStore } from "../../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -42,9 +46,14 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFiltersSub, setColumnFiltersSub] = useColumnFiltersStore((state) => [
+    state.columnFilters,
+    state.setColumnFilters,
+  ]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const [ref, rect] = useResizeObserver();
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
 
   const table = useReactTable({
     data: props.data,
@@ -57,8 +66,8 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       sorting,
       columnVisibility,
       columnFilters,
+      pagination,
     },
-    globalFilterFn: fuzzyFilter,
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -66,6 +75,7 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
   });
 
@@ -79,6 +89,16 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true, Actions: true });
     }
   }, [rect, table]);
+
+  useEffect(() => {
+    if (columnFiltersSub.length !== columnFilters.length) setColumnFilters(columnFiltersSub);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnFiltersSub]);
+
+  useEffect(() => {
+    if (columnFiltersSub.length !== columnFilters.length) setColumnFiltersSub(columnFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnFilters]);
 
   return (
     <Box

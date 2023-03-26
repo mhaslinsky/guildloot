@@ -1,14 +1,15 @@
 import { createStyles, Header, Burger, MediaQuery, Flex, Title, Card } from "@mantine/core";
-import { useGuildStore, useNavBarStore } from "../utils/store/store";
-import GuildSelect from "./GuildSelect";
+import { useGuildStore, useNavBarStore } from "../../utils/store/store";
+import GuildSelect from "../GuildSelect";
 import Link from "next/link";
-import theme from "../styles/theme";
+import theme from "../../styles/theme";
 import { useEffect } from "react";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
-import { ColorSchemeSwitcher } from "./Buttons/ColorSchemeSwitcher";
-import NumofTableSelector from "./Buttons/NumofTableSelector";
+import { useGrabUserInfo } from "../../utils/hooks/useUserInfo";
+import { ColorSchemeSwitcher } from "../Buttons/ColorSchemeSwitcher";
+import NumofTableSelector from "../Buttons/NumofTableSelector";
 import { useMediaQuery } from "@mantine/hooks";
 import { useRouter } from "next/router";
+import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -42,6 +43,7 @@ export function HeaderSearch() {
     state.setCurrentGuildName,
     state.setCurrentGuildID,
   ]);
+
   const isMobile = useMediaQuery("(max-width: 600px)");
   const router = useRouter();
 
@@ -97,7 +99,14 @@ export function HeaderSearch() {
           </MediaQuery>
         </Flex>
         <Flex align='center' pl={theme.spacing.md} w='100%' justify='space-between'>
-          {router.pathname === "/" && !isMobile ? <NumofTableSelector /> : <div></div>}
+          {router.pathname === "/" && !isMobile ? (
+            <>
+              <NumofTableSelector />
+              <ColumnFilterDisplay />
+            </>
+          ) : (
+            <div></div>
+          )}
           <Flex gap={theme.spacing.sm} align='center' direction='row'>
             <ColorSchemeSwitcher />
             <GuildSelect />
