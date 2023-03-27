@@ -1,4 +1,4 @@
-import { Flex, Card, ActionIcon, Text, Group, Divider, Stack } from "@mantine/core";
+import { Flex, Card, ActionIcon, Text, Group, Divider, Stack, ScrollArea } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import { RCLootItem } from "../utils/types";
@@ -87,30 +87,19 @@ const Home: NextPage = () => {
   );
 
   return (
-    <>
-      <Flex justify='center' align='center'>
-        {status == "loading" && <Text>Checking for cached login...</Text>}
-        {!session && status == "unauthenticated" && <HeroTitle />}
-        {initialRenderComplete && session && (
-          <>
-            <Stack w='100%'>
-              <Card>
-                <Group align='flex-start' grow>
-                  {Array.from({ length: numTables }).map((elem, index) => {
-                    return (
-                      <Group key={index} align='flex-start'>
-                        <LootTable columns={columns} loading={isFetching} data={data || []} />
-                        <Divider size='lg' orientation='vertical' />
-                      </Group>
-                    );
-                  })}
-                </Group>
-              </Card>
-            </Stack>
-          </>
-        )}
-      </Flex>
-    </>
+    <Flex h='100%' justify='center' align='center'>
+      {status == "loading" && <Text>Checking for cached login...</Text>}
+      {!session && status == "unauthenticated" && <HeroTitle />}
+      {initialRenderComplete && session && (
+        <Card h='100%' w='100%' m={0}>
+          <Group h='100%' align='flex-start' grow>
+            {Array.from({ length: numTables }).map((elem, index) => {
+              return <LootTable key={index} columns={columns} loading={isFetching} data={data || []} />;
+            })}
+          </Group>
+        </Card>
+      )}
+    </Flex>
   );
 };
 

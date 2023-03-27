@@ -1,5 +1,5 @@
 import { rcLootItem } from "@prisma/client";
-import { Box, Flex, LoadingOverlay, Table as Mtable, Text } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -13,12 +13,10 @@ import {
   ColumnFiltersState,
   getPaginationRowModel,
   PaginationState,
-  ColumnFilter,
-  OnChangeFn,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
-import { SortAscending, SortDescending, Filter as FilterIcon } from "tabler-icons-react";
+import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
@@ -89,9 +87,11 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
 
   return (
     <Box
+      component={ScrollArea}
       sx={(theme) => ({
         flexGrow: 1,
         position: "relative",
+        height: "100%",
       })}
     >
       <LoadingOverlay visible={props.loading} />

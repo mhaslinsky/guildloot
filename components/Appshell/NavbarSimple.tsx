@@ -23,7 +23,7 @@ import { GuildCreateForm } from "../GuildCreateForm";
 import { useRouter } from "next/router";
 
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef("icon");
+  const icon: any = getRef("icon");
   return {
     header: {
       paddingBottom: theme.spacing.md,

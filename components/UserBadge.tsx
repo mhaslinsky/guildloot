@@ -57,7 +57,12 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
   const currentGuildName = useGuildStore((state) => state.currentGuildName);
 
   return (
-    <Card p={10}>
+    <Card
+      sx={(theme) => ({
+        backgroundColor: theme.fn.variant({ variant: "light", color: theme.primaryColor }).background,
+      })}
+      p={10}
+    >
       <Flex
         sx={(theme) => ({
           position: "relative",

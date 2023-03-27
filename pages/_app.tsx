@@ -44,7 +44,8 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
                 <AppShell
                   styles={(theme) => ({
                     main: {
-                      minHeight: "100svh",
+                      minHeight: "unset",
+                      height: "calc(100svh - var(--mantine-header-height, 0px) + 56px)",
                     },
                   })}
                   header={<HeaderSearch />}
