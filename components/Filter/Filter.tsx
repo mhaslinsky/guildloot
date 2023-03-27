@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react";
 export default function Filter({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
   const localStyles = createStyles((theme) => ({
     input: {
-      color: theme.colors[theme.primaryColor][2],
+      color: theme.colors[theme.primaryColor][4],
       fontWeight: "bold",
       fontSize: theme.fontSizes.lg,
     },

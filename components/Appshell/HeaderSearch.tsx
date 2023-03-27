@@ -9,7 +9,6 @@ import { ColorSchemeSwitcher } from "../Buttons/ColorSchemeSwitcher";
 import NumofTableSelector from "../Buttons/NumofTableSelector";
 import { useMediaQuery } from "@mantine/hooks";
 import { useRouter } from "next/router";
-import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -99,14 +98,7 @@ export function HeaderSearch() {
           </MediaQuery>
         </Flex>
         <Flex align='center' pl={theme.spacing.md} w='100%' justify='space-between'>
-          {router.pathname === "/" && !isMobile ? (
-            <>
-              <NumofTableSelector />
-              <ColumnFilterDisplay />
-            </>
-          ) : (
-            <div></div>
-          )}
+          {router.pathname === "/" && !isMobile ? <NumofTableSelector /> : <div></div>}
           <Flex gap={theme.spacing.sm} align='center' direction='row'>
             <ColorSchemeSwitcher />
             <GuildSelect />

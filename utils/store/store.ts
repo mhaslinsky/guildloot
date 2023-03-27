@@ -85,7 +85,7 @@ export const useThemeStore = create<themeStoreState>((set) => ({
   colorScheme: "dark",
   setColorScheme: (scheme: ColorScheme) => set({ colorScheme: scheme }),
   toggleColorScheme: () => set((state: any) => ({ colorScheme: state.colorScheme === "dark" ? "light" : "dark" })),
-  primaryColor: "green",
+  primaryColor: "red",
   setPrimaryColor: (color: DefaultMantineColor) => set({ primaryColor: color }),
 }));
 
@@ -101,18 +101,7 @@ export const useNumTablesStore = create<numTablesState>((set) => ({
   decrementNumTables: () => set((state: any) => ({ numTables: state.numTables - 1 })),
 }));
 
-interface columnFiltersState {
-  columnFilters: ColumnFilter[];
-  setColumnFilters: (filters: ColumnFilter[]) => void;
-}
-
-export const useColumnFiltersStore = create<columnFiltersState>((set) => ({
-  columnFilters: [],
-  setColumnFilters: (filters: ColumnFilter[]) => set({ columnFilters: filters }),
-}));
-
 if (process.env.NODE_ENV === "development") {
   mountStoreDevtool("GuildStore", useGuildStore);
-  mountStoreDevtool("ColumnFilters", useColumnFiltersStore);
   mountStoreDevtool("NumTables", useNumTablesStore);
 }

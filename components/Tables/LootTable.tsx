@@ -23,7 +23,8 @@ import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
 import { useResizeObserver } from "@mantine/hooks";
-import { useColumnFiltersStore } from "../../utils/store/store";
+import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
+import theme from "../../styles/theme";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -46,10 +47,6 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnFiltersSub, setColumnFiltersSub] = useColumnFiltersStore((state) => [
-    state.columnFilters,
-    state.setColumnFilters,
-  ]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const [ref, rect] = useResizeObserver();
@@ -90,16 +87,6 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
     }
   }, [rect, table]);
 
-  useEffect(() => {
-    if (columnFiltersSub.length !== columnFilters.length) setColumnFilters(columnFiltersSub);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columnFiltersSub]);
-
-  useEffect(() => {
-    if (columnFiltersSub.length !== columnFilters.length) setColumnFiltersSub(columnFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columnFilters]);
-
   return (
     <Box
       sx={(theme) => ({
@@ -108,8 +95,8 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       })}
     >
       <LoadingOverlay visible={props.loading} />
-      {/* <Text>{JSON.stringify(rect)}</Text> */}
-      <Mtable ref={ref}>
+      <ColumnFilterDisplay state={columnFilters} setState={setColumnFilters} />
+      <Mtable mt={theme.spacing.sm} ref={ref}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
