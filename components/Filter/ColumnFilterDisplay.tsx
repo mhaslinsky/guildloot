@@ -76,6 +76,7 @@ export function ColumnFilterDisplay(props: {
     <Card
       className={cx(classes.card)}
       p={4}
+      mt={theme.spacing.md}
       onClick={() => {
         props.setState(props.state.filter((f) => f.id !== filter.id));
       }}
@@ -86,7 +87,7 @@ export function ColumnFilterDisplay(props: {
   ));
 
   const noFilters = (
-    <Card className={cx(classes.nfCard)} p={4}>
+    <Card mt={theme.spacing.md} className={cx(classes.nfCard)} p={4}>
       Filters: None
     </Card>
   );

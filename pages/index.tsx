@@ -91,7 +91,7 @@ const Home: NextPage = () => {
       {status == "loading" && <Text>Checking for cached login...</Text>}
       {!session && status == "unauthenticated" && <HeroTitle />}
       {initialRenderComplete && session && (
-        <Card h='100%' w='100%' m={0}>
+        <Card pt={0} pb={0} pr={0} h='100%' w='100%'>
           <Group h='100%' align='flex-start' grow>
             {Array.from({ length: numTables }).map((elem, index) => {
               return <LootTable key={index} columns={columns} loading={isFetching} data={data || []} />;

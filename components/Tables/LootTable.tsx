@@ -16,7 +16,7 @@ import {
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
-import { SortAscending, SortDescending } from "tabler-icons-react";
+import { CursorText, SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
@@ -88,10 +88,19 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   return (
     <Box
       component={ScrollArea}
-      sx={(theme) => ({
-        flexGrow: 1,
-        position: "relative",
-        height: "100%",
+      offsetScrollbars
+      styles={(theme) => ({
+        root: {
+          flexGrow: 1,
+          position: "relative",
+          height: "100%",
+        },
+        scrollbar: {
+          '&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+            backgroundColor:
+              theme.colorScheme === "dark" ? theme.colors[theme.primaryColor][7] : theme.colors.gray[3],
+          },
+        },
       })}
     >
       <LoadingOverlay visible={props.loading} />
@@ -118,9 +127,11 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
                           <FilterPopover table={table} column={header.column} />
                         )}
                         {
-                          { asc: <SortAscending size={18} />, desc: <SortDescending size={18} /> }[
-                            header.column.getIsSorted() as string
-                          ]
+                          {
+                            asc: <SortAscending size={18} />,
+                            desc: <SortDescending size={18} />,
+                            false: "",
+                          }[header.column.getIsSorted() as string]
                         }
                       </>
                     </Flex>
