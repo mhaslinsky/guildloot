@@ -2,71 +2,63 @@ import { Button, Flex, NativeSelect, Select, Text } from "@mantine/core";
 import { ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "tabler-icons-react";
 import { rcLootItem } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
+import { useEffect } from "react";
+import theme from "../styles/theme";
 
 export function PaginationControls(props: { table: Table<rcLootItem> }) {
   const { table } = props;
-  //   const { pageSize } = pagination;
+
+  useEffect(() => {
+    table.setPageSize(50);
+  }, []);
 
   return (
-    <Flex justify='space-between' align='center' wrap='wrap' mb={4}>
-      <Flex align='center' mb={{ base: 2, md: 0 }}>
-        <Text fz='sm' mr={2}>
-          Show
-        </Text>
-        <NativeSelect
-          value={table.getState().pagination.pageSize.toString()}
-          onChange={(e) => {
-            console.log(e.target.value);
-            table.setPageSize(Number(e.target.value));
-          }}
-          data={["10", "20", "30", "40", "50", "100"]}
-        >
-          {["10", "20", "30", "40", "50", "100"].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              {pageSize}
-            </option>
-          ))}
-        </NativeSelect>
-      </Flex>
-      <Flex align='center'>
+    <Flex gap={1} justify='space-between' align='center' wrap='wrap' mb={4} pr={1}>
+      <NativeSelect
+        value={table.getState().pagination.pageSize.toString()}
+        onChange={(e) => {
+          table.setPageSize(Number(e.target.value));
+        }}
+        data={["10", "20", "30", "40", "50", "100"]}
+      />
+      <Flex gap={1} align='center'>
         <Button
           size='sm'
-          variant='outline'
+          variant='filled'
           onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage}
+          disabled={table.getState().pagination.pageIndex === 0 ? true : false}
           aria-label={"First page"}
         >
           <ChevronsLeft size={18} />
         </Button>
         <Button
           size='sm'
-          variant='outline'
+          variant='filled'
           onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage}
+          disabled={table.getState().pagination.pageIndex === 0 ? true : false}
           aria-label={"Previous page"}
         >
           <ChevronLeft size={18} />
         </Button>
         <Button
           size='sm'
-          variant='outline'
-          onClick={() => {
-            console.log(table.getCanNextPage);
-            table.nextPage();
-          }}
-          disabled={!table.getCanNextPage}
+          variant='filled'
+          onClick={() => table.nextPage()}
+          disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1 ? true : false}
           aria-label={"Next page"}
         >
           <ChevronRight size={18} />
+          {table.getState().pagination.pageIndex + 1}
         </Button>
         <Button
           size='sm'
-          variant='outline'
+          variant='filled'
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanPreviousPage}
+          disabled={table.getState().pagination.pageIndex === table.getPageCount() - 1 ? true : false}
           aria-label={"Last page"}
         >
           <ChevronsRight size={18} />
+          {table.getPageCount()}
         </Button>
       </Flex>
     </Flex>

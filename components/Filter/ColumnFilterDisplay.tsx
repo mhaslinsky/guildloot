@@ -1,6 +1,6 @@
-import { Card, createStyles, Group, Text } from "@mantine/core";
+import { Card, createStyles, Group, Flex } from "@mantine/core";
 import { ColumnFiltersState } from "@tanstack/react-table";
-import theme from "../../styles/theme";
+import { useEffect } from "react";
 
 interface FilterText {
   [key: string]: string;
@@ -69,6 +69,7 @@ const useStyles = createStyles((theme) => ({
 export function ColumnFilterDisplay(props: {
   state: ColumnFiltersState;
   setState: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+  numFilters: (num: number) => void;
 }) {
   const { classes, cx } = useStyles();
 
@@ -76,7 +77,6 @@ export function ColumnFilterDisplay(props: {
     <Card
       className={cx(classes.card)}
       p={4}
-      mt={theme.spacing.md}
       onClick={() => {
         props.setState(props.state.filter((f) => f.id !== filter.id));
       }}
@@ -87,10 +87,19 @@ export function ColumnFilterDisplay(props: {
   ));
 
   const noFilters = (
-    <Card mt={theme.spacing.md} className={cx(classes.nfCard)} p={4}>
+    <Card className={cx(classes.nfCard)} p={4}>
       Filters: None
     </Card>
   );
 
-  return <Group>{displayFilters.length > 0 ? <Group>{displayFilters}</Group> : noFilters}</Group>;
+  useEffect(() => {
+    props.numFilters(displayFilters.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayFilters]);
+
+  return (
+    <Flex dir='row' gap='sm' align='center'>
+      {displayFilters.length > 0 ? displayFilters : noFilters}
+    </Flex>
+  );
 }

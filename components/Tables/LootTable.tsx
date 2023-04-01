@@ -20,7 +20,7 @@ import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
-import { useResizeObserver } from "@mantine/hooks";
+import { useElementSize, useResizeObserver } from "@mantine/hooks";
 import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 import theme from "../../styles/theme";
 import { PaginationControls } from "../PaginationControls";
@@ -49,6 +49,8 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const [ref, rect] = useResizeObserver();
+  const [flexDirection, setFlexDirection] = useState<"column" | "row">("row");
+  const [numFilters, setNumFilters] = useState(0);
   // const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
 
   const table = useReactTable({
@@ -75,15 +77,28 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   });
 
   useEffect(() => {
-    if (rect.width < 721) {
-      table.setColumnVisibility({ Actions: false });
-    }
     if (rect.width < 600) {
       table.setColumnVisibility({ Instance: false, Boss: false, dateTime: false, Actions: false });
     } else {
       table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true, Actions: true });
     }
   }, [rect, table]);
+
+  useEffect(() => {
+    if (rect.width > 1060) {
+      setFlexDirection("row");
+    } else if (rect.width < 1060 && numFilters > 1) {
+      setFlexDirection("column");
+    } else if (rect.width < 436) {
+      setFlexDirection("column");
+    } else {
+      setFlexDirection("row");
+    }
+  }, [numFilters, rect]);
+
+  function displayHandler(numFilters: number) {
+    setNumFilters(numFilters);
+  }
 
   return (
     <Box
@@ -104,10 +119,10 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       })}
     >
       <LoadingOverlay visible={props.loading} />
-      <Group>
-        <ColumnFilterDisplay state={columnFilters} setState={setColumnFilters} />
+      <Flex direction={flexDirection} gap={10} justify='space-between' align='center' pt={theme.spacing.sm}>
+        <ColumnFilterDisplay state={columnFilters} setState={setColumnFilters} numFilters={displayHandler} />
         <PaginationControls table={table} />
-      </Group>
+      </Flex>
       <Mtable mt={theme.spacing.sm} ref={ref}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
