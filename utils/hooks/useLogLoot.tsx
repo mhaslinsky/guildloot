@@ -4,7 +4,6 @@ import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
 import { ExclamationMark } from "tabler-icons-react";
 import { queryClient } from "../queryClient";
-import { rcLootItem } from "@prisma/client";
 
 const logGuildLoot = async (rcLootData: string | undefined, currentGuild: string | null) => {
   if (!rcLootData) return Promise.reject({ message: "Please enter some loot" });

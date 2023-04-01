@@ -22,7 +22,6 @@ const Log: NextPage = () => {
   const { data, mutate: logloot, isSuccess } = useLogLoot();
   const [opened, setOpened] = useState(false);
   const [modalContent, setModalContent] = useState([]);
-  const { height, width } = useViewportSize();
   const { ref: cardRef, width: cardWidth, height: cardHeight } = useElementSize();
 
   const [rows, setRows] = useState(10);
@@ -46,7 +45,6 @@ const Log: NextPage = () => {
   }, [setAvailableGuilds, setCurrentGuildID, setCurrentGuildName, userData]);
 
   useEffect(() => {
-    console.log(data);
     if (data?.badItems) {
       if (data.badItems.length === 0) return;
       const formattedItems = data.badItems.map(({ id, itemName, player }: rcLootItem) => ({
@@ -80,12 +78,9 @@ const Log: NextPage = () => {
     if (cardHeight < 795) setRowAdjustment(1);
     if (cardHeight < 530) setRowAdjustment(2);
     if (cardHeight < 266) setRowAdjustment(3);
-    // console.log(rowAdjustment);
-    // console.log(cardHeight, cardWidth);
+
     const lineHeight = parseInt(getComputedStyle(cardRef.current!).lineHeight);
-    // console.log(cardHeight + " / " + lineHeight);
     const rows = Math.floor(cardHeight / lineHeight);
-    // console.log("rows: " + rows);
     setRows(rows);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardRef, cardHeight, cardWidth]);

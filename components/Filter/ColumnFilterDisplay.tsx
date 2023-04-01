@@ -92,5 +92,5 @@ export function ColumnFilterDisplay(props: {
     </Card>
   );
 
-  return <Group>{displayFilters.length > 0 ? displayFilters : noFilters}</Group>;
+  return <Group>{displayFilters.length > 0 ? <Group>{displayFilters}</Group> : noFilters}</Group>;
 }

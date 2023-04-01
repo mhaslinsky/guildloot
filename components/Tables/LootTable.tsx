@@ -1,5 +1,5 @@
 import { rcLootItem } from "@prisma/client";
-import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable, Group } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -16,13 +16,14 @@ import {
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
-import { CursorText, SortAscending, SortDescending } from "tabler-icons-react";
+import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
 import { useResizeObserver } from "@mantine/hooks";
 import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 import theme from "../../styles/theme";
+import { PaginationControls } from "../PaginationControls";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -48,7 +49,7 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const [ref, rect] = useResizeObserver();
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
+  // const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
 
   const table = useReactTable({
     data: props.data,
@@ -61,7 +62,6 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       sorting,
       columnVisibility,
       columnFilters,
-      pagination,
     },
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
@@ -104,7 +104,10 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }
       })}
     >
       <LoadingOverlay visible={props.loading} />
-      <ColumnFilterDisplay state={columnFilters} setState={setColumnFilters} />
+      <Group>
+        <ColumnFilterDisplay state={columnFilters} setState={setColumnFilters} />
+        <PaginationControls table={table} />
+      </Group>
       <Mtable mt={theme.spacing.sm} ref={ref}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
