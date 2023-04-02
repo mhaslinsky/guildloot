@@ -10,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TrackerSource {
+  RC
+  GARGUL
+}
+
 model rcLootItem {
   id            String    @id
   player        String
@@ -31,6 +36,38 @@ model rcLootItem {
   note          String
   owner         String
   itemName      String
+
+  guild   Guild?  @relation(fields: [guildId], references: [id])
+  guildId String?
+
+  bLootDBItem blizzAPIItem? @relation(fields: [itemId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model lootItem {
+  id            String        @id @default(cuid())
+  trackerId     String
+  source        TrackerSource
+  player        String
+  dateTime      DateTime?
+  itemId        Int
+  itemString    String?
+  response      String?
+  offspec       Int?
+  votes         Int?
+  class         String?
+  instance      String?
+  boss          String?
+  gear1         String?
+  gear2         String?
+  responseId    String?
+  isAwardReason Boolean?
+  rollType      String?
+  equipLoc      String?
+  note          String?
+  owner         String?
+  itemName      String?
 
   guild   Guild?  @relation(fields: [guildId], references: [id])
   guildId String?
@@ -62,7 +99,8 @@ model blizzAPIItem {
   previewSet          Json?
   thumbnail           String
 
-  dropList rcLootItem[]
+  dropList      rcLootItem[]
+  dropInstances lootItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,6 +118,7 @@ model Guild {
   pending  User[]  @relation("Pending")
 
   rcLootItem rcLootItem[]
+  lootItem   lootItem[]
 }
 
 //Next Auth Models

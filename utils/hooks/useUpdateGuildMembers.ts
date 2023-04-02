@@ -26,8 +26,7 @@ export function useUpdateGuildMembers() {
   ]);
 
   const mutation = useMutation({
-    mutationFn: (variables: updateMemberArgs) =>
-      updateGuildMembers(variables.role, variables.userID, currentGuildID),
+    mutationFn: (args: updateMemberArgs) => updateGuildMembers(args.role, args.userID, currentGuildID),
     onError: (err) => {
       if (err instanceof AxiosError) {
         showNotification({

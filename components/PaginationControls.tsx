@@ -10,6 +10,7 @@ export function PaginationControls(props: { table: Table<rcLootItem> }) {
 
   useEffect(() => {
     table.setPageSize(50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
