@@ -64,6 +64,7 @@ model lootItem {
   responseId    String?
   isAwardReason Boolean?
   rollType      String?
+  subType       String?
   equipLoc      String?
   note          String?
   owner         String?
@@ -75,6 +76,8 @@ model lootItem {
   bLootDBItem blizzAPIItem? @relation(fields: [itemId], references: [id])
 
   createdAt DateTime @default(now())
+
+  @@unique([trackerId, player])
 }
 
 model blizzAPIItem {

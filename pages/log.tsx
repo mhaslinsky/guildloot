@@ -2,12 +2,12 @@ import { NextPage } from "next";
 import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
 import { useEffect, useRef, useState } from "react";
 import { useGuildStore } from "../utils/store/store";
-import { Button, Card, Group, JsonInput, Modal, Stack, Tabs, TabsValue, Text } from "@mantine/core";
+import { Badge, Button, Card, Group, JsonInput, Modal, Stack, Tabs, TabsValue, Text } from "@mantine/core";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useLogLoot } from "../utils/hooks/useLogLoot";
 import theme from "../styles/theme";
 import { rcLootItem } from "@prisma/client";
-import { useElementSize, useViewportSize } from "@mantine/hooks";
+import { useElementSize } from "@mantine/hooks";
 
 const Log: NextPage = () => {
   const textAreaRef = useRef(null);
@@ -23,8 +23,6 @@ const Log: NextPage = () => {
   const [opened, setOpened] = useState(false);
   const [modalContent, setModalContent] = useState([]);
   const { ref: cardRef, width: cardWidth, height: cardHeight } = useElementSize();
-  // const [rows, setRows] = useState(10);
-  // const [rowAdjustment, setRowAdjustment] = useState(0);
 
   useEffect(() => {
     if (userData) {
@@ -73,18 +71,6 @@ const Log: NextPage = () => {
     setLootData(value);
   };
 
-  // useEffect(() => {
-  //   if (cardHeight > 795) setRowAdjustment(0);
-  //   if (cardHeight < 795) setRowAdjustment(1);
-  //   if (cardHeight < 530) setRowAdjustment(2);
-  //   if (cardHeight < 266) setRowAdjustment(3);
-
-  //   const lineHeight = parseInt(getComputedStyle(cardRef.current!).lineHeight);
-  //   const rows = Math.floor(cardHeight / lineHeight);
-  //   setRows(rows);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [cardRef, cardHeight, cardWidth]);
-
   return (
     <>
       <Modal centered withCloseButton={false} opened={opened} onClose={() => setOpened(false)}>
@@ -98,7 +84,9 @@ const Log: NextPage = () => {
       </Modal>
       <Tabs value={activeTab} onTabChange={setActiveTab}>
         <Tabs.List>
-          <Tabs.Tab value='RCLootCouncil'>RCLootCouncil (Preferred)</Tabs.Tab>
+          <Tabs.Tab value='RCLootCouncil'>
+            RCLootCouncil <Badge>Preferred</Badge>
+          </Tabs.Tab>
           <Tabs.Tab value='Gargul'>Gargul</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value='Gargul' pt='xs'>
@@ -107,7 +95,7 @@ const Log: NextPage = () => {
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  logloot({ rcLootData: lootData, addon: activeTab });
+                  logloot({ lootData, addon: activeTab });
                 }}
               >
                 <FloatingDBLabelTextarea
@@ -135,10 +123,12 @@ const Log: NextPage = () => {
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  logloot({ rcLootData: lootData, addon: activeTab });
+                  logloot({ lootData, addon: activeTab });
                 }}
               >
                 <JsonInput
+                  value={lootData}
+                  onChange={(value) => inputChangeHandler(String(value))}
                   label='Your JSON data, exported from the RCLootCouncil addon'
                   placeholder={` Example:
                   [{ "player": "Todd-Skyfury",
@@ -188,7 +178,7 @@ const Log: NextPage = () => {
                   validationError='Invalid json'
                   formatOnBlur
                   autosize
-                  minRows={10}
+                  minRows={20}
                 />
                 <Group position='right' mt='xs'>
                   <Button type='submit'>Submit</Button>

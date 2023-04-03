@@ -1,12 +1,12 @@
 import { prisma } from "../../prisma/client";
-import { RCLootItem } from "../../utils/types";
 
-export default async function createRCLootItemRecord(item: RCLootItem, req: any) {
+export async function createRCLootItemRecord(item: any, req: any) {
   const linkID = item.itemID;
   try {
-    await prisma.rcLootItem.create({
+    await prisma.lootItem.create({
       data: {
-        id: item.id,
+        trackerId: item.id,
+        source: "RC",
         player: item.player,
         dateTime: item.dateTime != null ? item.dateTime : undefined,
         itemString: item.itemString,
@@ -34,3 +34,5 @@ export default async function createRCLootItemRecord(item: RCLootItem, req: any)
     throw "rclootID: " + item.id + " error: " + error;
   }
 }
+
+export async function createGargulLootItemRecord() {}

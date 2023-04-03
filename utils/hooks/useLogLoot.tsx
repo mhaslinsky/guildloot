@@ -6,21 +6,22 @@ import { ExclamationMark } from "tabler-icons-react";
 import { queryClient } from "../queryClient";
 
 type logLootArgs = {
-  rcLootData: string | undefined;
+  lootData: string | undefined;
   addon: "RCLootCouncil" | "Gargul" | string | null;
 };
 
 const logGuildLoot = async (
-  rcLootData: string | undefined,
+  lootData: string | undefined,
   addon: "RCLootCouncil" | "Gargul" | string | null,
   currentGuild: string | null
 ) => {
-  if (addon != "RCLootCouncil" || "Gargul")
+  console.log(addon as string);
+  if (!(addon == "RCLootCouncil" || addon == "Gargul"))
     return Promise.reject({ message: "Please select a valid loot tracker" });
-  if (!rcLootData) return Promise.reject({ message: "Please enter some loot" });
+  if (!lootData) return Promise.reject({ message: "Please enter some loot" });
   if (!currentGuild) return Promise.reject({ message: "Please select a guild" });
   const { data } = await axios.post("/api/loot/post", {
-    rcLootData,
+    lootData,
     addon,
     currentGuild,
   });
@@ -30,7 +31,7 @@ const logGuildLoot = async (
 export function useLogLoot() {
   const [currentGuildID] = useGuildStore((state) => [state.currentGuildID]);
   const mutation = useMutation({
-    mutationFn: (args: logLootArgs) => logGuildLoot(args.rcLootData, args.addon, currentGuildID),
+    mutationFn: (args: logLootArgs) => logGuildLoot(args.lootData, args.addon, currentGuildID),
     onError: (error) => {
       if (error instanceof AxiosError) {
         console.log(error);
