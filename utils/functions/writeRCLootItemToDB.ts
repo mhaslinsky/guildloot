@@ -35,4 +35,12 @@ export async function createRCLootItemRecord(item: any, req: any) {
   }
 }
 
-export async function createGargulLootItemRecord() {}
+export async function createGargulLootItemRecord(item: any, req: any) {
+  const linkID = item.itemID;
+  try {
+    // console.log("creating record for", item.itemName);
+  } catch (error) {
+    req.badRecord = item.id;
+    throw "rclootID: " + item.id + " error: " + error;
+  }
+}

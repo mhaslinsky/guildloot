@@ -78,45 +78,57 @@ async function processRCLootData(guildID: any, itemData: any, req: any, res: any
 
 async function processGargulLootData(guildID: any, itemData: any, req: any, res: any) {
   const parsedData = Papa.parse(itemData, { header: true, dynamicTyping: true }).data as PapaReturn[];
-  const expandedData = parsedData.map((item) => {
+
+  const formattedData = parsedData.map((item) => {
     const { itemID, dateTime, character, offspec, id } = item;
     const itemData = items.find((item) => item.itemId == itemID);
+
     if (!itemData) {
       console.log(`Item ${itemID} not found in database`);
       return null;
     } else {
-      let source;
-      for (let i = 0; i < itemData.tooltip.length; i++) {
-        console.log(itemData.tooltip[i].label);
-        if (itemData.tooltip[i].label === "Dropped by:") {
-          source = itemData.tooltip[i + 1].label.split(": ")[1];
-          break;
-        }
-      }
-      console.log(source);
-      // return {
-      //   gargulID: id,
-      //   itemID,
-      //   itemName: itemData.name || "Unknown",
-      //   dateTime,
-      //   character,
-      //   offspec,
-      // };
-    }
+      let droppedBy;
 
-    // return {
-    //   ...rest,
-    //   itemID,
-    //   itemName: name,
-    //   itemIcon: icon,
-    //   itemQuality: quality,
-    //   itemLevel,
-    //   itemClass,
-    //   itemSubclass: subclass,
-    //   guild: guildID,
-    // };
+      if (itemData.source) {
+        if (itemData.source.category === "Boss Drop") {
+          droppedBy = itemData.source.name;
+        } else if (itemData.source.category === "Zone Drop") {
+          droppedBy = zones.find((zone) => zone.id == itemData.source.zone)?.name;
+        }
+      } else {
+        const tooltipArray = itemData.tooltip;
+
+        const droppedByLabel = tooltipArray.find((tooltip) => tooltip.label.match(/^Dropped by: (.*)/)?.[1]);
+
+        droppedBy = droppedByLabel?.label.substring(12);
+      }
+
+      return {
+        gargulID: id,
+        itemID,
+        itemName: itemData.name || "Unknown",
+        dateTime,
+        character,
+        offspec,
+        boss: droppedBy || "Multiple",
+        instance: "Unknown",
+      };
+    }
   });
 
+  const promises = formattedData.map(async (item, index) => {
+    const formattedItem = formatItem(item, guildID);
+    try {
+      await createGargulLootItemRecord(formattedItem, req);
+      // console.log(`finished writing ${item?.itemName} from ${item?.droppedBy} number ${index + 1} to db`);
+    } catch (err) {
+      // console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
+      return item;
+    }
+  });
+
+  const badItems = (await Promise.all(promises)).filter(Boolean);
+  console.log(badItems);
   return res.status(404).json({ message: `Gargul Support NYI` });
 }
 
