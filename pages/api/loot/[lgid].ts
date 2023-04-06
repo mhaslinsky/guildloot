@@ -5,6 +5,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 import Papa from "papaparse";
 import Database from "wow-classic-items";
+import { Item } from "wow-classic-items/types/Item";
 
 type PapaReturn = {
   dateTime: string;
@@ -76,50 +77,160 @@ async function processRCLootData(guildID: any, itemData: any, req: any, res: any
   }
 }
 
+function getInstanceFromBoss(bossName: string) {
+  const naxxramasBosses = [
+    "Anub'Rekhan",
+    "Faerlina",
+    "Maexxna",
+    "Noth the Plaguebringer",
+    "Heigan the Unclean",
+    "Loatheb",
+    "Instructor Razuvious",
+    "Gothik the Harvester",
+    "The Four Horsemen",
+    "Patchwerk",
+    "Grobbulus",
+    "Gluth",
+    "Thaddius",
+    "Sapphiron",
+    "Kel'Thuzad",
+  ];
+  const eyeOfEternityBosses = ["Malygos"];
+  const vaultOfArchavonBosses = [
+    "Archavon the Stone Watcher",
+    "Emalon the Storm Watcher",
+    "Koralon the Flame Watcher",
+    "Toravon the Ice Watcher",
+  ];
+  const ulduarBosses = [
+    "Flame Leviathan",
+    "Ignis the Furnace Master",
+    "Razorscale",
+    "XT-002 Deconstructor",
+    "The Iron Council",
+    "Kologarn",
+    "Auriaya",
+    "Freya",
+    "Thorim",
+    "Mimiron",
+    "Hodir",
+    "General Vezax",
+    "Yogg-Saron",
+    "Algalon the Observer",
+  ];
+
+  if (naxxramasBosses.includes(bossName)) return "Naxxramas";
+  if (eyeOfEternityBosses.includes(bossName)) return "Eye of Eternity";
+  if (vaultOfArchavonBosses.includes(bossName)) return "Vault of Archavon";
+  if (ulduarBosses.includes(bossName)) return "Ulduar";
+  return null;
+}
+
 async function processGargulLootData(guildID: any, itemData: any, req: any, res: any) {
   const parsedData = Papa.parse(itemData, { header: true, dynamicTyping: true }).data as PapaReturn[];
 
   const formattedData = parsedData.map((item) => {
     const { itemID, dateTime, character, offspec, id } = item;
-    const itemData = items.find((item) => item.itemId == itemID);
+    const itemData = items.find((item) => item.itemId == itemID) as Item & { contentPhase?: number };
 
     if (!itemData) {
       console.log(`Item ${itemID} not found in database`);
       return null;
     } else {
       let droppedBy;
+      let instance;
 
       if (itemData.source) {
         if (itemData.source.category === "Boss Drop") {
           droppedBy = itemData.source.name;
+
+          const instanceZoneID = itemData.source.zone;
+
+          instance = zones.find((zone) => zone.id == instanceZoneID)?.name;
         } else if (itemData.source.category === "Zone Drop") {
           droppedBy = zones.find((zone) => zone.id == itemData.source.zone)?.name;
+
+          instance = zones.find((zone) => zone.id == itemData.source.zone)?.name;
+        } else if (itemData.source.category === "Vendor") {
+          const tooltipArray = itemData.tooltip;
+
+          const droppedByLabel = tooltipArray.find((tooltip) => tooltip.label.match(/^Dropped by: (.*)/)?.[1]);
+          droppedBy = droppedByLabel?.label.substring(12);
+
+          if (droppedBy) instance = getInstanceFromBoss(droppedBy);
+          else {
+            switch (itemData.contentPhase) {
+              case 1:
+                instance = "Naxx/OS/EoE";
+                break;
+              case 2:
+                instance = "Ulduar";
+                break;
+              case 3:
+                instance = "Trial of the Crusader";
+                break;
+              case 4:
+                instance = "Icecrown Citadel";
+                break;
+              case 5:
+                instance = "Ruby Sanctum";
+                break;
+              default:
+                instance = "Unknown";
+            }
+          }
         }
       } else {
         const tooltipArray = itemData.tooltip;
 
         const droppedByLabel = tooltipArray.find((tooltip) => tooltip.label.match(/^Dropped by: (.*)/)?.[1]);
-
         droppedBy = droppedByLabel?.label.substring(12);
+
+        if (droppedBy === "Steelbreaker") droppedBy = "The Iron Council";
+        if (droppedBy) instance = getInstanceFromBoss(droppedBy);
+        else if (itemData.contentPhase && itemData.itemId >= 35574) {
+          switch (itemData.contentPhase) {
+            case 1:
+              instance = "Naxx/OS/EoE";
+              break;
+            case 2:
+              instance = "Ulduar";
+              break;
+            case 3:
+              instance = "Trial of the Crusader";
+              break;
+            case 4:
+              instance = "Icecrown Citadel";
+              break;
+            case 5:
+              instance = "Ruby Sanctum";
+              break;
+            default:
+              instance = "Unknown";
+          }
+        }
       }
 
-      return {
-        gargulID: id,
+      const returnValue = {
+        trackerId: id,
         itemID,
         itemName: itemData.name || "Unknown",
         dateTime,
-        character,
         offspec,
-        boss: droppedBy || "Multiple",
-        instance: "Unknown",
+        player: character,
+        boss: droppedBy || "Multiple/Unknown",
+        instance: instance || "Unknown",
       };
+
+      console.log(returnValue);
+
+      return returnValue;
     }
   });
 
   const promises = formattedData.map(async (item, index) => {
-    const formattedItem = formatItem(item, guildID);
     try {
-      await createGargulLootItemRecord(formattedItem, req);
+      await createGargulLootItemRecord(item, req);
       // console.log(`finished writing ${item?.itemName} from ${item?.droppedBy} number ${index + 1} to db`);
     } catch (err) {
       // console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
@@ -161,7 +272,9 @@ export default async function lootEndpoint(req: any, res: any) {
     const token =
       (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
       (getCookie("next-auth.session-token", { req, res }) as string);
+
     const { lgid } = req.query;
+
     try {
       const userSession = await prisma.session.findUnique({
         where: { sessionToken: token },

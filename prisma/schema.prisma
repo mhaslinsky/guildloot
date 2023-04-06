@@ -77,7 +77,7 @@ model lootItem {
 
   createdAt DateTime @default(now())
 
-  @@unique([trackerId, player])
+  @@unique([trackerId, player, guildId])
 }
 
 model blizzAPIItem {
