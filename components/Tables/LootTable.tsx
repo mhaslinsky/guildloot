@@ -1,4 +1,4 @@
-import { rcLootItem } from "@prisma/client";
+import { lootItem } from "@prisma/client";
 import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable, Group } from "@mantine/core";
 import {
   flexRender,
@@ -12,7 +12,6 @@ import {
   getFilteredRowModel,
   ColumnFiltersState,
   getPaginationRowModel,
-  PaginationState,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
@@ -20,7 +19,7 @@ import { SortAscending, SortDescending } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
-import { useElementSize, useResizeObserver } from "@mantine/hooks";
+import { useResizeObserver } from "@mantine/hooks";
 import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 import theme from "../../styles/theme";
 import { PaginationControls } from "../PaginationControls";
@@ -43,7 +42,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-const LootTable: React.FC<{ columns: any; loading: boolean; data: rcLootItem[] }> = (props) => {
+const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});

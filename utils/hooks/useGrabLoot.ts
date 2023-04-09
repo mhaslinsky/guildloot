@@ -1,4 +1,4 @@
-import { rcLootItem } from "@prisma/client";
+import { lootItem } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -8,7 +8,7 @@ const fetchLootData = async (guild: string | null) => {
   if (!guild) return Promise.reject("No guild selected");
   //returns all loot for selected guild
   const { data } = await axios({ url: `/api/loot/${guild}`, method: "GET" });
-  return data as rcLootItem[];
+  return data as lootItem[];
 };
 
 const useGrabLoot = () => {

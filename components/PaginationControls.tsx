@@ -1,11 +1,11 @@
 import { Button, Flex, NativeSelect, Select, Text } from "@mantine/core";
 import { ChevronsRight, ChevronsLeft, ChevronLeft, ChevronRight } from "tabler-icons-react";
-import { rcLootItem } from "@prisma/client";
+import { lootItem } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
 import { useEffect } from "react";
 import theme from "../styles/theme";
 
-export function PaginationControls(props: { table: Table<rcLootItem> }) {
+export function PaginationControls(props: { table: Table<lootItem> }) {
   const { table } = props;
 
   useEffect(() => {

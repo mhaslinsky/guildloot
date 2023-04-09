@@ -19,9 +19,9 @@ import {
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useLogLoot } from "../utils/hooks/useLogLoot";
 import theme from "../styles/theme";
-import { rcLootItem } from "@prisma/client";
 import { useElementSize } from "@mantine/hooks";
 import { formattedGargulData } from "./api/loot/[lgid]";
+import { RCLootItem } from "../utils/types";
 
 const Log: NextPage = () => {
   const textAreaRef = useRef(null);
@@ -65,7 +65,7 @@ const Log: NextPage = () => {
     if (data?.badItems) {
       if (data.badItems.length === 0) return;
       if (activeTab === "RCLootCouncil") {
-        const formattedItems = data.badItems.map(({ id, itemName, player }: rcLootItem) => ({
+        const formattedItems = data.badItems.map(({ id, itemName, player }: RCLootItem) => ({
           id,
           itemName,
           player,

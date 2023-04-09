@@ -1,4 +1,3 @@
-// import { RCLootItem } from "../utils/types";
 import { Guild } from "@prisma/client";
 import { Box, Flex, LoadingOverlay, Table as Mtable } from "@mantine/core";
 import {
@@ -14,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { SortAscending, SortDescending } from "tabler-icons-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useStyles } from "../../styles/theme";
 // import { useAutoCompleteDataStore } from "../../utils/store/store";
 import { useMediaQuery } from "@mantine/hooks";
@@ -41,7 +40,6 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
-  // const setAutoCompleteData = useAutoCompleteDataStore((state) => state.setAutoCompleteData);
   const isMobile = useMediaQuery("(max-width: 600px)");
 
   const table = useReactTable({
@@ -63,16 +61,6 @@ const GuildTable: React.FC<{ columns: any; loading: boolean; data: Guild[] }> = 
     getFacetedUniqueValues: getFacetedUniqueValues(),
     onColumnVisibilityChange: setColumnVisibility,
   });
-
-  // useEffect(() => {
-  //   let cbData: any[] = [];
-  //   table.getAllColumns().forEach((column) => {
-  //     if (column.id === "Request Membership") return;
-  //     cbData.push([...column.getFacetedUniqueValues().keys()]);
-  //   });
-  //   const flattened = cbData.flat();
-  //   setAutoCompleteData(flattened);
-  // }, [setAutoCompleteData, table]);
 
   return (
     <Box
