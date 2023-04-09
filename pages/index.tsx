@@ -1,7 +1,6 @@
 import { Flex, Card, ActionIcon, Text, Group, Divider, Stack, ScrollArea } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
-import { RCLootItem } from "../utils/types";
 import LootTable from "../components/Tables/LootTable";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/useGrabLoot";
@@ -9,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
 import { IconSettings } from "@tabler/icons";
 import { useNumTablesStore } from "../utils/store/store";
+import { lootItem } from "@prisma/client";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
@@ -21,7 +21,7 @@ const Home: NextPage = () => {
     setInitialRenderComplete(true);
   }, []);
 
-  const columnHelper = createColumnHelper<RCLootItem>();
+  const columnHelper = createColumnHelper<lootItem>();
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => `${row.player}`, {
@@ -42,11 +42,12 @@ const Home: NextPage = () => {
         cell: (info) => info.getValue(),
         footer: "Boss",
       }),
-      columnHelper.accessor((row) => `${row.instance}`, {
+      columnHelper.accessor((row) => `${row.instance} ${row.raidSize}`, {
         header: "Instance",
         cell: (info) => {
-          const name = info.getValue().split("-");
-          const display = `${name[0]} (${name[1]})`;
+          const name = info.getValue().split(" ");
+          const raidSize = name[1] === "TWENTY_FIVE" ? "(25 Player)" : "(10 Player)";
+          const display = `${name[0]} ${raidSize}`;
           return display;
         },
         footer: "Instance",
@@ -56,13 +57,12 @@ const Home: NextPage = () => {
         cell: (info) => info.getValue(),
         footer: "Reason",
       }),
-      columnHelper.accessor("dateTime", {
+      columnHelper.accessor("date", {
         header: "Date",
         cell: (info) => {
           if (!info) return "N/A";
           const date = new Date(info.getValue()!).toLocaleDateString("en-US");
-          const time = new Date(info.getValue()!).toLocaleTimeString("en-US");
-          return `${date} ${time}`;
+          return `${date}`;
         },
         footer: "Date",
       }),

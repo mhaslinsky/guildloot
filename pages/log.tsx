@@ -2,17 +2,33 @@ import { NextPage } from "next";
 import FloatingDBLabelTextarea from "../components/FloatingDBLabelTextarea";
 import { useEffect, useRef, useState } from "react";
 import { useGuildStore } from "../utils/store/store";
-import { Badge, Button, Card, Group, JsonInput, Modal, Stack, Tabs, TabsValue, Text } from "@mantine/core";
+import {
+  Badge,
+  Button,
+  Card,
+  Group,
+  JsonInput,
+  Modal,
+  Stack,
+  Tabs,
+  TabsValue,
+  Text,
+  Switch,
+  Flex,
+} from "@mantine/core";
 import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
 import { useLogLoot } from "../utils/hooks/useLogLoot";
 import theme from "../styles/theme";
 import { rcLootItem } from "@prisma/client";
 import { useElementSize } from "@mantine/hooks";
+import { formattedGargulData } from "./api/loot/[lgid]";
 
 const Log: NextPage = () => {
   const textAreaRef = useRef(null);
   const [activeTab, setActiveTab] = useState<TabsValue>("RCLootCouncil");
   const [lootData, setLootData] = useState<string | undefined>("");
+  const [checked, setChecked] = useState(true);
+  const [raidSize, setRaidSize] = useState<10 | 25>(25);
   const { data: userData } = useGrabUserInfo();
   const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds] = useGuildStore((state) => [
     state.setCurrentGuildID,
@@ -24,6 +40,7 @@ const Log: NextPage = () => {
   const [modalContent, setModalContent] = useState([]);
   const { ref: cardRef, width: cardWidth, height: cardHeight } = useElementSize();
 
+  //setting guild dropdown list to guilds that user is admin or officer of
   useEffect(() => {
     if (userData) {
       const guilds = userData.guildAdmin
@@ -42,29 +59,49 @@ const Log: NextPage = () => {
     }
   }, [setAvailableGuilds, setCurrentGuildID, setCurrentGuildName, userData]);
 
+  //handling modal popup if there are some, but not all, bad items
   useEffect(() => {
+    let modalCont;
     if (data?.badItems) {
       if (data.badItems.length === 0) return;
-      const formattedItems = data.badItems.map(({ id, itemName, player }: rcLootItem) => ({
-        id,
-        itemName,
-        player,
-      }));
-      const modalCont = formattedItems.map((item: { id: any; itemName: any; player: any }) => {
-        return (
-          <Card key={item.id} mb={theme.spacing.xs}>
-            <Text>id: {item.id}</Text>
-            <Text> Item Name: {item.itemName}</Text>
-            <Text>Owner: {item.player}</Text>
-          </Card>
-        );
-      });
+      if (activeTab === "RCLootCouncil") {
+        const formattedItems = data.badItems.map(({ id, itemName, player }: rcLootItem) => ({
+          id,
+          itemName,
+          player,
+        }));
+        modalCont = formattedItems.map((item: { id: any; itemName: any; player: any }) => {
+          return (
+            <Card key={item.id} mb={theme.spacing.xs}>
+              <Text>id: {item.id}</Text>
+              <Text> Item Name: {item.itemName}</Text>
+              <Text>Owner: {item.player}</Text>
+            </Card>
+          );
+        });
+      } else if (activeTab === "Gargul") {
+        const formattedItems = data.badItems.map(({ trackerId, itemName, player }: formattedGargulData) => ({
+          trackerId,
+          itemName,
+          player,
+        }));
+        modalCont = formattedItems.map((item: { trackerId: any; itemName: any; player: any }) => {
+          return (
+            <Card key={item.trackerId} mb={theme.spacing.xs}>
+              <Text>id: {item.trackerId}</Text>
+              <Text> Item Name: {item.itemName}</Text>
+              <Text>Owner: {item.player}</Text>
+            </Card>
+          );
+        });
+      }
       setModalContent(modalCont);
       setOpened(true);
     }
     if (isSuccess) {
       setLootData("");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, data]);
 
   const inputChangeHandler = (value: string) => {
@@ -95,7 +132,7 @@ const Log: NextPage = () => {
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  logloot({ lootData, addon: activeTab });
+                  logloot({ lootData, addon: activeTab, raidSize });
                 }}
               >
                 <FloatingDBLabelTextarea
@@ -110,9 +147,19 @@ const Log: NextPage = () => {
                   label='Gargul Export, (Default Settings)'
                   minRows={10}
                 />
-                <Group position='right' mt='xs'>
+                <Flex justify='space-between' align='center' mt='xs'>
+                  <Switch
+                    checked={checked}
+                    onChange={(event) => {
+                      setChecked(event.target.checked);
+                      setRaidSize(event.target.checked ? 25 : 10);
+                    }}
+                    onLabel='25'
+                    offLabel='10'
+                    size='xl'
+                  />
                   <Button type='submit'>Submit</Button>
-                </Group>
+                </Flex>
               </form>
             </Card>
           </Stack>
@@ -179,6 +226,7 @@ const Log: NextPage = () => {
                   formatOnBlur
                   autosize
                   minRows={20}
+                  maxRows={50}
                 />
                 <Group position='right' mt='xs'>
                   <Button type='submit'>Submit</Button>

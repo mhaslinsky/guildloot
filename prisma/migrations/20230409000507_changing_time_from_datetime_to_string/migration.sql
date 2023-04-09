@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "lootItem" ALTER COLUMN "time" SET DATA TYPE TEXT;

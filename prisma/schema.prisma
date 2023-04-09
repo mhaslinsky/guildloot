@@ -15,6 +15,16 @@ enum TrackerSource {
   GARGUL
 }
 
+enum raidSize {
+  TWENTY_FIVE
+  TEN
+}
+
+enum raidDiffculty {
+  NORMAL
+  HEROIC
+}
+
 model rcLootItem {
   id            String    @id
   player        String
@@ -46,11 +56,12 @@ model rcLootItem {
 }
 
 model lootItem {
-  id            String        @id @default(cuid())
+  id            String         @id @default(cuid())
   trackerId     String
   source        TrackerSource
   player        String
-  dateTime      DateTime?
+  date          DateTime?
+  time          String?
   itemId        Int
   itemString    String?
   response      String?
@@ -61,7 +72,7 @@ model lootItem {
   boss          String?
   gear1         String?
   gear2         String?
-  responseId    String?
+  responseID    String?
   isAwardReason Boolean?
   rollType      String?
   subType       String?
@@ -69,6 +80,8 @@ model lootItem {
   note          String?
   owner         String?
   itemName      String?
+  raidSize      raidSize?
+  raidDiffculty raidDiffculty?
 
   guild   Guild?  @relation(fields: [guildId], references: [id])
   guildId String?

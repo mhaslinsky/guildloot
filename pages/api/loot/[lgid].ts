@@ -6,6 +6,8 @@ import { getCookie } from "cookies-next";
 import Papa from "papaparse";
 import Database from "wow-classic-items";
 import { Item } from "wow-classic-items/types/Item";
+import { TrackerSource, lootItem, raidDiffculty } from "@prisma/client";
+import { RCLootItem } from "../../../utils/types";
 
 type PapaReturn = {
   dateTime: string;
@@ -15,66 +17,68 @@ type PapaReturn = {
   id: string;
 };
 
+export type formattedGargulData = {
+  trackerId: string;
+  itemID: number;
+  itemName: string;
+  dateTime: Date;
+  offspec: number;
+  player: string;
+  boss: string;
+  instance: string;
+  guild: string;
+  response: string;
+  raidSize: 10 | 25;
+};
+
+export type formattedRCItem = {
+  instance: string;
+  raidSize: string;
+  guildId: string;
+  isAwardReason: boolean;
+  id: string;
+  itemID: number;
+  trackerId: string;
+  source: TrackerSource;
+  player: string;
+  date: Date | null;
+  time: string | null;
+  itemString: string | null;
+  response: string | null;
+  responseID: string | null;
+  votes: number | null;
+  class: string | null;
+  boss: string | null;
+  gear1: string | null;
+  gear2: string | null;
+  rollType: string | null;
+  subType: string | null;
+  equipLoc: string | null;
+  note: string | null;
+  owner: string | null;
+  itemName: string | null;
+};
+
 const items = new Database.Items({ iconSrc: "wowhead" });
 const zones = new Database.Zones({ iconSrc: "wowhead" });
 
-function formatItem(item: any, guildID: string) {
-  const { isAwardReason, date, time, ...itemData } = item;
-  const dateTimeString = `${date} ${time}`;
-  const dateTime = new Date(dateTimeString);
-  const newItem = {
+function formatRCItem(item: RCLootItem, guildID: string) {
+  const { isAwardReason, instance, date, response, ...itemData } = item;
+  const instanceArray = instance!.split("-");
+  const newItem: formattedRCItem = {
     ...itemData,
-    dateTime,
-    guild: guildID,
-    isAwardReason: isAwardReason === "true" ? true : false,
+    response,
+    player: response == "Disenchant" ? "Disenchanted" : item.player,
+    instance: instanceArray[0],
+    raidSize: instanceArray[1] == "25 Player" ? "TWENTY_FIVE" : "TEN",
+    guildId: guildID,
+    isAwardReason: isAwardReason === true ? true : false,
+    trackerId: item.id,
+    source: "RC",
+    date: new Date(date),
   };
+  console.log(newItem.time);
   return newItem;
-}
-
-async function processRCLootData(guildID: any, itemData: any, req: any, res: any) {
-  if (Array.isArray(itemData)) {
-    if (itemData.length === 0) return res.status(400).json({ message: `Enter Valid Loot` });
-
-    const promises = itemData.map(async (item, index) => {
-      const formattedItem = formatItem(item, guildID);
-      try {
-        await createRCLootItemRecord(formattedItem, req);
-        console.log(`finished writing ${item.itemName} number ${index + 1} to db`);
-      } catch (err) {
-        console.error(`failed to write ${item.itemName} number ${index + 1} to db:`, err);
-        return item;
-      }
-    });
-
-    const badItems = (await Promise.all(promises)).filter(Boolean);
-    console.log(badItems);
-
-    if (badItems.length > 0) {
-      if (badItems.length === itemData.length)
-        return res.status(500).json({
-          message: `Error writing to loot history for all ${itemData.length} items`,
-        });
-      return res.status(207).json({
-        message: `Succeeded writing ${itemData.length - badItems.length} of ${itemData.length} items`,
-        badItems,
-        code: 207,
-      });
-    } else {
-      return res.status(200).json({ message: `Written to Loot History Successfully` });
-    }
-  } else {
-    const singularItem = JSON.parse(req.body.lootData);
-    const formattedItem = formatItem(singularItem, guildID);
-
-    try {
-      await createRCLootItemRecord(formattedItem, req);
-    } catch (err) {
-      console.error(`failed to write ${singularItem.itemName} to db:`, err);
-      return res.status(500).json({ message: `Error writing to loot history for ${singularItem.itemName}` });
-    }
-
-    return res.status(200).json({ message: `Written to Loot History Successfully` });
-  }
 }
 
 function getInstanceFromBoss(bossName: string) {
@@ -126,7 +130,87 @@ function getInstanceFromBoss(bossName: string) {
   return null;
 }
 
+function getInstanceFromContentPhase(
+  droppedBy: string | undefined,
+  contentPhase: number | undefined,
+  itemId: number
+) {
+  let rInstance;
+  let rDroppedBy = droppedBy;
+  if (rDroppedBy === "Steelbreaker") rDroppedBy = "The Iron Council";
+  if (rDroppedBy) rInstance = getInstanceFromBoss(rDroppedBy);
+  else if (contentPhase && itemId >= 35574) {
+    switch (contentPhase) {
+      case 1:
+        rInstance = "Naxx/OS/EoE";
+        break;
+      case 2:
+        rInstance = "Ulduar";
+        break;
+      case 3:
+        rInstance = "Trial of the Crusader";
+        break;
+      case 4:
+        rInstance = "Icecrown Citadel";
+        break;
+      case 5:
+        rInstance = "Ruby Sanctum";
+        break;
+      default:
+        rInstance = "Unknown";
+    }
+  }
+  return { rInstance, rDroppedBy };
+}
+
+async function processRCLootData(guildID: any, itemData: RCLootItem[] | RCLootItem, req: any, res: any) {
+  if (Array.isArray(itemData)) {
+    if (itemData.length === 0) return res.status(400).json({ message: `Enter Valid Loot` });
+
+    const promises = itemData.map(async (item, index) => {
+      const formattedItem = formatRCItem(item, guildID);
+      try {
+        await createRCLootItemRecord(formattedItem, req);
+        console.log(`finished writing ${item.itemName} number ${index + 1} to db`);
+      } catch (err) {
+        console.error(`failed to write ${item.itemName} number ${index + 1} to db:`, err);
+        return item;
+      }
+    });
+
+    const badItems = (await Promise.all(promises)).filter(Boolean);
+    console.log(badItems);
+
+    if (badItems.length > 0) {
+      if (badItems.length === itemData.length)
+        return res.status(500).json({
+          message: `Error writing to loot history for all ${itemData.length} items. Did you submit twice?`,
+        });
+      return res.status(207).json({
+        message: `Succeeded writing ${itemData.length - badItems.length} of ${itemData.length} items`,
+        badItems,
+        code: 207,
+      });
+    } else {
+      return res.status(200).json({ message: `Written to Loot History Successfully` });
+    }
+  } else {
+    const singularItem = JSON.parse(req.body.lootData);
+    const formattedItem = formatRCItem(singularItem, guildID);
+
+    try {
+      await createRCLootItemRecord(formattedItem, req);
+    } catch (err) {
+      console.error(`failed to write ${singularItem.itemName} to db:`, err);
+      return res.status(500).json({ message: `Error writing to loot history for ${singularItem.itemName}` });
+    }
+
+    return res.status(200).json({ message: `Written to Loot History Successfully` });
+  }
+}
+
 async function processGargulLootData(guildID: any, itemData: any, req: any, res: any) {
+  const raidSize = req.body.raidSize;
   const parsedData = Papa.parse(itemData, { header: true, dynamicTyping: true }).data as PapaReturn[];
 
   const formattedData = parsedData.map((item) => {
@@ -157,28 +241,13 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
           const droppedByLabel = tooltipArray.find((tooltip) => tooltip.label.match(/^Dropped by: (.*)/)?.[1]);
           droppedBy = droppedByLabel?.label.substring(12);
 
-          if (droppedBy) instance = getInstanceFromBoss(droppedBy);
-          else {
-            switch (itemData.contentPhase) {
-              case 1:
-                instance = "Naxx/OS/EoE";
-                break;
-              case 2:
-                instance = "Ulduar";
-                break;
-              case 3:
-                instance = "Trial of the Crusader";
-                break;
-              case 4:
-                instance = "Icecrown Citadel";
-                break;
-              case 5:
-                instance = "Ruby Sanctum";
-                break;
-              default:
-                instance = "Unknown";
-            }
-          }
+          const { rInstance, rDroppedBy } = getInstanceFromContentPhase(
+            droppedBy,
+            itemData.contentPhase,
+            itemData.itemId
+          );
+          instance = rInstance;
+          droppedBy = rDroppedBy;
         }
       } else {
         const tooltipArray = itemData.tooltip;
@@ -186,43 +255,28 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
         const droppedByLabel = tooltipArray.find((tooltip) => tooltip.label.match(/^Dropped by: (.*)/)?.[1]);
         droppedBy = droppedByLabel?.label.substring(12);
 
-        if (droppedBy === "Steelbreaker") droppedBy = "The Iron Council";
-        if (droppedBy) instance = getInstanceFromBoss(droppedBy);
-        else if (itemData.contentPhase && itemData.itemId >= 35574) {
-          switch (itemData.contentPhase) {
-            case 1:
-              instance = "Naxx/OS/EoE";
-              break;
-            case 2:
-              instance = "Ulduar";
-              break;
-            case 3:
-              instance = "Trial of the Crusader";
-              break;
-            case 4:
-              instance = "Icecrown Citadel";
-              break;
-            case 5:
-              instance = "Ruby Sanctum";
-              break;
-            default:
-              instance = "Unknown";
-          }
-        }
+        const { rInstance, rDroppedBy } = getInstanceFromContentPhase(
+          droppedBy,
+          itemData.contentPhase,
+          itemData.itemId
+        );
+        instance = rInstance;
+        droppedBy = rDroppedBy;
       }
 
-      const returnValue = {
+      const returnValue: formattedGargulData = {
         trackerId: id,
         itemID,
+        guild: guildID,
         itemName: itemData.name || "Unknown",
-        dateTime,
+        dateTime: new Date(dateTime),
         offspec,
-        player: character,
+        response: character == "_disenchanted" ? "Disenchanted" : offspec ? "Offspec" : "Mainspec",
+        player: character == "_disenchanted" ? "Disenchanted" : character,
         boss: droppedBy || "Multiple/Unknown",
         instance: instance || "Unknown",
+        raidSize,
       };
-
-      console.log(returnValue);
 
       return returnValue;
     }
@@ -230,17 +284,29 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
 
   const promises = formattedData.map(async (item, index) => {
     try {
-      await createGargulLootItemRecord(item, req);
-      // console.log(`finished writing ${item?.itemName} from ${item?.droppedBy} number ${index + 1} to db`);
+      await createGargulLootItemRecord(item!, req);
+      console.log(`finished writing ${item?.itemName} from ${item?.boss} number ${index + 1} to db`);
     } catch (err) {
-      // console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
+      console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
       return item;
     }
   });
 
   const badItems = (await Promise.all(promises)).filter(Boolean);
-  console.log(badItems);
-  return res.status(404).json({ message: `Gargul Support NYI` });
+  console.log("bad gargul items:", badItems);
+  if (badItems.length > 0) {
+    if (badItems.length === formattedData.length)
+      return res.status(500).json({
+        message: `Error writing to loot history for all ${formattedData.length} items. Did you submit twice?`,
+      });
+    return res.status(207).json({
+      message: `Succeeded writing ${formattedData.length - badItems.length} of ${formattedData.length} items`,
+      badItems,
+      code: 207,
+    });
+  } else {
+    return res.status(200).json({ message: `Written to Loot History Successfully` });
+  }
 }
 
 export default async function lootEndpoint(req: any, res: any) {
@@ -292,7 +358,7 @@ export default async function lootEndpoint(req: any, res: any) {
       return res.status(500).json({ message: "An error occurred" });
     }
     try {
-      await prisma.rcLootItem
+      await prisma.lootItem
         .findMany({
           include: {
             bLootDBItem: true,
