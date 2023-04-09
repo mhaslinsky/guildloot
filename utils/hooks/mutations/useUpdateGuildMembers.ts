@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { useGuildStore } from "../store/store";
+import { useGuildStore } from "../../store/store";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
-import { queryClient } from "../queryClient";
+import { queryClient } from "../../queryClient";
 
 type updateMemberArgs = {
   role: string | null;

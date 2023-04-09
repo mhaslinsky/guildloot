@@ -1,6 +1,6 @@
 import { Avatar, Table, Group, Text, Select, MediaQuery } from "@mantine/core";
 import TimeAgo from "javascript-time-ago";
-import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
+import { useUpdateGuildMembers } from "../utils/hooks/mutations/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
 import { useMediaQuery } from "@mantine/hooks";
 

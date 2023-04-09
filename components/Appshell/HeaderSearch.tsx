@@ -4,7 +4,7 @@ import GuildSelect from "../GuildSelect";
 import Link from "next/link";
 import theme from "../../styles/theme";
 import { useEffect } from "react";
-import { useGrabUserInfo } from "../../utils/hooks/useUserInfo";
+import { useGrabUserInfo } from "../../utils/hooks/queries/useUserInfo";
 import { ColorSchemeSwitcher } from "../Buttons/ColorSchemeSwitcher";
 import NumofTableSelector from "../Buttons/NumofTableSelector";
 import { useMediaQuery } from "@mantine/hooks";

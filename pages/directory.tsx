@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { Flex, Card } from "@mantine/core";
 import GuildTable from "../components/Tables/GuildTable";
 import { useEffect, useMemo, useState } from "react";
-import { useGrabGuilds } from "../utils/hooks/useGrabGuilds";
+import { useGrabGuilds } from "../utils/hooks/queries/useGrabGuilds";
 import { Guild } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { MembershipButton } from "../components/Buttons/MembershipButton";

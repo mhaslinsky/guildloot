@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useInterval, useMediaQuery } from "@mantine/hooks";
 import { createStyles, Button, Progress } from "@mantine/core";
-import { useGrabUserInfo } from "../../utils/hooks/useUserInfo";
+import { useGrabUserInfo } from "../../utils/hooks/queries/useUserInfo";
 import { Text } from "@mantine/core";
 import { useSession } from "next-auth/react";
-import { useRequestGuildMembership } from "../../utils/hooks/useRequestGuildMembership";
+import { useRequestGuildMembership } from "../../utils/hooks/mutations/useRequestGuildMembership";
 
 const useStyles = createStyles(() => ({
   button: {

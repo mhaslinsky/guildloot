@@ -135,6 +135,8 @@ model Guild {
 
   rcLootItem rcLootItem[]
   lootItem   lootItem[]
+
+  @@unique([name, server])
 }
 
 //Next Auth Models

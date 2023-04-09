@@ -16,8 +16,8 @@ import {
   Switch,
   Flex,
 } from "@mantine/core";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
-import { useLogLoot } from "../utils/hooks/useLogLoot";
+import { useGrabUserInfo } from "../utils/hooks/queries/useUserInfo";
+import { useLogLoot } from "../utils/hooks/mutations/useLogLoot";
 import theme from "../styles/theme";
 import { useElementSize } from "@mantine/hooks";
 import { formattedGargulData } from "./api/loot/[lgid]";

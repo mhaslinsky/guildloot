@@ -6,7 +6,7 @@ import { getCookie } from "cookies-next";
 import Papa from "papaparse";
 import Database from "wow-classic-items";
 import { Item } from "wow-classic-items/types/Item";
-import { TrackerSource, lootItem, raidDiffculty } from "@prisma/client";
+import { TrackerSource } from "@prisma/client";
 import { RCLootItem } from "../../../utils/types";
 
 type PapaReturn = {

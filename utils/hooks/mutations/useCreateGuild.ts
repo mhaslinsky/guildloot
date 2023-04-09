@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
-import { guildModalStore, useGuildStore } from "../store/store";
+import { guildModalStore, useGuildStore } from "../../store/store";
 import { useRouter } from "next/router";
-import { queryClient } from "../queryClient";
+import { queryClient } from "../../queryClient";
 
 type createGuildArgs = {
   guildName: string | null;

@@ -27,6 +27,7 @@ export async function createRCLootItemRecord(item: formattedRCItem, req: any) {
         note: item.note,
         owner: item.owner,
         itemName: item.itemName,
+        raidSize: "TEN", //TODO: Fix this
         guild: { connect: { id: item.guildId } },
         bLootDBItem: { connect: { id: linkID } },
       },

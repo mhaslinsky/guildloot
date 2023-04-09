@@ -10,7 +10,7 @@ function queryErrorHandler(error: unknown): void {
   // error is type unknown because in js, anything can be an error (e.g. throw(5))
   const id = "react-query-error";
   const message = error instanceof Error ? error.message : "error connecting to server";
-  showNotification({ title: "Error", message, color: "red" });
+  showNotification({ title: "Error", message, icon: <ExclamationMark />, color: "red" });
 }
 
 export const queryClient = new QueryClient({

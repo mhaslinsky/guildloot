@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useGuildStore } from "../store/store";
-import { Guild } from "@prisma/client";
-import type { guildMemberInfo } from "../../pages/api/guildInfo/[gid]";
+import { useGuildStore } from "../../store/store";
+import type { guildMemberInfo } from "../../../pages/api/guildInfo/[gid]";
 
 const fetchGuildMembers = async (guild: string | null) => {
   if (!guild) return Promise.reject("No guild selected");

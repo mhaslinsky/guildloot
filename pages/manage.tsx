@@ -1,13 +1,13 @@
 import { NextPage } from "next";
 import { Title, Text, Stack, Divider, Button, Flex, Loader } from "@mantine/core";
 import { UsersRolesTable } from "../components/UserRolesTable";
-import { useGrabGuildMembers } from "../utils/hooks/useGrabGuildMembers";
-import { useGrabUserInfo } from "../utils/hooks/useUserInfo";
+import { useGrabGuildMembers } from "../utils/hooks/queries/useGrabGuildMembers";
+import { useGrabUserInfo } from "../utils/hooks/queries/useUserInfo";
 import { useGuildStore } from "../utils/store/store";
 import { useEffect } from "react";
-import { useUpdateGuildMembers } from "../utils/hooks/useUpdateGuildMembers";
+import { useUpdateGuildMembers } from "../utils/hooks/mutations/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
-import { useDeleteGuild } from "../utils/hooks/useDeleteGuild";
+import { useDeleteGuild } from "../utils/hooks/mutations/useDeleteGuild";
 import { useRouter } from "next/router";
 
 const ManageUsers: NextPage = () => {

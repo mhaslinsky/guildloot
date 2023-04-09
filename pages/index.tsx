@@ -1,14 +1,15 @@
-import { Flex, Card, ActionIcon, Text, Group, Divider, Stack, ScrollArea } from "@mantine/core";
+import { Flex, Card, ActionIcon, Text, Group, Checkbox } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import LootTable from "../components/Tables/LootTable";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useGrabLoot } from "../utils/hooks/useGrabLoot";
+import { useGrabLoot } from "../utils/hooks/queries/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
 import { IconSettings } from "@tabler/icons";
 import { useNumTablesStore } from "../utils/store/store";
 import { lootItem } from "@prisma/client";
+import { IndeterminateCheckbox } from "../components/IndeterminateCheckbox";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
@@ -24,6 +25,25 @@ const Home: NextPage = () => {
   const columnHelper = createColumnHelper<lootItem>();
   const columns = useMemo(
     () => [
+      columnHelper.display({
+        id: "Select",
+        header: ({ table }) => (
+          <IndeterminateCheckbox
+            disabled={false}
+            checked={table.getIsAllPageRowsSelected()}
+            indeterminate={table.getIsSomePageRowsSelected()}
+            onChange={table.getToggleAllPageRowsSelectedHandler}
+          />
+        ),
+        cell: ({ row }) => (
+          <IndeterminateCheckbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            indeterminate={row.getIsSomeSelected()}
+            onChange={row.getToggleSelectedHandler}
+          />
+        ),
+      }),
       columnHelper.accessor((row) => `${row.player}`, {
         header: "Player",
         cell: (info) => {
@@ -94,7 +114,7 @@ const Home: NextPage = () => {
         <Card pt={0} pb={0} pr={0} h='100%' w='100%'>
           <Group h='100%' align='flex-start' grow>
             {Array.from({ length: numTables }).map((elem, index) => {
-              return <LootTable key={index} columns={columns} loading={isFetching} data={data || []} />;
+              return <LootTable columns={columns} key={index} loading={isFetching} data={data || []} />;
             })}
           </Group>
         </Card>

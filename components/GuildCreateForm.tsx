@@ -2,7 +2,7 @@ import { TextInput, Tooltip, Center, Text, Button, Stack, Select, LoadingOverlay
 import { IconInfoCircle } from "@tabler/icons";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
-import { useCreateGuild } from "../utils/hooks/useCreateGuild";
+import { useCreateGuild } from "../utils/hooks/mutations/useCreateGuild";
 
 const serverList = [
   "Skyfury",

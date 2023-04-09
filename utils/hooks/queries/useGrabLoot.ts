@@ -2,7 +2,7 @@ import { lootItem } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useGuildStore } from "../store/store";
+import { useGuildStore } from "../../store/store";
 
 const fetchLootData = async (guild: string | null) => {
   if (!guild) return Promise.reject("No guild selected");

@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { useGuildStore } from "../store/store";
+import { useGuildStore } from "../../store/store";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
 import { ExclamationMark } from "tabler-icons-react";
-import { queryClient } from "../queryClient";
+import { queryClient } from "../../queryClient";
 
 type logLootArgs = {
   lootData: string | undefined;

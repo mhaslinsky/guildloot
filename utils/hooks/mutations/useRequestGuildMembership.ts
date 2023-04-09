@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
-import { useGrabUserInfo } from "./useUserInfo";
+import { useGrabUserInfo } from "../queries/useUserInfo";
 import { Guild } from "@prisma/client";
 
 type requestMembershipArgs = {

@@ -1,5 +1,5 @@
 import { lootItem } from "@prisma/client";
-import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable, Group } from "@mantine/core";
+import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable, Checkbox, ActionIcon } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -12,17 +12,20 @@ import {
   getFilteredRowModel,
   ColumnFiltersState,
   getPaginationRowModel,
+  createColumnHelper,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
 import { SortAscending, SortDescending } from "tabler-icons-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
 import { useResizeObserver } from "@mantine/hooks";
 import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 import theme from "../../styles/theme";
 import { PaginationControls } from "../PaginationControls";
+import { IconSettings } from "@tabler/icons";
+// import { IndeterminateCheckbox } from "../IndeterminateCheckbox";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -43,18 +46,18 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 };
 
 const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> = (props) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "date", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
   const [ref, rect] = useResizeObserver();
   const [flexDirection, setFlexDirection] = useState<"column" | "row">("row");
   const [numFilters, setNumFilters] = useState(0);
-  // const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
 
   const table = useReactTable({
     data: props.data,
     columns: props.columns,
+    enableRowSelection: true,
     enableHiding: true,
     filterFns: {
       fuzzy: fuzzyFilter,
@@ -131,7 +134,7 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> 
                   {header.isPlaceholder ? null : (
                     <Flex align='center' gap='sm'>
                       <>
-                        {header.column.id === "Actions" ? (
+                        {header.column.id === "Actions" || header.column.id === "Select" ? (
                           <div onClick={header.column.getToggleSortingHandler()}>
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </div>
@@ -140,9 +143,9 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> 
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </div>
                         )}
-                        {header.column.id !== "dateTime" && header.column.id !== "Actions" && (
-                          <FilterPopover table={table} column={header.column} />
-                        )}
+                        {header.column.id !== "date" &&
+                          header.column.id !== "Actions" &&
+                          header.column.id !== "Select" && <FilterPopover table={table} column={header.column} />}
                         {
                           {
                             asc: <SortAscending size={18} />,

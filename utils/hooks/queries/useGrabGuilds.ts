@@ -1,7 +1,6 @@
 import { Guild } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useGuildStore } from "../store/store";
 
 const fetchGuilds = async () => {
   //returns all guilds for guild directory page
