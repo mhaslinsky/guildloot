@@ -1,16 +1,16 @@
 import { useListState, randomId } from "@mantine/hooks";
 import { Checkbox } from "@mantine/core";
 import { ChangeEventHandler, useEffect } from "react";
+import { Table } from "@tanstack/react-table";
 
 export function IndeterminateCheckbox(props: {
   onChange: () => ChangeEventHandler<HTMLInputElement> | undefined;
   indeterminate: boolean;
   checked: boolean;
   disabled?: boolean;
+  table?: Table<any>;
 }) {
-  //   useEffect(() => {
-  //     console.log(props.checked, props.indeterminate, props.disabled);
-  //   }, [props]);
+  // console.log(props.table?.getSelectedRowModel().flatRows);
 
   return (
     <Checkbox

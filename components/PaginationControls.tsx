@@ -19,6 +19,7 @@ export function PaginationControls(props: { table: Table<lootItem> }) {
         value={table.getState().pagination.pageSize.toString()}
         onChange={(e) => {
           table.setPageSize(Number(e.target.value));
+          table.getToggleAllRowsSelectedHandler();
         }}
         data={["10", "20", "30", "40", "50", "100"]}
       />

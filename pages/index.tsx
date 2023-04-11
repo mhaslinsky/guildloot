@@ -29,6 +29,7 @@ const Home: NextPage = () => {
         id: "Select",
         header: ({ table }) => (
           <IndeterminateCheckbox
+            table={table}
             disabled={false}
             checked={table.getIsAllPageRowsSelected()}
             indeterminate={table.getIsSomePageRowsSelected()}
@@ -86,22 +87,22 @@ const Home: NextPage = () => {
         },
         footer: "Date",
       }),
-      columnHelper.display({
-        header: "Actions",
-        cell: (info) => (
-          <Flex justify='center'>
-            <ActionIcon
-              onClick={() => {
-                console.log(info.cell.row.original);
-              }}
-              variant='default'
-            >
-              <IconSettings size='1rem' />
-            </ActionIcon>
-          </Flex>
-        ),
-        footer: "Actions",
-      }),
+      // columnHelper.display({
+      //   header: "Actions",
+      //   cell: (info) => (
+      //     <Flex justify='center'>
+      //       <ActionIcon
+      //         onClick={() => {
+      //           console.log(info.cell.row.original);
+      //         }}
+      //         variant='default'
+      //       >
+      //         <IconSettings size='1rem' />
+      //       </ActionIcon>
+      //     </Flex>
+      //   ),
+      //   footer: "Actions",
+      // }),
     ],
     [columnHelper]
   );
@@ -114,7 +115,15 @@ const Home: NextPage = () => {
         <Card pt={0} pb={0} pr={0} h='100%' w='100%'>
           <Group h='100%' align='flex-start' grow>
             {Array.from({ length: numTables }).map((elem, index) => {
-              return <LootTable columns={columns} key={index} loading={isFetching} data={data || []} />;
+              return (
+                <LootTable
+                  numTables={numTables}
+                  columns={columns}
+                  key={index}
+                  loading={isFetching}
+                  data={data || []}
+                />
+              );
             })}
           </Group>
         </Card>

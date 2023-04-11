@@ -1,5 +1,15 @@
 import { lootItem } from "@prisma/client";
-import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable, Checkbox, ActionIcon } from "@mantine/core";
+import {
+  Box,
+  Flex,
+  LoadingOverlay,
+  ScrollArea,
+  Table as Mtable,
+  Checkbox,
+  ActionIcon,
+  Button,
+  Drawer,
+} from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -12,7 +22,6 @@ import {
   getFilteredRowModel,
   ColumnFiltersState,
   getPaginationRowModel,
-  createColumnHelper,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
@@ -25,7 +34,8 @@ import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 import theme from "../../styles/theme";
 import { PaginationControls } from "../PaginationControls";
 import { IconSettings } from "@tabler/icons";
-// import { IndeterminateCheckbox } from "../IndeterminateCheckbox";
+import { EditForm } from "../EditForm";
+import { useNumTablesStore } from "../../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -45,7 +55,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> = (props) => {
+const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; data: lootItem[] }> = (props) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "date", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -80,19 +90,30 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> 
 
   useEffect(() => {
     if (rect.width < 600) {
-      table.setColumnVisibility({ Instance: false, Boss: false, dateTime: false, Actions: false });
-    } else {
-      table.setColumnVisibility({ Instance: true, Boss: true, dateTime: true, Actions: true });
+      table.setColumnVisibility({ ...columnVisibility, Instance: false, Boss: false, date: false });
+    } else if (rect.width > 600) {
+      table.setColumnVisibility({ ...columnVisibility, Instance: true, Boss: true, date: true });
     }
-  }, [rect, table]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rect.width]);
+
+  useEffect(() => {
+    if (props.numTables > 1) table.setColumnVisibility({ ...columnVisibility, Select: false });
+    else {
+      table.setColumnVisibility({ ...columnVisibility, Select: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.numTables]);
 
   useEffect(() => {
     if (rect.width > 1060) {
       setFlexDirection("row");
     } else if (rect.width < 1060 && numFilters > 1) {
       setFlexDirection("column");
-    } else if (rect.width < 436) {
+    } else if (rect.width < 436 && rect.width > 0) {
       setFlexDirection("column");
+    } else if (rect.width === 0) {
+      setFlexDirection("row");
     } else {
       setFlexDirection("row");
     }
@@ -121,6 +142,25 @@ const LootTable: React.FC<{ columns: any; loading: boolean; data: lootItem[] }> 
       })}
     >
       <LoadingOverlay visible={props.loading} />
+      <Drawer
+        size={`calc(var(--mantine-header-height, 0px) + 16px)`}
+        position='top'
+        opened={table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected()}
+        onClose={() => {}}
+        withOverlay={false}
+        styles={(theme) => ({
+          header: {
+            display: "none",
+          },
+          body: {
+            height: "100%",
+          },
+        })}
+      >
+        <>
+          <EditForm table={table} />
+        </>
+      </Drawer>
       <Flex direction={flexDirection} gap={10} justify='space-between' align='center' pt={theme.spacing.sm}>
         <ColumnFilterDisplay state={columnFilters} setState={setColumnFilters} numFilters={displayHandler} />
         <PaginationControls table={table} />
