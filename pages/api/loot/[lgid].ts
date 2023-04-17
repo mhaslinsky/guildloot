@@ -33,7 +33,7 @@ export type formattedGargulData = {
 
 export type formattedRCItem = {
   instance: string;
-  raidSize: string;
+  raidSize: 25 | 10;
   guildId: string;
   isAwardReason: boolean;
   id: string;
@@ -43,6 +43,7 @@ export type formattedRCItem = {
   player: string;
   date: Date | null;
   time: string | null;
+  dateTime: Date | null;
   itemString: string | null;
   response: string | null;
   responseID: string | null;
@@ -65,19 +66,19 @@ const zones = new Database.Zones({ iconSrc: "wowhead" });
 function formatRCItem(item: RCLootItem, guildID: string) {
   const { isAwardReason, instance, date, response, ...itemData } = item;
   const instanceArray = instance!.split("-");
+  const convertedDate = new Date(date as string);
   const newItem: formattedRCItem = {
     ...itemData,
     response,
+    date: convertedDate,
     player: response == "Disenchant" ? "Disenchanted" : item.player,
     instance: instanceArray[0],
-    raidSize: instanceArray[1] == "25 Player" ? "TWENTY_FIVE" : "TEN",
+    raidSize: instanceArray[1] == "25 Player" ? 25 : 10,
     guildId: guildID,
     isAwardReason: isAwardReason === true ? true : false,
     trackerId: item.id,
     source: "RC",
-    date: new Date(date),
   };
-  console.log(newItem.time);
   return newItem;
 }
 
@@ -195,14 +196,14 @@ async function processRCLootData(guildID: any, itemData: RCLootItem[] | RCLootIt
       return res.status(200).json({ message: `Written to Loot History Successfully` });
     }
   } else {
-    const singularItem = JSON.parse(req.body.lootData);
-    const formattedItem = formatRCItem(singularItem, guildID);
+    // const singularItem = JSON.parse(req.body.lootData);
+    const formattedItem = formatRCItem(itemData, guildID);
 
     try {
       await createRCLootItemRecord(formattedItem, req);
     } catch (err) {
-      console.error(`failed to write ${singularItem.itemName} to db:`, err);
-      return res.status(500).json({ message: `Error writing to loot history for ${singularItem.itemName}` });
+      console.error(`failed to write ${itemData.itemName} to db:`, err);
+      return res.status(500).json({ message: `Error writing to loot history for ${itemData.itemName}` });
     }
 
     return res.status(200).json({ message: `Written to Loot History Successfully` });
@@ -219,7 +220,7 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
 
     if (!itemData) {
       console.log(`Item ${itemID} not found in database`);
-      return null;
+      return itemID;
     } else {
       let droppedBy;
       let instance;
@@ -283,12 +284,17 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
   });
 
   const promises = formattedData.map(async (item, index) => {
-    try {
-      await createGargulLootItemRecord(item!, req);
-      console.log(`finished writing ${item?.itemName} from ${item?.boss} number ${index + 1} to db`);
-    } catch (err) {
-      console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
+    //catching items with ID's that don't exist in the database
+    if (typeof item === "number") {
       return item;
+    } else {
+      try {
+        await createGargulLootItemRecord(item!, req);
+        console.log(`finished writing ${item?.itemName} from ${item?.boss} number ${index + 1} to db`);
+      } catch (err) {
+        console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
+        return item;
+      }
     }
   });
 
@@ -316,8 +322,8 @@ export default async function lootEndpoint(req: any, res: any) {
       const addon = req.body.addon;
 
       if (addon === "RCLootCouncil") {
-        const itemData = JSON.parse(req.body.lootData);
-        processRCLootData(guildID, itemData, req, res);
+        // const itemData = JSON.parse(req.body.lootData);
+        processRCLootData(guildID, req.body.lootData, req, res);
       } else {
         const itemData = req.body.lootData;
         processGargulLootData(guildID, itemData, req, res);

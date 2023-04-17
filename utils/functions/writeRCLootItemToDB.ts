@@ -11,6 +11,7 @@ export async function createRCLootItemRecord(item: formattedRCItem, req: any) {
         player: item.player,
         date: item.date,
         time: item.time,
+        dateTime: item.dateTime,
         itemString: item.itemString,
         response: item.response,
         responseID: item.responseID,
@@ -27,9 +28,10 @@ export async function createRCLootItemRecord(item: formattedRCItem, req: any) {
         note: item.note,
         owner: item.owner,
         itemName: item.itemName,
-        raidSize: "TEN", //TODO: Fix this
+        raidSize: item.raidSize == 25 ? "TWENTY_FIVE" : "TEN",
         guild: { connect: { id: item.guildId } },
         bLootDBItem: { connect: { id: linkID } },
+        updatedAt: new Date(),
       },
     });
   } catch (error) {
@@ -47,6 +49,7 @@ export async function createGargulLootItemRecord(item: formattedGargulData, req:
         source: "GARGUL",
         player: item.player,
         date: item.dateTime != null ? item.dateTime : undefined,
+        dateTime: item.dateTime != null ? item.dateTime : undefined,
         itemName: item.itemName,
         offspec: item.offspec,
         response: item.response,
@@ -55,6 +58,7 @@ export async function createGargulLootItemRecord(item: formattedGargulData, req:
         raidSize: item.raidSize == 25 ? "TWENTY_FIVE" : "TEN",
         guild: { connect: { id: item.guild } },
         bLootDBItem: { connect: { id: linkID } },
+        updatedAt: new Date(),
       },
     });
   } catch (error) {

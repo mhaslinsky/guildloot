@@ -1,24 +1,17 @@
 import { Card, TextInput, Box, Group, Autocomplete, Button, Flex } from "@mantine/core";
 import { lootItem } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import theme from "../styles/theme";
 
 export function EditForm(props: { table: Table<lootItem> }) {
-  const [playerValue, setPlayerValue] = useState<string>(
-    props.table.getSelectedRowModel().flatRows[0]?.original.player || ""
-  );
-  const [instanceValue, setInstanceValue] = useState<string>(
-    props.table.getSelectedRowModel().flatRows[0]?.original.instance || ""
-  );
-  const [bossValue, setBossValue] = useState<string>(
-    props.table.getSelectedRowModel().flatRows[0]?.original.boss || ""
-  );
-  const [reasonValue, setReasonValue] = useState<string>(
-    props.table.getSelectedRowModel().flatRows[0]?.original.response || ""
-  );
+  const [massEditMode, setMassEditMode] = useState<boolean>();
+  const [playerValue, setPlayerValue] = useState<string>();
+  const [instanceValue, setInstanceValue] = useState<string | undefined>();
+  const [bossValue, setBossValue] = useState<string | undefined>();
+  const [reasonValue, setReasonValue] = useState<string | undefined>();
 
   const playerValues = useMemo(
     () =>
@@ -81,11 +74,29 @@ export function EditForm(props: { table: Table<lootItem> }) {
   const form = useForm({
     validate: zodResolver(schema),
     initialValues: {
-      name: "",
-      server: "",
-      avatar: "",
+      player: "",
+      instance: "",
+      boss: "",
+      reason: "",
     },
   });
+
+  useEffect(() => {
+    if (props.table?.getSelectedRowModel().flatRows.length > 1) {
+      setMassEditMode(true);
+      setPlayerValue(undefined);
+      setInstanceValue(undefined);
+      setBossValue(undefined);
+      setReasonValue(undefined);
+    } else {
+      setMassEditMode(false);
+      setPlayerValue(props.table.getSelectedRowModel().flatRows[0]?.original.player || undefined);
+      setInstanceValue(props.table.getSelectedRowModel().flatRows[0]?.original.instance || undefined);
+      setBossValue(props.table.getSelectedRowModel().flatRows[0]?.original.boss || undefined);
+      setReasonValue(props.table.getSelectedRowModel().flatRows[0]?.original.response || undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.table.getSelectedRowModel().flatRows]);
 
   if (props.table?.getSelectedRowModel().flatRows.length > 1) {
     console.log("multiple items selected");

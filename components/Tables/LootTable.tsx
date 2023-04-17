@@ -56,7 +56,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 };
 
 const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; data: lootItem[] }> = (props) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "date", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const { classes } = useStyles();
@@ -89,10 +89,17 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
   });
 
   useEffect(() => {
-    if (rect.width < 600) {
-      table.setColumnVisibility({ ...columnVisibility, Instance: false, Boss: false, date: false });
-    } else if (rect.width > 600) {
-      table.setColumnVisibility({ ...columnVisibility, Instance: true, Boss: true, date: true });
+    console.log(rect.width);
+    if (rect.width < 615) {
+      table.setColumnVisibility({
+        ...columnVisibility,
+        Instance: false,
+        Boss: false,
+        dateTime: false,
+        Select: false,
+      });
+    } else if (rect.width > 615) {
+      table.setColumnVisibility({ ...columnVisibility, Instance: true, Boss: true, dateTime: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rect.width]);
@@ -143,7 +150,7 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
     >
       <LoadingOverlay visible={props.loading} />
       <Drawer
-        size={`calc(var(--mantine-header-height, 0px) + 16px)`}
+        size={`calc(var(--mantine-header-height, 0px) + 1rem)`}
         position='top'
         opened={table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected()}
         onClose={() => {}}
@@ -183,7 +190,7 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </div>
                         )}
-                        {header.column.id !== "date" &&
+                        {header.column.id !== "dateTime" &&
                           header.column.id !== "Actions" &&
                           header.column.id !== "Select" && <FilterPopover table={table} column={header.column} />}
                         {

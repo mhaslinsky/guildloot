@@ -10,6 +10,7 @@ import { IconSettings } from "@tabler/icons";
 import { useNumTablesStore } from "../utils/store/store";
 import { lootItem } from "@prisma/client";
 import { IndeterminateCheckbox } from "../components/IndeterminateCheckbox";
+import { DisplayDate } from "../components/DisplayDate";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
@@ -78,31 +79,11 @@ const Home: NextPage = () => {
         cell: (info) => info.getValue(),
         footer: "Reason",
       }),
-      columnHelper.accessor("date", {
+      columnHelper.accessor("dateTime", {
         header: "Date",
-        cell: (info) => {
-          if (!info) return "N/A";
-          const date = new Date(info.getValue()!).toLocaleDateString("en-US");
-          return `${date}`;
-        },
+        cell: (info) => <DisplayDate date={info} />,
         footer: "Date",
       }),
-      // columnHelper.display({
-      //   header: "Actions",
-      //   cell: (info) => (
-      //     <Flex justify='center'>
-      //       <ActionIcon
-      //         onClick={() => {
-      //           console.log(info.cell.row.original);
-      //         }}
-      //         variant='default'
-      //       >
-      //         <IconSettings size='1rem' />
-      //       </ActionIcon>
-      //     </Flex>
-      //   ),
-      //   footer: "Actions",
-      // }),
     ],
     [columnHelper]
   );
