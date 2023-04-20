@@ -6,9 +6,10 @@ import { getCookie } from "cookies-next";
 import Papa from "papaparse";
 import Database from "wow-classic-items";
 import { Item } from "wow-classic-items/types/Item";
-import { TrackerSource } from "@prisma/client";
+import { TrackerSource, lootItem } from "@prisma/client";
 import { RCLootItem } from "../../../utils/types";
 import { checkUserRoles } from "../guildInfo/[gid]";
+import { formValues } from "../../../components/EditForm";
 
 type PapaReturn = {
   dateTime: string;
@@ -391,6 +392,12 @@ export default async function lootEndpoint(req: any, res: any) {
       (getCookie("next-auth.session-token", { req, res }) as string);
     if (!token) return res.status(405).json({ message: "Not logged in, or blocking cookies." });
 
+    const {
+      lootRows,
+      updateValues,
+      currentGuildID,
+    }: { lootRows: lootItem[]; updateValues: formValues; currentGuildID: string } = req.body;
+
     try {
       const userSession = await prisma.session.findUnique({
         where: { sessionToken: token },
@@ -402,7 +409,13 @@ export default async function lootEndpoint(req: any, res: any) {
       });
       if (!userSession) return res.status(401).json({ message: "Unauthorized" });
 
-      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, req.body);
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, currentGuildID);
+      console.log(adminofReqGuild, officerofReqGuild);
+
+      if (!(adminofReqGuild || officerofReqGuild))
+        return res.status(401).json({ message: "Only admins and officers can edit loot" });
+
+      res.status(200).json({ message: "success" });
     } catch (e) {
       console.log(e);
     }
