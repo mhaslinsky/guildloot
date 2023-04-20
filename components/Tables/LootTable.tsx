@@ -89,17 +89,17 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
   });
 
   useEffect(() => {
-    console.log(rect.width);
-    if (rect.width < 615) {
+    if (rect.width < 655) {
       table.setColumnVisibility({
         ...columnVisibility,
         Instance: false,
+        Size: false,
         Boss: false,
         dateTime: false,
         Select: false,
       });
-    } else if (rect.width > 615) {
-      table.setColumnVisibility({ ...columnVisibility, Instance: true, Boss: true, dateTime: true });
+    } else if (rect.width > 655) {
+      table.setColumnVisibility({ ...columnVisibility, Instance: true, Size: true, Boss: true, dateTime: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rect.width]);

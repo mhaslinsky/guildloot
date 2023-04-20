@@ -9,26 +9,31 @@ export default async function getGuildMemberships(req: NextApiRequest, res: Next
   if (!session) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const email = session.user!.email!;
+
   const token =
     (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
     (getCookie("next-auth.session-token", { req, res }) as string);
+
   let userSession;
+
   try {
     userSession = await prisma.session.findUnique({
       where: { sessionToken: token },
       include: {
         user: {
+          //not returning id for admin of each guild for security purposes
           include: {
-            guildAdmin: true,
-            guildOfficer: true,
+            guildAdmin: { select: { name: true, server: true, image: true, id: true, createdAt: true } },
+            guildOfficer: { select: { name: true, server: true, image: true, id: true, createdAt: true } },
             accounts: true,
-            guildMember: true,
-            guildPending: true,
+            guildMember: { select: { name: true, server: true, image: true, id: true, createdAt: true } },
+            guildPending: { select: { name: true, server: true, image: true, id: true, createdAt: true } },
           },
         },
       },
     });
+
+    console.log(userSession?.user.guildAdmin);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "error reading from DB" });

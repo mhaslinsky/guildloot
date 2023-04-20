@@ -8,6 +8,7 @@ import Database from "wow-classic-items";
 import { Item } from "wow-classic-items/types/Item";
 import { TrackerSource } from "@prisma/client";
 import { RCLootItem } from "../../../utils/types";
+import { checkUserRoles } from "../guildInfo/[gid]";
 
 type PapaReturn = {
   dateTime: string;
@@ -64,14 +65,15 @@ const items = new Database.Items({ iconSrc: "wowhead" });
 const zones = new Database.Zones({ iconSrc: "wowhead" });
 
 function formatRCItem(item: RCLootItem, guildID: string) {
-  const { isAwardReason, instance, date, response, ...itemData } = item;
+  const { isAwardReason, instance, date, response, player, ...itemData } = item;
+  const playerNoServer = player.split("-")[0];
   const instanceArray = instance!.split("-");
   const convertedDate = new Date(date as string);
   const newItem: formattedRCItem = {
     ...itemData,
     response,
     date: convertedDate,
-    player: response == "Disenchant" ? "Disenchanted" : item.player,
+    player: response == "Disenchant" ? "Disenchanted" : playerNoServer,
     instance: instanceArray[0],
     raidSize: instanceArray[1] == "25 Player" ? 25 : 10,
     guildId: guildID,
@@ -379,6 +381,30 @@ export default async function lootEndpoint(req: any, res: any) {
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "error reading from DB" });
+    }
+  } else if (req.method == "PATCH") {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
+
+    const token =
+      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+      (getCookie("next-auth.session-token", { req, res }) as string);
+    if (!token) return res.status(405).json({ message: "Not logged in, or blocking cookies." });
+
+    try {
+      const userSession = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
+      });
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, req.body);
+    } catch (e) {
+      console.log(e);
     }
   } else {
     return res.status(405).json({ message: "Method not allowed" });

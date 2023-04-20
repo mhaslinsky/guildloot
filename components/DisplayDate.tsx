@@ -3,7 +3,6 @@ import { CellContext } from "@tanstack/react-table";
 import { Text, Tooltip } from "@mantine/core";
 
 export function DisplayDate(props: { date: CellContext<lootItem, Date | null> }) {
-  console.log(props.date.row.original.source);
   if (!props.date.getValue()) return <Text>None</Text>;
   const date = new Date(props.date.getValue()!);
 

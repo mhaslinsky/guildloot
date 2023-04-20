@@ -64,15 +64,19 @@ const Home: NextPage = () => {
         cell: (info) => info.getValue(),
         footer: "Boss",
       }),
-      columnHelper.accessor((row) => `${row.instance} ${row.raidSize}`, {
+      columnHelper.accessor((row) => `${row.instance} `, {
         header: "Instance",
+        cell: (info) => info.getValue(),
+        footer: "Instance",
+      }),
+      columnHelper.accessor((row) => `${row.raidSize}`, {
+        header: "Size",
         cell: (info) => {
-          const name = info.getValue().split(" ");
-          const raidSize = name[1] === "TWENTY_FIVE" ? "(25 Player)" : "(10 Player)";
-          const display = `${name[0]} ${raidSize}`;
+          const raidSize = info.getValue() == "TWENTY_FIVE" ? "25" : "10";
+          const display = `${raidSize}`;
           return display;
         },
-        footer: "Instance",
+        footer: "Size",
       }),
       columnHelper.accessor((row) => `${row.response}`, {
         header: "Reason",

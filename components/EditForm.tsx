@@ -1,74 +1,87 @@
-import { Card, TextInput, Box, Group, Autocomplete, Button, Flex } from "@mantine/core";
+// /* eslint-disable */
+import { Card, TextInput, Box, Group, Autocomplete, Button, Flex, Select, createStyles } from "@mantine/core";
 import { lootItem } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
-import theme from "../styles/theme";
+import { useEditLoot } from "../utils/hooks/mutations/useEditLoot";
+
+export type formValues = {
+  player: string | undefined;
+  instance: string | undefined;
+  size: string | undefined;
+  boss: string | undefined;
+  reason: string | undefined;
+};
+
+const useStyles = createStyles((theme) => ({
+  error: {
+    position: "absolute",
+  },
+  wrapper: {
+    positon: "relative",
+  },
+  root: {
+    position: "relative",
+  },
+  invalid: {
+    border: "solid blue",
+  },
+}));
 
 export function EditForm(props: { table: Table<lootItem> }) {
   const [massEditMode, setMassEditMode] = useState<boolean>();
-  const [playerValue, setPlayerValue] = useState<string>();
-  const [instanceValue, setInstanceValue] = useState<string | undefined>();
-  const [bossValue, setBossValue] = useState<string | undefined>();
-  const [reasonValue, setReasonValue] = useState<string | undefined>();
+  const { mutate: editLoot } = useEditLoot();
+  const { classes } = useStyles();
 
-  const playerValues = useMemo(
-    () =>
-      Array.from(
-        props.table
-          .getAllFlatColumns()
-          .find((c) => c.id === "Player")!
-          .getFacetedUniqueValues()
-          .keys()
-      ).sort(),
+  const getValuesForId = useCallback(
+    (id: string) => {
+      return Array.from(
+        Array.from(
+          props.table
+            .getAllFlatColumns()
+            .find((c) => c.id === id)!
+            .getFacetedUniqueValues()
+            .keys()
+        ).sort()
+      );
+    },
     [props.table]
   );
 
-  const instanceValues = useMemo(
-    () =>
-      Array.from(
-        props.table
-          .getAllFlatColumns()
-          .find((c) => c.id === "Instance")!
-          .getFacetedUniqueValues()
-          .keys()
-      ).sort(),
-    [props.table]
-  );
-
-  const bossValues = useMemo(
-    () =>
-      Array.from(
-        props.table
-          .getAllFlatColumns()
-          .find((c) => c.id === "Boss")!
-          .getFacetedUniqueValues()
-          .keys()
-      ).sort(),
-    [props.table]
-  );
-
-  const reasonValues = useMemo(
-    () =>
-      Array.from(
-        props.table
-          .getAllFlatColumns()
-          .find((c) => c.id === "Reason")!
-          .getFacetedUniqueValues()
-          .keys()
-      ).sort(),
-    [props.table]
-  );
+  const playerValues = useMemo(() => getValuesForId("Player"), [getValuesForId]);
+  const instanceValues = useMemo(() => getValuesForId("Instance"), [getValuesForId]);
+  const bossValues = useMemo(() => getValuesForId("Boss"), [getValuesForId]);
+  const reasonValues = useMemo(() => getValuesForId("Reason"), [getValuesForId]);
+  const sizeValues = ["10", "25"];
 
   const schema = z.object({
-    player: z.string().min(1, { message: "Select a Player" }),
+    player: z
+      .string()
+      .min(2, { message: "Must be over 2 characters" })
+      .max(12, { message: "Must be under 12 characters" })
+      .optional()
+      .or(z.literal("")),
     reason: z
       .string()
       .min(2, { message: "Must be over 2 characters" })
-      .max(24, { message: "Must be under 24 characters" }),
-    boss: z.string().min(1, { message: "Select a Realm" }),
-    instance: z.string().min(1, { message: "Select a Realm" }),
+      .max(24, { message: "Must be under 24 characters" })
+      .optional()
+      .or(z.literal("")),
+    boss: z
+      .string()
+      .min(2, { message: "Must be over 2 characters" })
+      .max(24, { message: "Must be under 24 characters" })
+      .optional()
+      .or(z.literal("")),
+    instance: z
+      .string()
+      .min(2, { message: "Must be over 2 characters" })
+      .max(24, { message: "Must be under 24 characters" })
+      .optional()
+      .or(z.literal("")),
+    size: z.enum(["10", "25"]).optional().or(z.literal("")),
   });
 
   const form = useForm({
@@ -76,6 +89,7 @@ export function EditForm(props: { table: Table<lootItem> }) {
     initialValues: {
       player: "",
       instance: "",
+      size: "",
       boss: "",
       reason: "",
     },
@@ -84,71 +98,106 @@ export function EditForm(props: { table: Table<lootItem> }) {
   useEffect(() => {
     if (props.table?.getSelectedRowModel().flatRows.length > 1) {
       setMassEditMode(true);
-      setPlayerValue(undefined);
-      setInstanceValue(undefined);
-      setBossValue(undefined);
-      setReasonValue(undefined);
+      form.setValues({
+        boss: undefined,
+        instance: undefined,
+        player: undefined,
+        reason: undefined,
+        size: undefined,
+      });
     } else {
+      form.setValues({
+        boss: props.table.getSelectedRowModel().flatRows[0]?.original.boss || undefined,
+        instance: props.table.getSelectedRowModel().flatRows[0]?.original.instance || undefined,
+        player: props.table.getSelectedRowModel().flatRows[0]?.original.player || undefined,
+        reason: props.table.getSelectedRowModel().flatRows[0]?.original.response || undefined,
+        size:
+          props.table.getSelectedRowModel().flatRows[0]?.original.raidSize == "TWENTY_FIVE"
+            ? "25"
+            : "10" || undefined,
+      });
       setMassEditMode(false);
-      setPlayerValue(props.table.getSelectedRowModel().flatRows[0]?.original.player || undefined);
-      setInstanceValue(props.table.getSelectedRowModel().flatRows[0]?.original.instance || undefined);
-      setBossValue(props.table.getSelectedRowModel().flatRows[0]?.original.boss || undefined);
-      setReasonValue(props.table.getSelectedRowModel().flatRows[0]?.original.response || undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.table.getSelectedRowModel().flatRows]);
 
-  if (props.table?.getSelectedRowModel().flatRows.length > 1) {
-    console.log("multiple items selected");
-  } else if (props.table?.getSelectedRowModel().flatRows.length === 0) {
-    console.log("no items selected");
-  } else {
-    console.log("single item selected");
-    console.log(props.table.getSelectedRowModel().flatRows[0].original);
-  }
   return (
     <Box mx={16} h='100%'>
-      {props.table?.getSelectedRowModel().flatRows.length > 1 ? (
-        <Flex h='100%' justify='space-between' align='center'>
+      <form
+        style={{ height: "100%" }}
+        onSubmit={form.onSubmit(
+          (values, _event) => {
+            const rows = props.table?.getSelectedRowModel().flatRows.map((r) => r.original);
+            editLoot({ lootRows: rows, values });
+          }
+          // (validationErrors, _values, _event) => {
+          //   console.log(validationErrors, _values, _event);
+          // }
+        )}
+      >
+        <Flex h='100%' justify='space-between' align='center' pb={2}>
           <Group>
-            <Autocomplete placeholder='Player' value={playerValue} onChange={setPlayerValue} data={playerValues} />
-            <Autocomplete placeholder='Reason' value={reasonValue} onChange={setReasonValue} data={reasonValues} />
-            <Autocomplete placeholder='Boss' value={bossValue} onChange={setBossValue} data={bossValues} />
             <Autocomplete
-              placeholder='Instance'
-              value={instanceValue}
-              onChange={setInstanceValue}
-              data={instanceValues}
+              classNames={{
+                wrapper: classes.wrapper,
+                error: classes.error,
+                root: classes.root,
+              }}
+              placeholder='Player'
+              data={playerValues}
+              {...form.getInputProps("player")}
             />
+            <Autocomplete
+              classNames={{
+                wrapper: classes.wrapper,
+                error: classes.error,
+              }}
+              variant='default'
+              placeholder='Reason'
+              data={reasonValues}
+              {...form.getInputProps("reason")}
+            />
+            <Autocomplete
+              classNames={{
+                wrapper: classes.wrapper,
+                error: classes.error,
+              }}
+              placeholder='Boss'
+              data={bossValues}
+              {...form.getInputProps("boss")}
+            />
+            <Autocomplete
+              classNames={{
+                wrapper: classes.wrapper,
+                error: classes.error,
+              }}
+              placeholder='Instance'
+              data={instanceValues}
+              {...form.getInputProps("instance")}
+            />
+            <Select placeholder='Size' data={sizeValues} {...form.getInputProps("size")} />
           </Group>
           <Group>
-            <Button>Mass Edit ({`${props.table?.getSelectedRowModel().flatRows.length}`})</Button>
-            <Button variant='subtle' color='red.7'>
-              Delete All
-            </Button>
+            {props.table?.getSelectedRowModel().flatRows.length > 1 ? (
+              <>
+                <Button type='submit'>
+                  Mass Edit ({`${props.table?.getSelectedRowModel().flatRows.length}`})
+                </Button>
+                <Button variant='subtle' color='red.7'>
+                  Delete All
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type='submit'>Edit</Button>
+                <Button variant='subtle' color='red.7'>
+                  Delete
+                </Button>
+              </>
+            )}
           </Group>
         </Flex>
-      ) : (
-        <Flex h='100%' justify='space-between' align='center'>
-          <Group>
-            <Autocomplete placeholder='Player' value={playerValue} onChange={setPlayerValue} data={playerValues} />
-            <Autocomplete placeholder='Reason' value={reasonValue} onChange={setReasonValue} data={reasonValues} />
-            <Autocomplete placeholder='Boss' value={bossValue} onChange={setBossValue} data={bossValues} />
-            <Autocomplete
-              placeholder='Instance'
-              value={instanceValue}
-              onChange={setInstanceValue}
-              data={instanceValues}
-            />
-          </Group>
-          <Group>
-            <Button>Edit</Button>
-            <Button variant='subtle' color='red.7'>
-              Delete
-            </Button>
-          </Group>
-        </Flex>
-      )}
+      </form>
     </Box>
   );
 }
