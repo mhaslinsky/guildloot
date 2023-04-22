@@ -86,6 +86,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
   //endpoint for updating guild members/info
   if (req.method == "POST") {
     const { gid } = req.query;
+    //requested user and role change values
     const role = req.body.role;
     const userID = req.body.userID;
     try {
@@ -107,10 +108,8 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
 
       if (!userToBeChanged) return res.status(404).json({ message: "User not found" });
 
-      const guildAdminships = userSession.user.guildAdmin || [];
-      const adminofReqGuild = guildAdminships.find((guild: Guild) => guild.id === gid);
-      const guildOfficerships = userSession.user.guildOfficer || [];
-      const officerofReqGuild = guildOfficerships.find((guild: Guild) => guild.id === gid);
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, gid as string);
+
       const adminCheck = [...userToBeChanged.guildAdmin] || [];
       const isUserAdmin = adminCheck.find((guild: Guild) => guild.id === gid);
       const officerCheck = [...userToBeChanged.guildOfficer] || [];

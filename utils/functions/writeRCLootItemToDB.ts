@@ -1,3 +1,5 @@
+import { lootItem } from "@prisma/client";
+import { formValues } from "../../components/EditForm";
 import { formattedGargulData, formattedRCItem } from "../../pages/api/loot/[lgid]";
 import { prisma } from "../../prisma/client";
 
@@ -64,5 +66,30 @@ export async function createGargulLootItemRecord(item: formattedGargulData, req:
   } catch (error) {
     req.badRecord = item.trackerId;
     throw "rclootID: " + item.trackerId + " error: " + error;
+  }
+}
+
+export async function updateLootItemRecord(
+  updateData: formValues,
+  lootRow: lootItem,
+  currentGuildID: string,
+  req: any
+) {
+  try {
+    await prisma.lootItem.update({
+      where: { id: lootRow.id },
+      data: {
+        ...(updateData.player && { player: updateData.player }),
+        ...(updateData.instance && { instance: updateData.instance }),
+        ...(updateData.boss && { boss: updateData.boss }),
+        ...(updateData.size && {
+          raidSize: updateData.size == "25" ? "TWENTY_FIVE" : "TEN",
+        }),
+        ...(updateData.reason && { response: updateData.reason }),
+      },
+    });
+  } catch (e) {
+    console.log(e);
+    throw e;
   }
 }

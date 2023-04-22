@@ -1,6 +1,10 @@
 import { prisma } from "../../../prisma/client";
 import { getServerSession } from "next-auth";
-import { createRCLootItemRecord, createGargulLootItemRecord } from "../../../utils/functions/writeRCLootItemToDB";
+import {
+  createRCLootItemRecord,
+  createGargulLootItemRecord,
+  updateLootItemRecord,
+} from "../../../utils/functions/writeRCLootItemToDB";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 import Papa from "papaparse";
@@ -407,18 +411,30 @@ export default async function lootEndpoint(req: any, res: any) {
           },
         },
       });
+
       if (!userSession) return res.status(401).json({ message: "Unauthorized" });
 
       const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, currentGuildID);
-      console.log(adminofReqGuild, officerofReqGuild);
 
       if (!(adminofReqGuild || officerofReqGuild))
         return res.status(401).json({ message: "Only admins and officers can edit loot" });
-
-      res.status(200).json({ message: "success" });
     } catch (e) {
       console.log(e);
     }
+
+    try {
+      const promises = lootRows.map(async (lootRow) => {
+        updateLootItemRecord(updateValues, lootRow, currentGuildID, req);
+      });
+
+      const results = await Promise.all(promises);
+      console.log(results);
+    } catch (e) {
+      console.log(e);
+      return res.status(405).json({ message: "error" });
+    }
+
+    return res.status(200).json({ message: "success" });
   } else {
     return res.status(405).json({ message: "Method not allowed" });
   }
