@@ -76,6 +76,15 @@ export async function updateLootItemRecord(
   req: any
 ) {
   try {
+    const existingLootItem = await prisma.lootItem.findUnique({
+      where: { id: lootRow.id },
+      select: { guildId: true },
+    });
+
+    if (!existingLootItem || existingLootItem.guildId !== currentGuildID) {
+      throw new Error("Guild ID does not match");
+    }
+
     await prisma.lootItem.update({
       where: { id: lootRow.id },
       data: {
@@ -87,6 +96,26 @@ export async function updateLootItemRecord(
         }),
         ...(updateData.reason && { response: updateData.reason }),
       },
+    });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export async function deleteLootItemRecord(lootRow: lootItem, currentGuildID: string, req: any) {
+  try {
+    const existingLootItem = await prisma.lootItem.findUnique({
+      where: { id: lootRow.id },
+      select: { guildId: true },
+    });
+
+    if (!existingLootItem || existingLootItem.guildId !== currentGuildID) {
+      throw new Error("Guild ID does not match");
+    }
+
+    await prisma.lootItem.delete({
+      where: { id: lootRow.id },
     });
   } catch (e) {
     console.log(e);

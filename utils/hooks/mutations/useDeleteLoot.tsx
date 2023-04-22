@@ -15,25 +15,23 @@ type editLootArgs = {
 
 const isValueUndefinedOrEmpty = (value: string | undefined) => value === undefined || value === "";
 
-const editGuildLoot = async (lootRows: lootItem[], updateValues: formValues, currentGuildID: string | null) => {
+const deleteGuildLoot = async (lootRows: lootItem[], currentGuildID: string | null) => {
   if (!lootRows) return Promise.reject({ message: "No loot rows selected" });
-  if (!updateValues) return Promise.reject({ message: "No data sent" });
   if (!currentGuildID) return Promise.reject({ message: "No guild selected" });
 
-  if (_.every(updateValues, isValueUndefinedOrEmpty)) return Promise.reject({ message: "No data to update" });
-
-  const { data } = await axios.patch("/api/loot/edit", {
-    lootRows,
-    updateValues,
-    currentGuildID,
+  const { data } = await axios.delete("/api/loot/edit", {
+    data: {
+      lootRows,
+      currentGuildID,
+    },
   });
   return data;
 };
 
-export function useEditLoot() {
+export function useDeleteLoot() {
   const [currentGuildID] = useGuildStore((state) => [state.currentGuildID]);
   const mutation = useMutation({
-    mutationFn: (args: editLootArgs) => editGuildLoot(args.lootRows, args.values, currentGuildID),
+    mutationFn: (args: lootItem[]) => deleteGuildLoot(args, currentGuildID),
     onError: (error) => {
       if (error instanceof AxiosError) {
         console.log(error);
@@ -58,13 +56,13 @@ export function useEditLoot() {
       if (data.code === 207) {
         showNotification({
           title: "Upload Successful-ish",
-          message: data.message || "Loot editted successfully",
+          message: data.message || "Loot deleted successfully",
           color: "yellow",
         });
       } else {
         showNotification({
           title: "Success",
-          message: data.message || "Loot editted successfully",
+          message: data.message || "Loot deleted successfully",
           color: "green",
         });
       }

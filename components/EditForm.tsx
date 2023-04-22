@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { useEditLoot } from "../utils/hooks/mutations/useEditLoot";
+import { useDeleteLoot } from "../utils/hooks/mutations/useDeleteLoot";
 
 export type formValues = {
   player: string | undefined;
@@ -33,6 +34,7 @@ const useStyles = createStyles((theme) => ({
 export function EditForm(props: { table: Table<lootItem> }) {
   const [massEditMode, setMassEditMode] = useState<boolean>();
   const { mutate: editLoot } = useEditLoot();
+  const { mutate: deleteLoot } = useDeleteLoot();
   const { classes } = useStyles();
 
   const getValuesForId = useCallback(
@@ -127,8 +129,14 @@ export function EditForm(props: { table: Table<lootItem> }) {
         style={{ height: "100%" }}
         onSubmit={form.onSubmit(
           (values, _event) => {
-            const rows = props.table?.getSelectedRowModel().flatRows.map((r) => r.original);
-            editLoot({ lootRows: rows, values });
+            // @ts-expect-error
+            if (_event.nativeEvent.submitter.value == "edit") {
+              const rows = props.table?.getSelectedRowModel().flatRows.map((r) => r.original);
+              editLoot({ lootRows: rows, values });
+            } else {
+              const rows = props.table?.getSelectedRowModel().flatRows.map((r) => r.original);
+              deleteLoot(rows);
+            }
           }
           // (validationErrors, _values, _event) => {
           //   console.log(validationErrors, _values, _event);
@@ -180,17 +188,19 @@ export function EditForm(props: { table: Table<lootItem> }) {
           <Group>
             {props.table?.getSelectedRowModel().flatRows.length > 1 ? (
               <>
-                <Button type='submit'>
+                <Button value='edit' type='submit'>
                   Mass Edit ({`${props.table?.getSelectedRowModel().flatRows.length}`})
                 </Button>
-                <Button variant='subtle' color='red.7'>
+                <Button value='delete' type='submit' variant='subtle' color='red.7'>
                   Delete All
                 </Button>
               </>
             ) : (
               <>
-                <Button type='submit'>Edit</Button>
-                <Button variant='subtle' color='red.7'>
+                <Button value='edit' type='submit'>
+                  Edit
+                </Button>
+                <Button value='delete' type='submit' variant='subtle' color='red.7'>
                   Delete
                 </Button>
               </>

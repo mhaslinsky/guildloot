@@ -4,6 +4,7 @@ import {
   createRCLootItemRecord,
   createGargulLootItemRecord,
   updateLootItemRecord,
+  deleteLootItemRecord,
 } from "../../../utils/functions/writeRCLootItemToDB";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
@@ -432,6 +433,46 @@ export default async function lootEndpoint(req: any, res: any) {
     } catch (e) {
       console.log(e);
       return res.status(405).json({ message: "error" });
+    }
+
+    return res.status(200).json({ message: "success" });
+  } else if (req.method == "DELETE") {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
+
+    const token =
+      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+      (getCookie("next-auth.session-token", { req, res }) as string);
+    if (!token) return res.status(405).json({ message: "Not logged in, or blocking cookies." });
+
+    const { lootRows, currentGuildID }: { lootRows: lootItem[]; currentGuildID: string } = req.body;
+
+    try {
+      const userSession = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
+      });
+
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, currentGuildID);
+
+      if (!(adminofReqGuild || officerofReqGuild))
+        return res.status(401).json({ message: "Only admins and officers can edit loot" });
+
+      const promises = lootRows.map(async (lootRow) => {
+        deleteLootItemRecord(lootRow, currentGuildID, req);
+      });
+
+      const results = await Promise.all(promises);
+      console.log(results);
+    } catch (e) {
+      console.log(e);
+      return res.status(405).json({ message: "error", error: e });
     }
 
     return res.status(200).json({ message: "success" });
