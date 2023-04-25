@@ -8,7 +8,10 @@ type requestMembershipArgs = {
   guildID: string | null;
 };
 
-const requestMembership = async (guildID: string | null, existingMemberships: Guild[] | undefined) => {
+const requestMembership = async (
+  guildID: string | null,
+  existingMemberships: Omit<Guild, "adminId">[] | undefined
+) => {
   if (!guildID) return Promise.reject({ message: "No guild selected" });
   if (existingMemberships?.find((guild) => guild.id == guildID))
     return Promise.reject({ message: "Already a member" });
