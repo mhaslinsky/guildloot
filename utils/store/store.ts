@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import type { ColorScheme, DefaultMantineColor } from "@mantine/core";
-import { ColumnFiltersState, ColumnFilter } from "@tanstack/react-table";
 
 interface GuildVT {
   value: string;
@@ -11,7 +10,6 @@ interface GuildVT {
   name: string;
   server: string;
   image: string | null;
-  adminId: string;
 }
 
 interface navBarState {

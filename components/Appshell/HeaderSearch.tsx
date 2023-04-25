@@ -9,6 +9,7 @@ import { ColorSchemeSwitcher } from "../Buttons/ColorSchemeSwitcher";
 import NumofTableSelector from "../Buttons/NumofTableSelector";
 import { useMediaQuery } from "@mantine/hooks";
 import { useRouter } from "next/router";
+import { type } from "os";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -59,6 +60,7 @@ export function HeaderSearch() {
           label: guild.name,
         };
       });
+
       setAvailableGuilds(guildsWithValues);
     }
   }, [setAvailableGuilds, availableGuilds]);

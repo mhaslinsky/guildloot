@@ -1,4 +1,4 @@
-import { Flex, Card, ActionIcon, Text, Group, Checkbox } from "@mantine/core";
+import { Flex, Card, Text, Group, Tooltip } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import LootTable from "../components/Tables/LootTable";
@@ -6,10 +6,11 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/queries/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
-import { IconSettings } from "@tabler/icons";
 import { useNumTablesStore } from "../utils/store/store";
 import { lootItem } from "@prisma/client";
 import { IndeterminateCheckbox } from "../components/IndeterminateCheckbox";
+import { DisplayDate } from "../components/DisplayDate";
+import _ from "lodash";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
@@ -29,6 +30,7 @@ const Home: NextPage = () => {
         id: "Select",
         header: ({ table }) => (
           <IndeterminateCheckbox
+            table={table}
             disabled={false}
             checked={table.getIsAllPageRowsSelected()}
             indeterminate={table.getIsSomePageRowsSelected()}
@@ -62,45 +64,37 @@ const Home: NextPage = () => {
         cell: (info) => info.getValue(),
         footer: "Boss",
       }),
-      columnHelper.accessor((row) => `${row.instance} ${row.raidSize}`, {
+      columnHelper.accessor((row) => `${row.instance} `, {
         header: "Instance",
+        cell: (info) => info.getValue(),
+        footer: "Instance",
+      }),
+      columnHelper.accessor((row) => `${row.raidSize}`, {
+        header: "Size",
         cell: (info) => {
-          const name = info.getValue().split(" ");
-          const raidSize = name[1] === "TWENTY_FIVE" ? "(25 Player)" : "(10 Player)";
-          const display = `${name[0]} ${raidSize}`;
+          const raidSize = info.getValue() == "TWENTY_FIVE" ? "25" : "10";
+          const display = `${raidSize}`;
           return display;
         },
-        footer: "Instance",
+        footer: "Size",
       }),
       columnHelper.accessor((row) => `${row.response}`, {
         header: "Reason",
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          if (info.getValue().length > 22)
+            return (
+              <Tooltip label={info.getValue()}>
+                <Text>{_.truncate(info.getValue(), { length: 22 })}</Text>
+              </Tooltip>
+            );
+          else return <Text>{info.getValue()}</Text>;
+        },
         footer: "Reason",
       }),
-      columnHelper.accessor("date", {
+      columnHelper.accessor("dateTime", {
         header: "Date",
-        cell: (info) => {
-          if (!info) return "N/A";
-          const date = new Date(info.getValue()!).toLocaleDateString("en-US");
-          return `${date}`;
-        },
+        cell: (info) => <DisplayDate date={info} />,
         footer: "Date",
-      }),
-      columnHelper.display({
-        header: "Actions",
-        cell: (info) => (
-          <Flex justify='center'>
-            <ActionIcon
-              onClick={() => {
-                console.log(info.cell.row.original);
-              }}
-              variant='default'
-            >
-              <IconSettings size='1rem' />
-            </ActionIcon>
-          </Flex>
-        ),
-        footer: "Actions",
       }),
     ],
     [columnHelper]
@@ -114,7 +108,15 @@ const Home: NextPage = () => {
         <Card pt={0} pb={0} pr={0} h='100%' w='100%'>
           <Group h='100%' align='flex-start' grow>
             {Array.from({ length: numTables }).map((elem, index) => {
-              return <LootTable columns={columns} key={index} loading={isFetching} data={data || []} />;
+              return (
+                <LootTable
+                  numTables={numTables}
+                  columns={columns}
+                  key={index}
+                  loading={isFetching}
+                  data={data || []}
+                />
+              );
             })}
           </Group>
         </Card>

@@ -248,8 +248,9 @@ export type blizzDBItem = {
 
 export type RCLootItem = {
   player: string;
-  date: string;
+  date: string | Date;
   time: string;
+  dateTime: Date;
   id: string;
   itemID: number;
   itemString: string;

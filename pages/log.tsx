@@ -65,34 +65,33 @@ const Log: NextPage = () => {
     if (data?.badItems) {
       if (data.badItems.length === 0) return;
       if (activeTab === "RCLootCouncil") {
-        const formattedItems = data.badItems.map(({ id, itemName, player }: RCLootItem) => ({
-          id,
-          itemName,
-          player,
-        }));
-        modalCont = formattedItems.map((item: { id: any; itemName: any; player: any }) => {
+        modalCont = data.badItems.map((item: RCLootItem) => {
           return (
             <Card key={item.id} mb={theme.spacing.xs}>
-              <Text>id: {item.id}</Text>
+              <Text>RCLC id: {item.id}</Text>
+              <Text>itemID: {item.itemID}</Text>
               <Text> Item Name: {item.itemName}</Text>
               <Text>Owner: {item.player}</Text>
             </Card>
           );
         });
       } else if (activeTab === "Gargul") {
-        const formattedItems = data.badItems.map(({ trackerId, itemName, player }: formattedGargulData) => ({
-          trackerId,
-          itemName,
-          player,
-        }));
-        modalCont = formattedItems.map((item: { trackerId: any; itemName: any; player: any }) => {
-          return (
-            <Card key={item.trackerId} mb={theme.spacing.xs}>
-              <Text>id: {item.trackerId}</Text>
-              <Text> Item Name: {item.itemName}</Text>
-              <Text>Owner: {item.player}</Text>
-            </Card>
-          );
+        modalCont = data.badItems.map((item: formattedGargulData | number) => {
+          if (typeof item === "number")
+            return (
+              <Card key={item} mb={theme.spacing.xs}>
+                <Text>id: {item} Not found in database</Text>
+              </Card>
+            );
+          else {
+            return (
+              <Card key={item.trackerId} mb={theme.spacing.xs}>
+                <Text>id: {item.trackerId}</Text>
+                <Text> Item Name: {item.itemName}</Text>
+                <Text>Owner: {item.player}</Text>
+              </Card>
+            );
+          }
         });
       }
       setModalContent(modalCont);
@@ -114,7 +113,7 @@ const Log: NextPage = () => {
         <>
           <Text weight={700} pb={theme.spacing.md}>
             There were problems with the following items, please check their formatting, or that they were not
-            uploaded already.
+            uploaded already, and that the itemIDs are valid.
           </Text>
           {modalContent}
         </>

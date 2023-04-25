@@ -19,9 +19,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
     <div key={id} ref={ref} {...others}>
       <Group noWrap>
         <Avatar src={image} />
-        <div>
-          <Text size='sm'>{name}</Text>
-        </div>
+        <Text size='sm'>{name}</Text>
       </Group>
     </div>
   )

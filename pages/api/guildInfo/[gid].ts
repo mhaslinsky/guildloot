@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
-import { Guild } from "@prisma/client";
+import { Account, Guild, Session, User } from "@prisma/client";
 
 export type guildMemberInfo = Guild & {
   Admin: {
@@ -31,6 +31,27 @@ export type guildMemberInfo = Guild & {
     lastSignedIn: Date | null;
   }[];
 };
+
+//takes in a session object and guildID, returns if user is admin or officer of that guild
+export function checkUserRoles(
+  userSession: Session & {
+    user: User & {
+      guildAdmin: Guild[];
+      guildOfficer: Guild[];
+      guildMember: Guild[];
+      accounts: Account[];
+      sessions: Session[];
+    };
+  },
+  guildId: string
+) {
+  const guildAdminships = userSession.user.guildAdmin || [];
+  const adminofReqGuild = guildAdminships.find((guild: Guild) => guild.id === guildId);
+  const guildOfficerships = userSession.user.guildOfficer || [];
+  const officerofReqGuild = guildOfficerships.find((guild: Guild) => guild.id === guildId);
+
+  return { adminofReqGuild, officerofReqGuild };
+}
 
 export default async function guildManagement(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
@@ -65,6 +86,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
   //endpoint for updating guild members/info
   if (req.method == "POST") {
     const { gid } = req.query;
+    //requested user and role change values
     const role = req.body.role;
     const userID = req.body.userID;
     try {
@@ -76,22 +98,25 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
           },
         },
       });
+
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+
       const userToBeChanged = await prisma.user.findUnique({
         where: { id: userID },
         include: { guildAdmin: true, guildOfficer: true, guildMember: true },
       });
+
       if (!userToBeChanged) return res.status(404).json({ message: "User not found" });
-      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
-      const guildAdminships = userSession.user.guildAdmin || [];
-      const adminofReqGuild = guildAdminships.find((guild: Guild) => guild.id === gid);
-      const guildOfficerships = userSession.user.guildOfficer || [];
-      const officerofReqGuild = guildOfficerships.find((guild: Guild) => guild.id === gid);
+
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, gid as string);
+
       const adminCheck = [...userToBeChanged.guildAdmin] || [];
       const isUserAdmin = adminCheck.find((guild: Guild) => guild.id === gid);
       const officerCheck = [...userToBeChanged.guildOfficer] || [];
       const isUserOfficer = officerCheck.find((guild: Guild) => guild.id === gid);
       const memberCheck = [...userToBeChanged.guildMember] || [];
       const isUserMember = memberCheck.find((guild: Guild) => guild.id === gid);
+
       if (role === "Admin" || role === "Officer") {
         if (!adminofReqGuild) {
           return res.status(401).json({ message: "Only admin's can transfer admin privs or promote officers" });

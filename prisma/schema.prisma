@@ -62,6 +62,7 @@ model lootItem {
   player        String
   date          DateTime?
   time          String?
+  dateTime      DateTime?
   itemId        Int
   itemString    String?
   response      String?
@@ -89,6 +90,7 @@ model lootItem {
   bLootDBItem blizzAPIItem? @relation(fields: [itemId], references: [id])
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([trackerId, player, guildId])
 }
@@ -123,15 +125,16 @@ model blizzAPIItem {
 }
 
 model Guild {
-  id       String  @id @default(cuid())
-  name     String
-  server   String
-  image    String?
-  Admin    User    @relation("Admin", fields: [adminId], references: [id])
-  adminId  String
-  officers User[]  @relation("Officer")
-  members  User[]  @relation("Member")
-  pending  User[]  @relation("Pending")
+  id        String   @id @default(cuid())
+  name      String
+  server    String
+  image     String?
+  Admin     User     @relation("Admin", fields: [adminId], references: [id])
+  adminId   String
+  officers  User[]   @relation("Officer")
+  members   User[]   @relation("Member")
+  pending   User[]   @relation("Pending")
+  createdAt DateTime @default(now())
 
   rcLootItem rcLootItem[]
   lootItem   lootItem[]
@@ -153,6 +156,7 @@ model User {
   guildOfficer  Guild[]   @relation("Officer")
   guildMember   Guild[]   @relation("Member")
   guildPending  Guild[]   @relation("Pending")
+  createdAt     DateTime  @default(now())
 }
 
 //Account Hold OAuth Tokens/Data
@@ -172,6 +176,8 @@ model Account {
   sub               String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 
   @@unique([provider, providerAccountId])
 }

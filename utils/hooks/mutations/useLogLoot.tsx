@@ -4,6 +4,7 @@ import { showNotification } from "@mantine/notifications";
 import axios, { AxiosError } from "axios";
 import { ExclamationMark } from "tabler-icons-react";
 import { queryClient } from "../../queryClient";
+import { RCLootItem } from "../../types";
 
 type logLootArgs = {
   lootData: string | undefined;
@@ -12,7 +13,7 @@ type logLootArgs = {
 };
 
 const logGuildLoot = async (
-  lootData: string | undefined,
+  lootData: string | RCLootItem | RCLootItem[] | undefined,
   addon: "RCLootCouncil" | "Gargul" | string | null,
   currentGuild: string | null,
   raidSize?: 10 | 25
@@ -22,6 +23,34 @@ const logGuildLoot = async (
   if (!lootData) return Promise.reject({ message: "Please enter some loot" });
   if (!currentGuild) return Promise.reject({ message: "Please select a guild" });
   if (addon == "Gargul" && !raidSize) return Promise.reject({ message: "Please select a raid size" });
+  if (addon == "RCLootCouncil") {
+    try {
+      let loot: RCLootItem | RCLootItem[] = JSON.parse(lootData as string);
+      if (Array.isArray(loot)) {
+        lootData = loot.map((item) => {
+          const { date, time } = item;
+          return {
+            ...item,
+            date,
+            time,
+            dateTime: new Date(new Date(`${date} ${time}`).toISOString()),
+          };
+        });
+      } else {
+        const { date, time } = loot;
+        lootData = {
+          ...loot,
+          date,
+          time,
+          dateTime: new Date(new Date(`${date} ${time}`).toISOString()),
+        };
+      }
+    } catch (e) {
+      console.log(e);
+      return Promise.reject({ message: "something went wrong" });
+    }
+  }
+  console.log(lootData);
   const { data } = await axios.post("/api/loot/post", {
     lootData,
     addon,

@@ -1,13 +1,20 @@
 import { prisma } from "../../../prisma/client";
 import { getServerSession } from "next-auth";
-import { createRCLootItemRecord, createGargulLootItemRecord } from "../../../utils/functions/writeRCLootItemToDB";
+import {
+  createRCLootItemRecord,
+  createGargulLootItemRecord,
+  updateLootItemRecord,
+  deleteLootItemRecord,
+} from "../../../utils/functions/writeRCLootItemToDB";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
 import Papa from "papaparse";
 import Database from "wow-classic-items";
 import { Item } from "wow-classic-items/types/Item";
-import { TrackerSource } from "@prisma/client";
+import { TrackerSource, lootItem } from "@prisma/client";
 import { RCLootItem } from "../../../utils/types";
+import { checkUserRoles } from "../guildInfo/[gid]";
+import { formValues } from "../../../components/EditForm";
 
 type PapaReturn = {
   dateTime: string;
@@ -33,7 +40,7 @@ export type formattedGargulData = {
 
 export type formattedRCItem = {
   instance: string;
-  raidSize: string;
+  raidSize: 25 | 10;
   guildId: string;
   isAwardReason: boolean;
   id: string;
@@ -43,6 +50,7 @@ export type formattedRCItem = {
   player: string;
   date: Date | null;
   time: string | null;
+  dateTime: Date | null;
   itemString: string | null;
   response: string | null;
   responseID: string | null;
@@ -63,21 +71,22 @@ const items = new Database.Items({ iconSrc: "wowhead" });
 const zones = new Database.Zones({ iconSrc: "wowhead" });
 
 function formatRCItem(item: RCLootItem, guildID: string) {
-  const { isAwardReason, instance, date, response, ...itemData } = item;
+  const { isAwardReason, instance, date, response, player, ...itemData } = item;
+  const playerNoServer = player.split("-")[0];
   const instanceArray = instance!.split("-");
+  const convertedDate = new Date(date as string);
   const newItem: formattedRCItem = {
     ...itemData,
     response,
-    player: response == "Disenchant" ? "Disenchanted" : item.player,
+    date: convertedDate,
+    player: response == "Disenchant" ? "Disenchanted" : playerNoServer,
     instance: instanceArray[0],
-    raidSize: instanceArray[1] == "25 Player" ? "TWENTY_FIVE" : "TEN",
+    raidSize: instanceArray[1] == "25 Player" ? 25 : 10,
     guildId: guildID,
     isAwardReason: isAwardReason === true ? true : false,
     trackerId: item.id,
     source: "RC",
-    date: new Date(date),
   };
-  console.log(newItem.time);
   return newItem;
 }
 
@@ -195,14 +204,14 @@ async function processRCLootData(guildID: any, itemData: RCLootItem[] | RCLootIt
       return res.status(200).json({ message: `Written to Loot History Successfully` });
     }
   } else {
-    const singularItem = JSON.parse(req.body.lootData);
-    const formattedItem = formatRCItem(singularItem, guildID);
+    // const singularItem = JSON.parse(req.body.lootData);
+    const formattedItem = formatRCItem(itemData, guildID);
 
     try {
       await createRCLootItemRecord(formattedItem, req);
     } catch (err) {
-      console.error(`failed to write ${singularItem.itemName} to db:`, err);
-      return res.status(500).json({ message: `Error writing to loot history for ${singularItem.itemName}` });
+      console.error(`failed to write ${itemData.itemName} to db:`, err);
+      return res.status(500).json({ message: `Error writing to loot history for ${itemData.itemName}` });
     }
 
     return res.status(200).json({ message: `Written to Loot History Successfully` });
@@ -219,7 +228,7 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
 
     if (!itemData) {
       console.log(`Item ${itemID} not found in database`);
-      return null;
+      return itemID;
     } else {
       let droppedBy;
       let instance;
@@ -283,12 +292,17 @@ async function processGargulLootData(guildID: any, itemData: any, req: any, res:
   });
 
   const promises = formattedData.map(async (item, index) => {
-    try {
-      await createGargulLootItemRecord(item!, req);
-      console.log(`finished writing ${item?.itemName} from ${item?.boss} number ${index + 1} to db`);
-    } catch (err) {
-      console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
+    //catching items with ID's that don't exist in the database
+    if (typeof item === "number") {
       return item;
+    } else {
+      try {
+        await createGargulLootItemRecord(item!, req);
+        console.log(`finished writing ${item?.itemName} from ${item?.boss} number ${index + 1} to db`);
+      } catch (err) {
+        console.error(`failed to write ${item?.itemName} number ${index + 1} to db:`, err);
+        return item;
+      }
     }
   });
 
@@ -316,8 +330,8 @@ export default async function lootEndpoint(req: any, res: any) {
       const addon = req.body.addon;
 
       if (addon === "RCLootCouncil") {
-        const itemData = JSON.parse(req.body.lootData);
-        processRCLootData(guildID, itemData, req, res);
+        // const itemData = JSON.parse(req.body.lootData);
+        processRCLootData(guildID, req.body.lootData, req, res);
       } else {
         const itemData = req.body.lootData;
         processGargulLootData(guildID, itemData, req, res);
@@ -374,6 +388,93 @@ export default async function lootEndpoint(req: any, res: any) {
       console.log(err);
       res.status(500).json({ message: "error reading from DB" });
     }
+  } else if (req.method == "PATCH") {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
+
+    const token =
+      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+      (getCookie("next-auth.session-token", { req, res }) as string);
+    if (!token) return res.status(405).json({ message: "Not logged in, or blocking cookies." });
+
+    const {
+      lootRows,
+      updateValues,
+      currentGuildID,
+    }: { lootRows: lootItem[]; updateValues: formValues; currentGuildID: string } = req.body;
+
+    try {
+      const userSession = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
+      });
+
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, currentGuildID);
+
+      if (!(adminofReqGuild || officerofReqGuild))
+        return res.status(401).json({ message: "Only admins and officers can edit loot" });
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      const promises = lootRows.map(async (lootRow) => {
+        updateLootItemRecord(updateValues, lootRow, currentGuildID, req);
+      });
+
+      const results = await Promise.all(promises);
+      console.log(results);
+    } catch (e) {
+      console.log(e);
+      return res.status(405).json({ message: "error" });
+    }
+
+    return res.status(200).json({ message: "success" });
+  } else if (req.method == "DELETE") {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
+
+    const token =
+      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
+      (getCookie("next-auth.session-token", { req, res }) as string);
+    if (!token) return res.status(405).json({ message: "Not logged in, or blocking cookies." });
+
+    const { lootRows, currentGuildID }: { lootRows: lootItem[]; currentGuildID: string } = req.body;
+
+    try {
+      const userSession = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
+      });
+
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, currentGuildID);
+
+      if (!(adminofReqGuild || officerofReqGuild))
+        return res.status(401).json({ message: "Only admins and officers can edit loot" });
+
+      const promises = lootRows.map(async (lootRow) => {
+        deleteLootItemRecord(lootRow, currentGuildID, req);
+      });
+
+      await Promise.all(promises);
+    } catch (e) {
+      console.log(e);
+      return res.status(405).json({ message: "error", error: e });
+    }
+
+    return res.status(200).json({ message: "success" });
   } else {
     return res.status(405).json({ message: "Method not allowed" });
   }
