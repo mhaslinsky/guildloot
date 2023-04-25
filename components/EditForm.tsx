@@ -1,8 +1,8 @@
 // /* eslint-disable */
-import { Card, TextInput, Box, Group, Autocomplete, Button, Flex, Select, createStyles } from "@mantine/core";
+import { Box, Group, Autocomplete, Button, Flex, Select, createStyles } from "@mantine/core";
 import { lootItem } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { useEditLoot } from "../utils/hooks/mutations/useEditLoot";
@@ -32,9 +32,8 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export function EditForm(props: { table: Table<lootItem> }) {
-  const [massEditMode, setMassEditMode] = useState<boolean>();
-  const { mutate: editLoot } = useEditLoot();
-  const { mutate: deleteLoot } = useDeleteLoot();
+  const { mutate: editLoot, isSuccess: editSuccess } = useEditLoot();
+  const { mutate: deleteLoot, isSuccess: deleteSuccess } = useDeleteLoot();
   const { classes } = useStyles();
 
   const getValuesForId = useCallback(
@@ -98,8 +97,13 @@ export function EditForm(props: { table: Table<lootItem> }) {
   });
 
   useEffect(() => {
+    if (editSuccess || deleteSuccess) {
+      props.table.toggleAllRowsSelected(false);
+    }
+  }, [editSuccess, deleteSuccess, props.table]);
+
+  useEffect(() => {
     if (props.table?.getSelectedRowModel().flatRows.length > 1) {
-      setMassEditMode(true);
       form.setValues({
         boss: undefined,
         instance: undefined,
@@ -118,7 +122,6 @@ export function EditForm(props: { table: Table<lootItem> }) {
             ? "25"
             : "10" || undefined,
       });
-      setMassEditMode(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.table.getSelectedRowModel().flatRows]);

@@ -1,4 +1,4 @@
-import { Flex, Card, ActionIcon, Text, Group, Checkbox } from "@mantine/core";
+import { Flex, Card, Text, Group, Tooltip } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { NextPage } from "next";
 import LootTable from "../components/Tables/LootTable";
@@ -6,11 +6,11 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useGrabLoot } from "../utils/hooks/queries/useGrabLoot";
 import { useSession } from "next-auth/react";
 import { HeroTitle } from "../components/HeroTitle";
-import { IconSettings } from "@tabler/icons";
 import { useNumTablesStore } from "../utils/store/store";
 import { lootItem } from "@prisma/client";
 import { IndeterminateCheckbox } from "../components/IndeterminateCheckbox";
 import { DisplayDate } from "../components/DisplayDate";
+import _ from "lodash";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
@@ -80,7 +80,15 @@ const Home: NextPage = () => {
       }),
       columnHelper.accessor((row) => `${row.response}`, {
         header: "Reason",
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          if (info.getValue().length > 22)
+            return (
+              <Tooltip label={info.getValue()}>
+                <Text>{_.truncate(info.getValue(), { length: 22 })}</Text>
+              </Tooltip>
+            );
+          else return <Text>{info.getValue()}</Text>;
+        },
         footer: "Reason",
       }),
       columnHelper.accessor("dateTime", {

@@ -468,8 +468,7 @@ export default async function lootEndpoint(req: any, res: any) {
         deleteLootItemRecord(lootRow, currentGuildID, req);
       });
 
-      const results = await Promise.all(promises);
-      console.log(results);
+      await Promise.all(promises);
     } catch (e) {
       console.log(e);
       return res.status(405).json({ message: "error", error: e });

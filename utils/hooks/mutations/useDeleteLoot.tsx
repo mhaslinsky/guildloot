@@ -8,13 +8,6 @@ import { ExclamationMark } from "tabler-icons-react";
 import { queryClient } from "../../queryClient";
 import { useGuildStore } from "../../store/store";
 
-type editLootArgs = {
-  lootRows: lootItem[];
-  values: formValues;
-};
-
-const isValueUndefinedOrEmpty = (value: string | undefined) => value === undefined || value === "";
-
 const deleteGuildLoot = async (lootRows: lootItem[], currentGuildID: string | null) => {
   if (!lootRows) return Promise.reject({ message: "No loot rows selected" });
   if (!currentGuildID) return Promise.reject({ message: "No guild selected" });
