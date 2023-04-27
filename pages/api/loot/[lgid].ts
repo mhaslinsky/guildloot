@@ -194,6 +194,7 @@ async function processRCLootData(guildID: any, itemData: RCLootItem[] | RCLootIt
       if (badItems.length === itemData.length)
         return res.status(500).json({
           message: `Error writing to loot history for all ${itemData.length} items. Did you submit twice?`,
+          badItems,
         });
       return res.status(207).json({
         message: `Succeeded writing ${itemData.length - badItems.length} of ${itemData.length} items`,
@@ -435,7 +436,7 @@ export default async function lootEndpoint(req: any, res: any) {
       return res.status(405).json({ message: "error" });
     }
 
-    return res.status(200).json({ message: "success" });
+    return res.status(200).json({ message: "Loot Editted Successfully" });
   } else if (req.method == "DELETE") {
     const session = await getServerSession(req, res, authOptions);
     if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
@@ -474,7 +475,7 @@ export default async function lootEndpoint(req: any, res: any) {
       return res.status(405).json({ message: "error", error: e });
     }
 
-    return res.status(200).json({ message: "success" });
+    return res.status(200).json({ message: "Loot Deleted Successfully" });
   } else {
     return res.status(405).json({ message: "Method not allowed" });
   }
