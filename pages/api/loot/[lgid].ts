@@ -8,13 +8,18 @@ import {
 } from "../../../utils/functions/writeRCLootItemToDB";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
-import Papa from "papaparse";
 import Database from "wow-classic-items";
 import { Item } from "wow-classic-items/types/Item";
 import { TrackerSource, lootItem } from "@prisma/client";
 import { RCLootItem } from "../../../utils/types";
 import { checkUserRoles } from "../guildInfo/[gid]";
 import { formValues } from "../../../components/EditForm";
+
+export const config = {
+  api: {
+    responseLimit: false,
+  },
+};
 
 export type PapaReturn = {
   dateTime: string;
@@ -361,8 +366,10 @@ export default async function lootEndpoint(req: any, res: any) {
         include: { user: { include: { guildAdmin: true, guildOfficer: true, guildMember: true } } },
       });
       if (!userSession) return res.status(401).json({ message: "User not found" });
+
       const guildMemberShips =
         userSession.user.guildAdmin.concat(userSession.user.guildOfficer, userSession.user.guildMember) || [];
+
       const checkGuildMemberShip = guildMemberShips.find((guild) => guild.id === lgid);
       if (!checkGuildMemberShip) {
         return res.status(401).json({ message: "You are not a member of that guild" });

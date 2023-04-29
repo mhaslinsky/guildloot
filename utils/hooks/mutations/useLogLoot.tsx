@@ -92,13 +92,17 @@ const logGuildLoot = async (
 
       const allBadItems = (await Promise.all(postPromises))
         .map((response) => {
+          //checking if axios error, if all items in chunk fail, BE returns axios error
           if (response.response && response.response.data !== undefined) {
+            //harvesting bad items array from axios response
             return response.response.data.badItems;
+            //checking if only a select few failed, get sent my custom error message
           } else if (response.badItems !== undefined) {
             return response.badItems;
           } else {
             return null;
           }
+          //final value is array of arrays of bad items, and undefined if no bad items
         })
         .flat()
         .filter(Boolean);
