@@ -16,7 +16,7 @@ import { RCLootItem } from "../../../utils/types";
 import { checkUserRoles } from "../guildInfo/[gid]";
 import { formValues } from "../../../components/EditForm";
 
-type PapaReturn = {
+export type PapaReturn = {
   dateTime: string;
   character: string;
   itemID: number;
@@ -219,11 +219,11 @@ async function processRCLootData(guildID: any, itemData: RCLootItem[] | RCLootIt
   }
 }
 
-async function processGargulLootData(guildID: any, itemData: any, req: any, res: any) {
+async function processGargulLootData(guildID: any, itemData: PapaReturn[], req: any, res: any) {
   const raidSize = req.body.raidSize;
-  const parsedData = Papa.parse(itemData, { header: true, dynamicTyping: true }).data as PapaReturn[];
+  // const parsedData = Papa.parse(itemData, { header: true, dynamicTyping: true }).data as PapaReturn[];
 
-  const formattedData = parsedData.map((item) => {
+  const formattedData = itemData.map((item) => {
     const { itemID, dateTime, character, offspec, id } = item;
     const itemData = items.find((item) => item.itemId == itemID) as Item & { contentPhase?: number };
 
@@ -334,8 +334,7 @@ export default async function lootEndpoint(req: any, res: any) {
         // const itemData = JSON.parse(req.body.lootData);
         processRCLootData(guildID, req.body.lootData, req, res);
       } else {
-        const itemData = req.body.lootData;
-        processGargulLootData(guildID, itemData, req, res);
+        processGargulLootData(guildID, req.body.lootData, req, res);
       }
     } catch (err) {
       console.log(err);

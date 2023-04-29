@@ -6,6 +6,8 @@ import { ExclamationMark } from "tabler-icons-react";
 import { queryClient } from "../../queryClient";
 import { RCLootItem } from "../../types";
 import router from "next/router";
+import Papa from "papaparse";
+import { PapaReturn } from "../../../pages/api/loot/[lgid]";
 
 type logLootArgs = {
   lootData: string | undefined;
@@ -22,7 +24,7 @@ const splitArray = (arr: any[], size: number) => {
 };
 
 const logGuildLoot = async (
-  lootData: string | RCLootItem | RCLootItem[] | undefined,
+  lootData: string | RCLootItem | RCLootItem[] | PapaReturn[] | undefined,
   addon: "RCLootCouncil" | "Gargul" | string | null,
   currentGuild: string | null,
   raidSize?: 10 | 25
@@ -48,7 +50,7 @@ const logGuildLoot = async (
         };
       });
       if (lootData.length > 150) {
-        arrayChunks = splitArray(lootData, 150);
+        arrayChunks = splitArray(lootData, 150) as RCLootItem[][];
       }
     } else {
       const { date, time } = loot;
@@ -60,44 +62,92 @@ const logGuildLoot = async (
       };
     }
   }
+  if (addon == "Gargul") {
+    const parsedData = Papa.parse(lootData as string, { header: true, dynamicTyping: true }).data as PapaReturn[];
+    if (parsedData.length > 150) {
+      arrayChunks = splitArray(parsedData, 150) as PapaReturn[][];
+    } else {
+      lootData = parsedData;
+    }
+  }
   //to facilitate splitting large size loot uploads, to get around vercel 10s lambda timeout
   //split into chunks of 150 items, and upload each chunk separately, then reassemble responses from BE
   if (arrayChunks) {
-    const postPromises = arrayChunks.map(async (chunk) => {
-      try {
-        const { data } = await axios.post("/api/loot/post", {
-          lootData: chunk,
-          addon,
-          currentGuild,
-          raidSize,
-        });
-        return data;
-      } catch (e) {
-        return e;
-      }
-    });
-
-    const allBadItems = (await Promise.all(postPromises))
-      .map((response) => {
-        if (response.response && response.response.data !== undefined) {
-          return response.response.data.badItems;
-        } else if (response.badItems !== undefined) {
-          return response.badItems;
-        } else {
-          return null;
+    //@ts-ignore
+    if (!arrayChunks[0][0].offspec) {
+      console.log("rclootcouncil");
+      const postPromises = (arrayChunks as RCLootItem[][]).map(async (chunk) => {
+        try {
+          const { data } = await axios.post("/api/loot/post", {
+            lootData: chunk,
+            addon,
+            currentGuild,
+            raidSize,
+          });
+          return data;
+        } catch (e) {
+          return e;
         }
-      })
-      .flat()
-      .filter(Boolean);
+      });
 
-    console.log(allBadItems);
+      const allBadItems = (await Promise.all(postPromises))
+        .map((response) => {
+          if (response.response && response.response.data !== undefined) {
+            return response.response.data.badItems;
+          } else if (response.badItems !== undefined) {
+            return response.badItems;
+          } else {
+            return null;
+          }
+        })
+        .flat()
+        .filter(Boolean);
 
-    const statusCode =
-      allBadItems.length == (lootData as RCLootItem[]).length ? 500 : allBadItems.length > 0 ? 207 : 200;
+      console.log(allBadItems);
 
-    const message = allBadItems.length > 0 ? "Some items were not logged" : "Loot logged successfully";
+      const statusCode =
+        allBadItems.length == (lootData as RCLootItem[]).length ? 500 : allBadItems.length > 0 ? 207 : 200;
 
-    return { message, badItems: allBadItems, code: statusCode };
+      const message = allBadItems.length > 0 ? "Some items were not logged" : "Loot logged successfully";
+
+      return { message, badItems: allBadItems, code: statusCode };
+    } else {
+      console.log("papa parse");
+
+      const postPromises = (arrayChunks as PapaReturn[][]).map(async (chunk) => {
+        try {
+          const { data } = await axios.post("/api/loot/post", {
+            lootData: chunk,
+            addon,
+            currentGuild,
+            raidSize,
+          });
+          return data;
+        } catch (e) {
+          return e;
+        }
+      });
+
+      const allBadItems = (await Promise.all(postPromises))
+        .map((response) => {
+          if (response.response && response.response.data !== undefined) {
+            return response.response.data.badItems;
+          } else if (response.badItems !== undefined) {
+            return response.badItems;
+          } else {
+            return null;
+          }
+        })
+        .flat()
+        .filter(Boolean);
+
+      const statusCode =
+        allBadItems.length == (lootData as RCLootItem[]).length ? 500 : allBadItems.length > 0 ? 207 : 200;
+
+      const message = allBadItems.length > 0 ? "Some items were not logged" : "Loot logged successfully";
+
+      return { message, badItems: allBadItems, code: statusCode };
+    }
   }
   const { data } = await axios.post("/api/loot/post", {
     lootData,
