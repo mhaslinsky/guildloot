@@ -14,7 +14,7 @@ import _ from "lodash";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const { data, isFetching } = useGrabLoot();
+  const { data, fetchNextPage, hasNextPage, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
 
   const [numTables] = useNumTablesStore((state) => [state.numTables]);
@@ -22,6 +22,10 @@ const Home: NextPage = () => {
   useEffect(() => {
     setInitialRenderComplete(true);
   }, []);
+
+  useEffect(() => {
+    if (hasNextPage) fetchNextPage();
+  }, [fetchNextPage, hasNextPage]);
 
   const columnHelper = createColumnHelper<lootItem>();
   const columns = useMemo(
@@ -114,7 +118,13 @@ const Home: NextPage = () => {
                   columns={columns}
                   key={index}
                   loading={isFetching}
-                  data={data || []}
+                  data={
+                    data?.pages
+                      .map((chunk) => {
+                        return chunk.lootChunk;
+                      })
+                      .flat() || []
+                  }
                 />
               );
             })}

@@ -350,51 +350,7 @@ export default async function lootEndpoint(req: any, res: any) {
       }
     }
   } else if (req.method == "GET") {
-    const session = await getServerSession(req, res, authOptions);
-    if (!session) {
-      return res.status(401).json({ message: "Not logged in" });
-    }
-    const token =
-      (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
-      (getCookie("next-auth.session-token", { req, res }) as string);
-
-    const { lgid } = req.query;
-
-    try {
-      const userSession = await prisma.session.findUnique({
-        where: { sessionToken: token },
-        include: { user: { include: { guildAdmin: true, guildOfficer: true, guildMember: true } } },
-      });
-      if (!userSession) return res.status(401).json({ message: "User not found" });
-
-      const guildMemberShips =
-        userSession.user.guildAdmin.concat(userSession.user.guildOfficer, userSession.user.guildMember) || [];
-
-      const checkGuildMemberShip = guildMemberShips.find((guild) => guild.id === lgid);
-      if (!checkGuildMemberShip) {
-        return res.status(401).json({ message: "You are not a member of that guild" });
-      }
-    } catch (e) {
-      console.log("error occured getting user data: ", e);
-      return res.status(500).json({ message: "An error occurred" });
-    }
-    try {
-      await prisma.lootItem
-        .findMany({
-          include: {
-            bLootDBItem: true,
-          },
-          where: {
-            guild: { id: lgid },
-          },
-        })
-        .then((data) => {
-          res.status(200).json(data);
-        });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "error reading from DB" });
-    }
+    res.status(405).json({ message: "Method not at this endpoint" });
   } else if (req.method == "PATCH") {
     const session = await getServerSession(req, res, authOptions);
     if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
