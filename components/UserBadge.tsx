@@ -2,6 +2,7 @@ import { createStyles, Avatar, Text, Flex, Card } from "@mantine/core";
 import { IconLogout } from "@tabler/icons";
 import { signOut } from "next-auth/react";
 import { useGuildStore } from "../utils/store/store";
+import router from "next/router";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -76,7 +77,14 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
             {currentGuildName ? `<${currentGuildName}>` : null}
           </Text>
 
-          <Text size='lg' weight={500} className={classes.name}>
+          <Text
+            size='lg'
+            weight={500}
+            onClick={() => {
+              router.push("/profile");
+            }}
+            className={classes.name}
+          >
             {username}
           </Text>
           <a
