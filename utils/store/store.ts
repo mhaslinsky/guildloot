@@ -83,7 +83,7 @@ export const useThemeStore = create<themeStoreState>((set) => ({
   colorScheme: "dark",
   setColorScheme: (scheme: ColorScheme) => set({ colorScheme: scheme }),
   toggleColorScheme: () => set((state: any) => ({ colorScheme: state.colorScheme === "dark" ? "light" : "dark" })),
-  primaryColor: "grape",
+  primaryColor: "",
   setPrimaryColor: (color: DefaultMantineColor) => set({ primaryColor: color }),
 }));
 

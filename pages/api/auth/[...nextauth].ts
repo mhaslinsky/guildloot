@@ -67,10 +67,11 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       console.log("signIn", user, account, profile, email, credentials);
       const curDateTime = new Date();
+      const oneMinuteAgo = new Date(curDateTime.getTime() - 1 * 1000);
       try {
         await prisma.user.update({
           where: { id: user.id },
-          data: { lastSignedIn: curDateTime },
+          data: { lastSignedIn: oneMinuteAgo },
         });
       } catch (e) {
         console.log(e);
@@ -79,10 +80,11 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, user, token }) {
       const curDateTime = new Date();
+      const oneMinuteAgo = new Date(curDateTime.getTime() - 1 * 1000);
       try {
         await prisma.user.update({
           where: { id: user.id },
-          data: { lastSignedIn: curDateTime },
+          data: { lastSignedIn: oneMinuteAgo },
         });
       } catch (e) {
         console.log(e);
