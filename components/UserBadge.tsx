@@ -1,8 +1,9 @@
 import { createStyles, Avatar, Text, Flex, Card } from "@mantine/core";
 import { IconLogout } from "@tabler/icons";
 import { signOut } from "next-auth/react";
-import { useGuildStore } from "../utils/store/store";
+import { useGuildStore, useThemeStore } from "../utils/store/store";
 import router from "next/router";
+import { useEffect } from "react";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -56,6 +57,15 @@ interface UserInfoIconsProps {
 export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps) {
   const { classes } = useStyles();
   const currentGuildName = useGuildStore((state) => state.currentGuildName);
+  const [setPrimaryColor, primaryColor] = useThemeStore((state) => [state.setPrimaryColor, state.primaryColor]);
+
+  useEffect(() => {
+    const color = localStorage.getItem("accentColor");
+    if (color) {
+      setPrimaryColor(color);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Card
@@ -76,7 +86,6 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
           <Text size='xs' sx={{ textTransform: "uppercase" }} weight={650} color='dimmed'>
             {currentGuildName ? `<${currentGuildName}>` : null}
           </Text>
-
           <Text
             size='lg'
             weight={500}

@@ -3,48 +3,50 @@ import { NextPage } from "next";
 import { Card, createStyles, ColorPicker, Text, Stack, Avatar, Title, Input, TextInput } from "@mantine/core";
 import { useGrabUserInfo } from "../utils/hooks/queries/useUserInfo";
 import { useResizeObserver } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useThemeStore } from "../utils/store/store";
 
 const useStyles = createStyles((theme) => ({
-  root: {
-    display: "flex",
-    backgroundImage: `linear-gradient(-60deg, ${theme.colors[theme.primaryColor][4]} 0%, ${
-      theme.colors[theme.primaryColor][7]
-    } 100%)`,
-    padding: `calc(${theme.spacing.xl} * 1.5)`,
-    borderRadius: theme.radius.md,
-
+  wrapper: {
+    width: "60%",
     [theme.fn.smallerThan("sm")]: {
-      flexDirection: "column",
+      width: "100%",
     },
+  },
+  root: {
+    width: "60%",
+    [theme.fn.smallerThan("sm")]: {
+      width: "100%",
+    },
+  },
+  input: {
+    fontWeight: 600,
   },
 }));
 
-interface StatsGroupProps {
-  data: { title: string; stats: string; description: string }[];
-}
-
 const Profile: NextPage = () => {
+  const { theme } = useStyles();
   const { data } = useGrabUserInfo();
   const { classes } = useStyles();
-  const [value, onChange] = useState("");
+  const [value, setValue] = useState("");
   const [username, setUsername] = useState(data?.name);
   const [ref, rect] = useResizeObserver();
+  const nameRef = useRef<HTMLInputElement>(null);
 
   const [setPrimaryColor, primaryColor] = useThemeStore((state) => [state.setPrimaryColor, state.primaryColor]);
 
-  useEffect(() => {
-    const color = localStorage.getItem("accentColor");
-    console.log("stored color: ", color);
-    if (color) {
-      onChange(color);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   const color = localStorage.getItem("accentColor");
+  //   if (color) {
+  //     setValue(color);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
-    console.log(value);
+    const cachedColor = localStorage.getItem("accentColor");
+    console.log("cachedColor", cachedColor);
+    setPrimaryColor(cachedColor || "blue");
     switch (value) {
       case "#1A1B1E":
         setPrimaryColor("dark");
@@ -89,31 +91,53 @@ const Profile: NextPage = () => {
         setPrimaryColor("orange");
         break;
       default:
-        setPrimaryColor("blue");
         break;
     }
-    localStorage.setItem("accentColor", value);
-  }, [primaryColor, setPrimaryColor, value]);
+    localStorage.setItem("accentColor", primaryColor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   return (
     <Card ref={ref} h='100%' w='100%'>
       <Stack align='center' h='100%'>
-        <Title order={2}>Profile Pic:</Title>
+        <Title color={theme.fn.variant({ variant: "subtle", color: theme.primaryColor }).color} order={2}>
+          Profile Picture:
+        </Title>
         <Avatar radius='xl' size={rect.width / 5} src={data?.image || undefined}></Avatar>
-        <Title order={2}>Display Name:</Title>
+        <Title color={theme.fn.variant({ variant: "subtle", color: theme.primaryColor }).color} order={2}>
+          Display Name:
+        </Title>
         <TextInput
+          ref={nameRef}
+          onBlur={() => {
+            if (nameRef.current?.value !== data?.name) {
+              console.log("fire mutation");
+            } else {
+              console.log("no change");
+            }
+          }}
+          classNames={{
+            root: classes.root,
+            input: classes.input,
+          }}
+          size='lg'
           value={username}
           onChange={(e) => {
             setUsername(e.currentTarget.value);
           }}
-          w='50%'
           placeholder='username'
-        ></TextInput>
-        <Title order={2}>Accent Color:</Title>
+        />
+        <Title color={theme.fn.variant({ variant: "subtle", color: theme.primaryColor }).color} order={2}>
+          Accent Color:
+        </Title>
         <ColorPicker
+          classNames={{
+            wrapper: classes.wrapper,
+          }}
           format='hex'
+          swatchesPerRow={7}
           value={value}
-          onChange={onChange}
+          onChange={setValue}
           withPicker={false}
           swatches={[
             "#1A1B1E",
@@ -132,9 +156,6 @@ const Profile: NextPage = () => {
             "#F76707",
           ]}
         />
-        <Text align='center' style={{ marginTop: 5 }}>
-          {value}
-        </Text>
       </Stack>
     </Card>
   );
