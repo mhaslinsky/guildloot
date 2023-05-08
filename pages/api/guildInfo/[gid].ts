@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { getCookie } from "cookies-next";
-import { Account, Guild, Session, User } from "@prisma/client";
+import { Account, Guild, Prisma, Session, User } from "@prisma/client";
 
 export type guildMemberInfo = Guild & {
   Admin: {
@@ -275,8 +275,14 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
         data: { server },
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({ message: "Internal Server Error" });
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        console.log(e.code);
+        if (e.code == "P2002") {
+          return res.status(400).json({ message: "Guild name already exists on that server" });
+        }
+      }
+      console.log("error on guild creation: " + e);
+      return res.status(500).json({ message: "Error Editting Guild" });
     }
     return res.status(200).json({ message: "Guild Server Updated" });
   }

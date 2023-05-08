@@ -81,23 +81,22 @@ const ManageUsers: NextPage = () => {
               )}
           </Box>
           <Group>
-            {roleInCurrentGuild == "admin" ||
-              (roleInCurrentGuild == "officer" && (
-                <>
-                  <Text>Server: </Text>
-                  <Select
-                    searchable
-                    data={serverList}
-                    placeholder={guildInfo?.server || "Select a server"}
-                    defaultValue={guildInfo?.server}
-                    onChange={(value) => {
-                      if (value !== guildInfo?.server && value !== null) {
-                        editGuild({ server: value });
-                      }
-                    }}
-                  />
-                </>
-              ))}
+            {(roleInCurrentGuild == "admin" || roleInCurrentGuild == "officer") && (
+              <>
+                <Text>Server: </Text>
+                <Select
+                  searchable
+                  data={serverList}
+                  placeholder={guildInfo?.server || "Select a server"}
+                  defaultValue={guildInfo?.server}
+                  onChange={(value) => {
+                    if (value !== guildInfo?.server && value !== null) {
+                      editGuild({ server: value });
+                    }
+                  }}
+                />
+              </>
+            )}
           </Group>
         </Stack>
         <Stack>
