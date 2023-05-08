@@ -1,7 +1,9 @@
 import { createStyles, Avatar, Text, Flex, Card } from "@mantine/core";
 import { IconLogout } from "@tabler/icons";
 import { signOut } from "next-auth/react";
-import { useGuildStore } from "../utils/store/store";
+import { useGuildStore, useThemeStore } from "../utils/store/store";
+import router from "next/router";
+import { useEffect } from "react";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -12,6 +14,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
     name: {
       fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+      "&:hover": {
+        cursor: "pointer",
+      },
     },
 
     link: {
@@ -55,6 +60,15 @@ interface UserInfoIconsProps {
 export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps) {
   const { classes } = useStyles();
   const currentGuildName = useGuildStore((state) => state.currentGuildName);
+  const [setPrimaryColor] = useThemeStore((state) => [state.setPrimaryColor]);
+
+  useEffect(() => {
+    const color = localStorage.getItem("accentColor");
+    if (color) {
+      setPrimaryColor(color);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Card
@@ -72,11 +86,17 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
         align='center'
       >
         <div>
-          <Text size='xs' sx={{ textTransform: "uppercase" }} weight={650} color='dimmed'>
+          <Text size='xs' sx={{ textTransform: "uppercase" }} weight={650}>
             {currentGuildName ? `<${currentGuildName}>` : null}
           </Text>
-
-          <Text size='lg' weight={500} className={classes.name}>
+          <Text
+            size='lg'
+            weight={500}
+            onClick={() => {
+              router.push("/profile");
+            }}
+            className={classes.name}
+          >
             {username}
           </Text>
           <a
@@ -88,7 +108,7 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
             }}
           >
             <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Logout</span>
+            <Text>Logout</Text>
           </a>
         </div>
 

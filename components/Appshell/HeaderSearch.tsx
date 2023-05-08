@@ -26,14 +26,14 @@ const useStyles = createStyles((theme) => ({
 
   link: {
     "&:hover": {
-      color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
+      color: theme.primaryColor,
       transition: "400ms",
     },
   },
 }));
 
 export function HeaderSearch() {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const isNavBarOpen = useNavBarStore((state) => state.isNavBarOpen);
   const toggle = useNavBarStore((state) => state.toggleNavBar);
   const { data: availableGuilds } = useGrabUserInfo();
@@ -87,6 +87,7 @@ export function HeaderSearch() {
               <Card w={300}>
                 <Flex justify='center'>
                   <Title
+                    color={theme.fn.variant({ variant: "subtle", color: theme.primaryColor }).color}
                     className={classes.link}
                     underline={false}
                     sx={{ fontFamily: "transducer, sans-serif", whiteSpace: "nowrap" }}
