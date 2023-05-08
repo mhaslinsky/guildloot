@@ -223,7 +223,7 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
       return res.status(500).json({ message: "error updating DB" });
     }
   }
-  //endpoit for deleting a guild
+  //endpoint for deleting a guild
   if (req.method == "DELETE") {
     try {
       const userSession = await prisma.session.findUnique({
@@ -248,7 +248,39 @@ export default async function guildManagement(req: NextApiRequest, res: NextApiR
     }
     return res.status(200).json({ message: "Guild deleted" });
   }
-  if (!(req.method == "GET" || req.method == "POST" || req.method == "DELETE")) {
+  //endpoint for updating a guild(Server only currently)
+  if (req.method == "PATCH") {
+    try {
+      const userSession = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        include: {
+          user: {
+            include: { guildAdmin: true, guildOfficer: true, accounts: true, sessions: true, guildMember: true },
+          },
+        },
+      });
+      if (!userSession) return res.status(401).json({ message: "Unauthorized" });
+
+      const { server, currentGuildID } = req.body;
+
+      const guild = await prisma.guild.findUnique({ where: { id: currentGuildID as string } });
+      if (!guild) return res.status(404).json({ message: "Guild not found" });
+
+      const { adminofReqGuild, officerofReqGuild } = checkUserRoles(userSession, currentGuildID as string);
+      if (!(adminofReqGuild || officerofReqGuild))
+        return res.status(401).json({ message: "Only Admins or Officers can change guild server" });
+
+      await prisma.guild.update({
+        where: { id: currentGuildID as string },
+        data: { server },
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    return res.status(200).json({ message: "Guild Server Updated" });
+  }
+  if (!(req.method == "GET" || req.method == "POST" || req.method == "DELETE" || req.method == "PATCH")) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 }

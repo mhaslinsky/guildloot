@@ -1,19 +1,23 @@
 import { NextPage } from "next";
-import { Title, Text, Stack, Divider, Button, Flex, Loader } from "@mantine/core";
+import { Title, Text, Stack, Divider, Button, Flex, Loader, Group, Select, Box } from "@mantine/core";
 import { UsersRolesTable } from "../components/UserRolesTable";
 import { useGrabGuildMembers } from "../utils/hooks/queries/useGrabGuildMembers";
 import { useGrabUserInfo } from "../utils/hooks/queries/useUserInfo";
 import { useGuildStore } from "../utils/store/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUpdateGuildMembers } from "../utils/hooks/mutations/useUpdateGuildMembers";
 import { openConfirmModal } from "@mantine/modals";
 import { useDeleteGuild } from "../utils/hooks/mutations/useDeleteGuild";
 import { useRouter } from "next/router";
+import { serverList } from "../components/GuildCreateForm";
+import { useEditGuild } from "../utils/hooks/mutations/useEditGuild";
 
 const ManageUsers: NextPage = () => {
-  const { data: currentGuildMembers, isLoading, fetchStatus, status } = useGrabGuildMembers();
+  const { data: guildInfo, isLoading, fetchStatus, status } = useGrabGuildMembers();
   const { mutate: updateGuildMember } = useUpdateGuildMembers();
+  const { mutate: editGuild } = useEditGuild();
   const { mutate: deleteGuild } = useDeleteGuild();
+  const [guildServer, setGuildServer] = useState(guildInfo?.server || null);
   const { data: availableGuilds } = useGrabUserInfo();
   const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds, currentGuildID, roleInCurrentGuild] =
     useGuildStore((state) => [
@@ -57,27 +61,44 @@ const ManageUsers: NextPage = () => {
     );
   else {
     return (
-      <Stack style={{}} justify='space-between' h='100%'>
-        <Stack>
-          <Title pt='md' pb='-1rem' order={3}>
-            Current Members
-          </Title>
-          <UsersRolesTable data={currentGuildMembers?.Admin} role='Admin' />
-          {currentGuildMembers?.officers.length! > 0 && (
-            <UsersRolesTable data={currentGuildMembers?.officers} role='Officer' />
-          )}
-          {currentGuildMembers?.members.length! > 0 && (
-            <UsersRolesTable data={currentGuildMembers?.members} role='Member' />
-          )}
-          {(roleInCurrentGuild == "admin" || roleInCurrentGuild == "officer") &&
-            currentGuildMembers?.pending.length! > 0 && (
-              <>
-                <Title pt='lg' order={3}>
-                  Pending Requests
-                </Title>
-                <UsersRolesTable data={currentGuildMembers?.pending} role='Pending' />
-              </>
-            )}
+      <Stack justify='space-between' h='100%'>
+        <Stack justify='space-between' h='100%'>
+          <Box>
+            <Title pt='md' pb='-1rem' order={3}>
+              Current Members
+            </Title>
+            <UsersRolesTable data={guildInfo?.Admin} role='Admin' />
+            {guildInfo?.officers.length! > 0 && <UsersRolesTable data={guildInfo?.officers} role='Officer' />}
+            {guildInfo?.members.length! > 0 && <UsersRolesTable data={guildInfo?.members} role='Member' />}
+            {(roleInCurrentGuild == "admin" || roleInCurrentGuild == "officer") &&
+              guildInfo?.pending.length! > 0 && (
+                <>
+                  <Title pt='lg' order={3}>
+                    Pending Requests
+                  </Title>
+                  <UsersRolesTable data={guildInfo?.pending} role='Pending' />
+                </>
+              )}
+          </Box>
+          <Group>
+            {roleInCurrentGuild == "admin" ||
+              (roleInCurrentGuild == "officer" && (
+                <>
+                  <Text>Server: </Text>
+                  <Select
+                    searchable
+                    data={serverList}
+                    placeholder={guildInfo?.server || "Select a server"}
+                    defaultValue={guildInfo?.server}
+                    onChange={(value) => {
+                      if (value !== guildInfo?.server && value !== null) {
+                        editGuild({ server: value });
+                      }
+                    }}
+                  />
+                </>
+              ))}
+          </Group>
         </Stack>
         <Stack>
           <Divider />

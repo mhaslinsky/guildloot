@@ -4,7 +4,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import { useCreateGuild } from "../utils/hooks/mutations/useCreateGuild";
 
-const serverList = [
+export const serverList = [
   "Skyfury",
   "Maladath",
   "Angerforge",

@@ -30,11 +30,14 @@ const Log: NextPage = () => {
   const [checked, setChecked] = useState(true);
   const [raidSize, setRaidSize] = useState<10 | 25>(25);
   const { data: userData } = useGrabUserInfo();
-  const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds] = useGuildStore((state) => [
-    state.setCurrentGuildID,
-    state.setCurrentGuildName,
-    state.setAvailableGuilds,
-  ]);
+  const [setCurrentGuildID, setCurrentGuildName, setAvailableGuilds, roleInCurrentGuild] = useGuildStore(
+    (state) => [
+      state.setCurrentGuildID,
+      state.setCurrentGuildName,
+      state.setAvailableGuilds,
+      state.roleinCurrentGuild,
+    ]
+  );
   const { data, mutate: logloot, isSuccess } = useLogLoot();
   const [opened, setOpened] = useState(false);
   const [modalContent, setModalContent] = useState([]);
@@ -54,10 +57,12 @@ const Log: NextPage = () => {
         };
       });
       setAvailableGuilds(guildsWithValues || []);
-      setCurrentGuildID(guildsWithValues[0]?.value || null);
-      setCurrentGuildName(guildsWithValues[0]?.name || null);
+      if (!(roleInCurrentGuild === "admin" || roleInCurrentGuild === "officer")) {
+        setCurrentGuildID(guildsWithValues[0]?.value || null);
+        setCurrentGuildName(guildsWithValues[0]?.name || null);
+      }
     }
-  }, [setAvailableGuilds, setCurrentGuildID, setCurrentGuildName, userData]);
+  }, [roleInCurrentGuild, setAvailableGuilds, setCurrentGuildID, setCurrentGuildName, userData]);
 
   //handling modal popup if there are some, but not all, bad items
   useEffect(() => {
