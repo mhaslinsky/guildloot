@@ -14,6 +14,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
     name: {
       fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+      "&:hover": {
+        cursor: "pointer",
+      },
     },
 
     link: {
@@ -57,7 +60,7 @@ interface UserInfoIconsProps {
 export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps) {
   const { classes } = useStyles();
   const currentGuildName = useGuildStore((state) => state.currentGuildName);
-  const [setPrimaryColor, primaryColor] = useThemeStore((state) => [state.setPrimaryColor, state.primaryColor]);
+  const [setPrimaryColor] = useThemeStore((state) => [state.setPrimaryColor]);
 
   useEffect(() => {
     const color = localStorage.getItem("accentColor");
@@ -83,7 +86,7 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
         align='center'
       >
         <div>
-          <Text size='xs' sx={{ textTransform: "uppercase" }} weight={650} color='dimmed'>
+          <Text size='xs' sx={{ textTransform: "uppercase" }} weight={650}>
             {currentGuildName ? `<${currentGuildName}>` : null}
           </Text>
           <Text
@@ -105,7 +108,7 @@ export function UserBadge({ avatar, guild, username, email }: UserInfoIconsProps
             }}
           >
             <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Logout</span>
+            <Text>Logout</Text>
           </a>
         </div>
 

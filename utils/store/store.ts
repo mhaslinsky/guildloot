@@ -84,7 +84,10 @@ export const useThemeStore = create<themeStoreState>((set) => ({
   setColorScheme: (scheme: ColorScheme) => set({ colorScheme: scheme }),
   toggleColorScheme: () => set((state: any) => ({ colorScheme: state.colorScheme === "dark" ? "light" : "dark" })),
   primaryColor: "",
-  setPrimaryColor: (color: DefaultMantineColor) => set({ primaryColor: color }),
+  setPrimaryColor: (color: DefaultMantineColor) => {
+    set({ primaryColor: color });
+    localStorage.setItem("accentColor", color);
+  },
 }));
 
 interface numTablesState {

@@ -11,9 +11,9 @@ import {
   Stack,
   Title,
   ScrollArea,
-  Text,
+  Box,
 } from "@mantine/core";
-import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch } from "@tabler/icons";
+import { IconLogout, IconBallpen, IconPlus, IconSubtask, IconListSearch, IconSettings } from "@tabler/icons";
 import { useNavBarStore, guildModalStore, useGuildStore } from "../../utils/store/store";
 import { useSession } from "next-auth/react";
 import { UserBadge } from "../UserBadge";
@@ -21,6 +21,7 @@ import { AuthenticationForm } from "../AuthForm";
 import Link from "next/link";
 import { GuildCreateForm } from "../GuildCreateForm";
 import { useRouter } from "next/router";
+import { useGrabUserInfo } from "../../utils/hooks/queries/useUserInfo";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon: any = getRef("icon");
@@ -81,12 +82,9 @@ export function NavbarSimple() {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("none");
   const [modalOpened, setModalOpened] = useState(false);
-  const [isNavBarOpen, toggleNavBar, setNavBar] = useNavBarStore((state) => [
-    state.isNavBarOpen,
-    state.toggleNavBar,
-    state.setNavBar,
-  ]);
+  const [isNavBarOpen] = useNavBarStore((state) => [state.isNavBarOpen]);
   const { data: session } = useSession();
+  const { data: userInfo } = useGrabUserInfo();
   const router = useRouter();
   const [createGuildModalOpen, setCreateGuildModalOpened] = guildModalStore((state) => [
     state.createGuildModalOpen,
@@ -100,6 +98,7 @@ export function NavbarSimple() {
         { link: "/manage", label: "Guild Management", icon: IconSubtask },
         { link: "/directory", label: "Browse Guilds", icon: IconListSearch },
         { link: "/log", label: "Log Drops", icon: IconBallpen },
+        { link: "/profile", label: "Settings", icon: IconSettings },
       ]);
     } else if (roleInCurrentGuild == "member") {
       setAvaLinks([
@@ -183,7 +182,25 @@ export function NavbarSimple() {
           </MediaQuery>
           {session && (
             <Stack h='100%' justify='space-between'>
-              <Stack>{links}</Stack>
+              <Box
+                component={ScrollArea}
+                offsetScrollbars
+                styles={(theme) => ({
+                  root: {
+                    flexGrow: 1,
+                    position: "relative",
+                    height: "100%",
+                  },
+                  scrollbar: {
+                    '&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+                      backgroundColor:
+                        theme.colorScheme === "dark" ? theme.colors[theme.primaryColor][7] : theme.colors.gray[3],
+                    },
+                  },
+                })}
+              >
+                <Stack>{links}</Stack>
+              </Box>
               <UnstyledButton
                 w='100%'
                 className={classes.link}
@@ -208,7 +225,7 @@ export function NavbarSimple() {
           )}
           {session && (
             <>
-              <UserBadge avatar={session.user!.image!} username={session.user!.name!} />
+              <UserBadge avatar={userInfo?.image || ""} username={userInfo?.name || ""} />
             </>
           )}
         </Navbar.Section>

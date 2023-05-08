@@ -22,13 +22,40 @@ export default async function userProfileEndpoint(req: NextApiRequest, res: Next
   const response = await auth(req, res);
   if (response) {
     const { session, token } = response;
-    console.log(session, token);
+    const { propToChange, value } = req.body;
+
+    if (req.method == "POST") {
+      try {
+        const user = await prisma.session.findUnique({
+          where: { sessionToken: token },
+          include: { user: true },
+        });
+
+        const userId = user?.userId;
+
+        if (propToChange === "username") {
+          const update = await prisma.user.update({
+            where: { id: userId },
+            data: { name: value },
+          });
+        }
+
+        if (propToChange === "image") {
+          const update = await prisma.user.update({
+            where: { id: userId },
+            data: { image: value },
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+
+      return res.status(200).json({ message: "Profile Updated!" });
+    } else {
+      res.status(405).json({ message: "Method not allowed" });
+    }
   } else {
     return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  if (req.method == "POST") {
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
   }
 }

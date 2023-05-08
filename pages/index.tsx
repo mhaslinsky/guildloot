@@ -106,7 +106,7 @@ const Home: NextPage = () => {
 
   return (
     <Flex h='100%' justify='center' align='center'>
-      {status == "loading" && <Text>Checking for cached login...</Text>}
+      {status == "loading" && <Text>Trying to log you in...</Text>}
       {!session && status == "unauthenticated" && <HeroTitle />}
       {initialRenderComplete && session && (
         <Card pt={0} pb={0} pr={0} h='100%' w='100%'>
