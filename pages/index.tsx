@@ -79,7 +79,6 @@ const Home: NextPage = () => {
       }),
       columnHelper.accessor((row) => `${row.raidSize}`, {
         header: "Size",
-        filterFn: "fuzzy",
         cell: (info) => {
           const raidSize = info.getValue() == "TWENTY_FIVE" ? "25" : "10";
           const display = `${raidSize}`;
