@@ -1,15 +1,5 @@
 import { lootItem } from "@prisma/client";
-import {
-  Box,
-  Flex,
-  LoadingOverlay,
-  ScrollArea,
-  Table as Mtable,
-  Checkbox,
-  ActionIcon,
-  Button,
-  Drawer,
-} from "@mantine/core";
+import { Box, Flex, LoadingOverlay, ScrollArea, Table as Mtable, Drawer } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -26,16 +16,14 @@ import {
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { Anchor } from "@mantine/core";
 import { SortAscending, SortDescending } from "tabler-icons-react";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useStyles } from "../../styles/theme";
 import FilterPopover from "../Filter/FilterPopover";
 import { useResizeObserver } from "@mantine/hooks";
 import { ColumnFilterDisplay } from "../Filter/ColumnFilterDisplay";
 import theme from "../../styles/theme";
 import { PaginationControls } from "../PaginationControls";
-import { IconSettings } from "@tabler/icons";
 import { EditForm } from "../EditForm";
-import { useNumTablesStore } from "../../utils/store/store";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -47,11 +35,13 @@ declare module "@tanstack/table-core" {
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const negativeFiter = value.startsWith("!");
   // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value);
+  const itemRank = rankItem(row.getValue(columnId), value.replace("!", ""));
   // Store the itemRank info
   addMeta({ itemRank });
   // Return if the item should be filtered in/out
+  if (negativeFiter) return !itemRank.passed;
   return itemRank.passed;
 };
 
@@ -87,6 +77,10 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
     getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
   });
+
+  // useEffect(() => {
+  //   console.log("columnFilters", columnFilters);
+  // }, [columnFilters]);
 
   useEffect(() => {
     if (rect.width < 655) {

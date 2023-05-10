@@ -33,6 +33,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
     [column.getFacetedUniqueValues()]
   );
 
+  //debouncing column filter being set
   useEffect(() => {
     const timeout = setTimeout(() => {
       column.setFilterValue(value);

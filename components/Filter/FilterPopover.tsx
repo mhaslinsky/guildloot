@@ -14,7 +14,7 @@ const localStyles = createStyles((theme) => ({
 
 export default function FilterPopover({ column, table }: { column: Column<any, unknown>; table: Table<any> }) {
   const { classes: globalClasses } = useStyles();
-  const { classes, theme } = localStyles();
+  const { classes } = localStyles();
 
   return (
     <Popover classNames={{ dropdown: classes.dropdown }}>

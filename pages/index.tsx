@@ -60,6 +60,7 @@ const Home: NextPage = () => {
       }),
       columnHelper.accessor(`itemName`, {
         header: "Item",
+        filterFn: "fuzzy",
         cell: (info) => info.getValue(),
         footer: "Item",
       }),
