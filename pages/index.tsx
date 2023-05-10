@@ -52,6 +52,7 @@ const Home: NextPage = () => {
       }),
       columnHelper.accessor((row) => `${row.player}`, {
         header: "Player",
+        filterFn: "fuzzy",
         cell: (info) => {
           const name = info.getValue().split("-");
           return name[0];
@@ -66,16 +67,19 @@ const Home: NextPage = () => {
       }),
       columnHelper.accessor((row) => `${row.boss}`, {
         header: "Boss",
+        filterFn: "fuzzy",
         cell: (info) => info.getValue(),
         footer: "Boss",
       }),
       columnHelper.accessor((row) => `${row.instance} `, {
         header: "Instance",
+        filterFn: "fuzzy",
         cell: (info) => info.getValue(),
         footer: "Instance",
       }),
       columnHelper.accessor((row) => `${row.raidSize}`, {
         header: "Size",
+        filterFn: "fuzzy",
         cell: (info) => {
           const raidSize = info.getValue() == "TWENTY_FIVE" ? "25" : "10";
           const display = `${raidSize}`;
@@ -85,6 +89,7 @@ const Home: NextPage = () => {
       }),
       columnHelper.accessor((row) => `${row.response}`, {
         header: "Reason",
+        filterFn: "fuzzy",
         cell: (info) => {
           if (info.getValue().length > 22)
             return (
