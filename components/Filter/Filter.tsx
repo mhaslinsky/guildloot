@@ -28,7 +28,7 @@ export default function Filter({ column, table }: { column: Column<any, unknown>
   const debounce = 250;
   const columnFilterValue = column.getFilterValue();
   const sortedUniqueValues = useMemo(
-    () => (typeof firstValue === "number" ? [] : Array.from(column.getFacetedUniqueValues().keys()).sort()),
+    () => Array.from(column.getFacetedUniqueValues().keys()).sort(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [column.getFacetedUniqueValues()]
   );

@@ -35,13 +35,26 @@ declare module "@tanstack/table-core" {
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  const negativeFiter = value.startsWith("!");
+  const filterAND = value.includes("&&");
+  const filterOR = value.includes("||");
+  const filterNOT = value.startsWith("!");
+
+  if (filterAND) {
+    const filters = value.split("&&");
+    const results = filters.map((filter: string) => fuzzyFilter(row, columnId, filter, addMeta));
+    return results.every((result: boolean) => result);
+  }
+  if (filterOR) {
+    const filters = value.split("||");
+    const results = filters.map((filter: string) => fuzzyFilter(row, columnId, filter, addMeta));
+    return results.some((result: boolean) => result);
+  }
   // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value.replace("!", ""));
   // Store the itemRank info
   addMeta({ itemRank });
   // Return if the item should be filtered in/out
-  if (negativeFiter) return !itemRank.passed;
+  if (filterNOT) return !itemRank.passed;
   return itemRank.passed;
 };
 
