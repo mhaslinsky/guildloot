@@ -17,12 +17,14 @@ const useGrabLoot = () => {
 
   return useInfiniteQuery(
     ["loot", currentGuildID],
+    //pageParam updated internally by tanstack query after initial run by getNextPageParam
     ({ pageParam = 1 }) => fetchLootData(currentGuildID, pageParam),
     {
       enabled: !!currentGuildID && !!session,
       staleTime: 1000 * 1800,
       keepPreviousData: true,
-      getNextPageParam: (lastPage) => lastPage.nextPage,
+      //cursor is either returned as the next pageParam(page) or undefined if on last page from BE
+      getNextPageParam: (cursor) => cursor.nextPage,
       onSuccess: (data) => {},
     }
   );

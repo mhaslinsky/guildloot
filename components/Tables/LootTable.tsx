@@ -91,10 +91,6 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
     onColumnVisibilityChange: setColumnVisibility,
   });
 
-  // useEffect(() => {
-  //   console.log("columnFilters", columnFilters);
-  // }, [columnFilters]);
-
   useEffect(() => {
     if (rect.width < 655) {
       table.setColumnVisibility({

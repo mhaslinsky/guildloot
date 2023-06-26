@@ -34,7 +34,7 @@ export function useDeleteGuild() {
       } else {
         showNotification({
           title: "Error",
-          message: "unknown errror",
+          message: "unknown error",
           color: "red",
         });
       }

@@ -24,6 +24,7 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
+    //checks with getNextPageParam in useInfQuery to see if there is a next page
     if (hasNextPage) fetchNextPage();
   }, [fetchNextPage, hasNextPage]);
 

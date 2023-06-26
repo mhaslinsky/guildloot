@@ -76,9 +76,19 @@ const items = new Database.Items({ iconSrc: "wowhead" });
 const zones = new Database.Zones({ iconSrc: "wowhead" });
 
 function formatRCItem(item: RCLootItem, guildID: string) {
-  const { isAwardReason, instance, date, response, player, ...itemData } = item;
+  const { isAwardReason, date, response, player, ...itemData } = item;
+  let { instance } = item;
+
+  if (item.boss === "Onyxia") {
+    console.log("ony loot found, setting instance to onys lair...");
+    instance = "Onyxia's Lair-25 Player";
+  }
+
   const playerNoServer = player.split("-")[0];
   const instanceArray = instance!.split("-");
+
+  console.log(instanceArray);
+
   const convertedDate = new Date(date as string);
   const newItem: formattedRCItem = {
     ...itemData,
@@ -86,12 +96,13 @@ function formatRCItem(item: RCLootItem, guildID: string) {
     date: convertedDate,
     player: response == "Disenchant" ? "Disenchanted" : playerNoServer,
     instance: instanceArray[0],
-    raidSize: instanceArray[1] == "25 Player" ? 25 : 10,
+    raidSize: instanceArray[1].trim() == "25 Player" || instanceArray[1].trim() == "25 Player (Heroic)" ? 25 : 10,
     guildId: guildID,
     isAwardReason: isAwardReason === true ? true : false,
     trackerId: item.id,
     source: "RC",
   };
+
   return newItem;
 }
 
@@ -114,12 +125,14 @@ function getInstanceFromBoss(bossName: string) {
     "Kel'Thuzad",
   ];
   const eyeOfEternityBosses = ["Malygos"];
+
   const vaultOfArchavonBosses = [
     "Archavon the Stone Watcher",
     "Emalon the Storm Watcher",
     "Koralon the Flame Watcher",
     "Toravon the Ice Watcher",
   ];
+
   const ulduarBosses = [
     "Flame Leviathan",
     "Ignis the Furnace Master",
@@ -137,10 +150,19 @@ function getInstanceFromBoss(bossName: string) {
     "Algalon the Observer",
   ];
 
+  const trialOfTheCrusaderBosses = [
+    "Northrend Beasts",
+    "Lord Jaraxxus",
+    "Faction Champions",
+    "Val'kyr Twins",
+    "Anub'arak",
+  ];
+
   if (naxxramasBosses.includes(bossName)) return "Naxxramas";
   if (eyeOfEternityBosses.includes(bossName)) return "Eye of Eternity";
   if (vaultOfArchavonBosses.includes(bossName)) return "Vault of Archavon";
   if (ulduarBosses.includes(bossName)) return "Ulduar";
+  if (trialOfTheCrusaderBosses.includes(bossName)) return "Trial of the Crusader";
   return null;
 }
 

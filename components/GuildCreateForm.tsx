@@ -122,6 +122,7 @@ const schema = z.object({
 
 export function GuildCreateForm() {
   const { mutate: createGuild, isLoading } = useCreateGuild();
+
   const form = useForm({
     validate: zodResolver(schema),
     initialValues: {

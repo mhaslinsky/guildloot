@@ -61,7 +61,7 @@ const ManageUsers: NextPage = () => {
     );
   else {
     return (
-      <Stack justify='space-between' h='100%'>
+      <Flex direction='column' justify='space-between' w='100%' style={{ minHeight: "100%" }}>
         <Stack justify='space-between' h='100%'>
           <Box>
             <Title pt='md' pb='-1rem' order={3}>
@@ -80,7 +80,7 @@ const ManageUsers: NextPage = () => {
                 </>
               )}
           </Box>
-          <Group>
+          <Group pb='md'>
             {(roleInCurrentGuild == "admin" || roleInCurrentGuild == "officer") && (
               <>
                 <Text>Server: </Text>
@@ -101,7 +101,7 @@ const ManageUsers: NextPage = () => {
         </Stack>
         <Stack>
           <Divider />
-          <Flex justify='space-between' w='100%'>
+          <Flex justify='space-between' w='100%' pb='md'>
             {roleInCurrentGuild == "admin" && (
               <Button
                 variant='subtle'
@@ -164,7 +164,7 @@ const ManageUsers: NextPage = () => {
             )}
           </Flex>
         </Stack>
-      </Stack>
+      </Flex>
     );
   }
 };
