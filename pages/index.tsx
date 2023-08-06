@@ -14,7 +14,7 @@ import _, { set } from "lodash";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isFetching } = useGrabLoot();
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } = useGrabLoot();
   const { data: session, status } = useSession();
   const [loadingLoot, setLoadingLoot] = useState<boolean>(true);
 
