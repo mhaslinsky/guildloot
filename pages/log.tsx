@@ -38,7 +38,7 @@ const Log: NextPage = () => {
       state.roleinCurrentGuild,
     ]
   );
-  const { data, mutate: logloot, isSuccess } = useLogLoot();
+  const { data, mutate: logloot, isSuccess, isLoading } = useLogLoot();
   const [opened, setOpened] = useState(false);
   const [modalContent, setModalContent] = useState([]);
   const { ref: cardRef, width: cardWidth, height: cardHeight } = useElementSize();
@@ -233,7 +233,7 @@ const Log: NextPage = () => {
                   maxRows={50}
                 />
                 <Group position='right' mt='xs'>
-                  <Button type='submit'>Submit</Button>
+                  <Button type='submit'>{isLoading ? "Submitting" : "Submit"}</Button>
                 </Group>
               </form>
             </Card>
