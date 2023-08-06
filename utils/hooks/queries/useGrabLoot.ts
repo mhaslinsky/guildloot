@@ -3,6 +3,8 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useGuildStore } from "../../store/store";
 
+let clientCursor: number;
+
 const fetchLootData = async (guild: string | null, cursor: number) => {
   if (!guild) return Promise.reject("No guild selected");
   //returns all loot for selected guild
@@ -30,4 +32,4 @@ const useGrabLoot = () => {
   );
 };
 
-export { useGrabLoot, fetchLootData };
+export { useGrabLoot, fetchLootData, clientCursor };

@@ -10,12 +10,13 @@ import { useNumTablesStore } from "../utils/store/store";
 import { lootItem } from "@prisma/client";
 import { IndeterminateCheckbox } from "../components/IndeterminateCheckbox";
 import { DisplayDate } from "../components/DisplayDate";
-import _ from "lodash";
+import _, { set } from "lodash";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const { data, fetchNextPage, hasNextPage, isFetching } = useGrabLoot();
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isFetching } = useGrabLoot();
   const { data: session, status } = useSession();
+  const [loadingLoot, setLoadingLoot] = useState<boolean>(true);
 
   const [numTables] = useNumTablesStore((state) => [state.numTables]);
 
@@ -24,9 +25,14 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
+    setLoadingLoot(true);
     //checks with getNextPageParam in useInfQuery to see if there is a next page
+    if (isFetchingNextPage) return;
     if (hasNextPage) fetchNextPage();
-  }, [fetchNextPage, hasNextPage]);
+    else if (!hasNextPage && initialRenderComplete) {
+      setLoadingLoot(false);
+    }
+  }, [fetchNextPage, hasNextPage, initialRenderComplete, isFetchingNextPage]);
 
   const columnHelper = createColumnHelper<lootItem>();
   const columns = useMemo(
@@ -123,7 +129,7 @@ const Home: NextPage = () => {
                   numTables={numTables}
                   columns={columns}
                   key={index}
-                  loading={isFetching}
+                  loading={loadingLoot}
                   data={
                     data?.pages
                       .map((chunk) => {

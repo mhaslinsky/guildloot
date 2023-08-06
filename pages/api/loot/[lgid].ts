@@ -423,11 +423,13 @@ export default async function lootEndpoint(req: any, res: any) {
     return res.status(200).json({ message: "Loot Editted Successfully" });
   } else if (req.method == "DELETE") {
     const session = await getServerSession(req, res, authOptions);
+
     if (!session) return res.status(405).json({ message: "Not logged in, how are you here?" });
 
     const token =
       (getCookie("__Secure-next-auth.session-token", { req, res }) as string) ||
       (getCookie("next-auth.session-token", { req, res }) as string);
+
     if (!token) return res.status(405).json({ message: "Not logged in, or blocking cookies." });
 
     const { lootRows, currentGuildID }: { lootRows: lootItem[]; currentGuildID: string } = req.body;
