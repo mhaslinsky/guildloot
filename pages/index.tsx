@@ -10,7 +10,7 @@ import { useNumTablesStore } from "../utils/store/store";
 import { lootItem } from "@prisma/client";
 import { IndeterminateCheckbox } from "../components/IndeterminateCheckbox";
 import { DisplayDate } from "../components/DisplayDate";
-import _, { set } from "lodash";
+import _ from "lodash";
 
 const Home: NextPage = () => {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
@@ -21,6 +21,7 @@ const Home: NextPage = () => {
   const [numTables] = useNumTablesStore((state) => [state.numTables]);
 
   useEffect(() => {
+    setLoadingLoot(true);
     setInitialRenderComplete(true);
   }, []);
 

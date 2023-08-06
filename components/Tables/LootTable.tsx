@@ -58,7 +58,14 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; data: lootItem[] }> = (props) => {
+interface LootTableProps {
+  numTables: number;
+  columns: any;
+  loading: boolean;
+  data: lootItem[];
+}
+
+const LootTable: React.FC<LootTableProps> = ({ numTables, columns, loading = true, data }) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "dateTime", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -68,8 +75,8 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
   const [numFilters, setNumFilters] = useState(0);
 
   const table = useReactTable({
-    data: props.data,
-    columns: props.columns,
+    data: data,
+    columns: columns,
     enableRowSelection: true,
     enableHiding: true,
     filterFns: {
@@ -108,12 +115,12 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
   }, [rect.width]);
 
   useEffect(() => {
-    if (props.numTables > 1) table.setColumnVisibility({ ...columnVisibility, Select: false });
+    if (numTables > 1) table.setColumnVisibility({ ...columnVisibility, Select: false });
     else {
       table.setColumnVisibility({ ...columnVisibility, Select: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.numTables]);
+  }, [numTables]);
 
   useEffect(() => {
     if (rect.width > 1060) {
@@ -151,7 +158,7 @@ const LootTable: React.FC<{ numTables: number; columns: any; loading: boolean; d
         },
       })}
     >
-      <LoadingOverlay visible={props.loading} />
+      <LoadingOverlay visible={loading} />
       <Drawer
         size={`calc(var(--mantine-header-height, 0px) + 1rem)`}
         position='top'
