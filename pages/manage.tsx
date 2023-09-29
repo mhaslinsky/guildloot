@@ -6,11 +6,11 @@ import { useGrabUserInfo } from "../utils/hooks/queries/useUserInfo";
 import { useGuildStore } from "../utils/store/store";
 import { useEffect, useState } from "react";
 import { useUpdateGuildMembers } from "../utils/hooks/mutations/useUpdateGuildMembers";
-import { openConfirmModal } from "@mantine/modals";
 import { useDeleteGuild } from "../utils/hooks/mutations/useDeleteGuild";
+import { useEditGuild } from "../utils/hooks/mutations/useEditGuild";
+import { openConfirmModal } from "@mantine/modals";
 import { useRouter } from "next/router";
 import { serverList } from "../components/GuildCreateForm";
-import { useEditGuild } from "../utils/hooks/mutations/useEditGuild";
 
 const ManageUsers: NextPage = () => {
   const { data: guildInfo, isLoading, fetchStatus, status } = useGrabGuildMembers();

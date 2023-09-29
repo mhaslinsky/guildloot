@@ -88,9 +88,9 @@ export async function updateLootItemRecord(
     await prisma.lootItem.update({
       where: { id: lootRow.id },
       data: {
-        ...(updateData.player && { player: updateData.player }),
-        ...(updateData.instance && { instance: updateData.instance }),
-        ...(updateData.boss && { boss: updateData.boss }),
+        ...(updateData.player && { player: updateData.player.trim() }),
+        ...(updateData.instance && { instance: updateData.instance.trim() }),
+        ...(updateData.boss && { boss: updateData.boss.trim() }),
         ...(updateData.size && {
           raidSize: updateData.size == "25" ? "TWENTY_FIVE" : "TEN",
         }),

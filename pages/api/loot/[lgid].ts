@@ -87,15 +87,13 @@ function formatRCItem(item: RCLootItem, guildID: string) {
   const playerNoServer = player.split("-")[0];
   const instanceArray = instance!.split("-");
 
-  console.log(instanceArray);
-
   const convertedDate = new Date(date as string);
   const newItem: formattedRCItem = {
     ...itemData,
     response,
     date: convertedDate,
     player: response == "Disenchant" ? "Disenchanted" : playerNoServer,
-    instance: instanceArray[0],
+    instance: instanceArray[0].trim(),
     raidSize: instanceArray[1].trim() == "25 Player" || instanceArray[1].trim() == "25 Player (Heroic)" ? 25 : 10,
     guildId: guildID,
     isAwardReason: isAwardReason === true ? true : false,
@@ -158,11 +156,27 @@ function getInstanceFromBoss(bossName: string) {
     "Anub'arak",
   ];
 
+  const icecrownCitadelBosses = [
+    "Lord Marrowgar",
+    "Lady Deathwhisper",
+    "Gunship Battle",
+    "Deathbringer Saurfang",
+    "Festergut",
+    "Rotface",
+    "Professor Putricide",
+    "Blood Prince Council",
+    "Blood-Queen Lana'thel",
+    "Valithria Dreamwalker",
+    "Sindragosa",
+    "The Lich King",
+  ];
+
   if (naxxramasBosses.includes(bossName)) return "Naxxramas";
   if (eyeOfEternityBosses.includes(bossName)) return "Eye of Eternity";
   if (vaultOfArchavonBosses.includes(bossName)) return "Vault of Archavon";
   if (ulduarBosses.includes(bossName)) return "Ulduar";
   if (trialOfTheCrusaderBosses.includes(bossName)) return "Trial of the Crusader";
+  if (icecrownCitadelBosses.includes(bossName)) return "Icecrown Citadel";
   return null;
 }
 
@@ -215,7 +229,6 @@ async function processRCLootData(guildID: any, itemData: RCLootItem[] | RCLootIt
     });
 
     const badItems = (await Promise.all(promises)).filter(Boolean);
-    console.log(badItems);
 
     if (badItems.length > 0) {
       if (badItems.length === itemData.length)

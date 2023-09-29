@@ -24,16 +24,6 @@ export const useNavBarStore = create<navBarState>((set) => ({
   toggleNavBar: () => set((state: any) => ({ isNavBarOpen: !state.isNavBarOpen })),
 }));
 
-// interface autoCompleteState {
-//   autoCompleteData: any;
-//   setAutoCompleteData: (data: any) => void;
-// }
-
-// export const useAutoCompleteDataStore = create<autoCompleteState>((set) => ({
-//   autoCompleteData: [],
-//   setAutoCompleteData: (data: any) => set({ autoCompleteData: data }),
-// }));
-
 interface guildState {
   currentGuildID: string | null;
   currentGuildName: string | null;
